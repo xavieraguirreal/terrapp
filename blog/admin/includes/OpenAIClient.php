@@ -48,9 +48,16 @@ class OpenAIClient {
 
     /**
      * Valida si una noticia es relevante para agricultura urbana
-     * Funciona con cualquier idioma
+     * TEMPORALMENTE DESACTIVADO - acepta todo porque gpt-4o-mini está fallando
+     * TODO: Revisar por qué el modelo rechaza todo
      */
     public function validarRelevancia(string $titulo, string $contenido): bool {
+        // Validación desactivada temporalmente - los topics de Tavily ya filtran
+        // El admin puede rechazar manualmente lo que no sea relevante
+        $this->ultimaRespuestaValidacion = "VALIDATION_DISABLED";
+        return true;
+
+        /* CÓDIGO ORIGINAL - DESCOMENTAR CUANDO SE ARREGLE
         $prompt = "Is this article about PLANTS, GARDENING, FARMING, VEGETABLES, or URBAN AGRICULTURE?
 
 TITLE: {$titulo}
@@ -69,6 +76,7 @@ Be INCLUSIVE: if in doubt, answer YES.";
         $respuesta = strtoupper(trim($response));
 
         return strpos($respuesta, 'YES') !== false || strpos($respuesta, 'SI') !== false;
+        */
     }
 
     /**
