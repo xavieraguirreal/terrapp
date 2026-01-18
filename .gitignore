@@ -22,6 +22,9 @@ nul
 # Local config (si tienes configs locales diferentes)
 # blog/admin/config/config.local.php
 
+# Config con API keys sensibles (subir manualmente por FTP)
+blog/admin/config/config.php
+
 # Cache
 *.cache
 
