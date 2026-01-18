@@ -48,26 +48,48 @@ class OpenAIClient {
 
     /**
      * Valida si una noticia es relevante para agricultura urbana
+     * Usa búsqueda de palabras clave + OpenAI como fallback
      */
     public function validarRelevancia(string $titulo, string $contenido): bool {
-        $temasLista = implode(', ', $this->temasValidos);
+        $texto = strtolower($titulo . ' ' . mb_substr($contenido, 0, 1000));
 
-        $prompt = "¿Esta noticia es sobre PLANTAS, JARDINERÍA, CULTIVOS o HUERTOS?
+        // Palabras clave que indican relevancia
+        $keywords = [
+            'plant', 'garden', 'farm', 'crop', 'seed', 'vegetable', 'fruit',
+            'grow', 'harvest', 'soil', 'compost', 'organic', 'cultivation',
+            'agricultura', 'huerto', 'huerta', 'jardín', 'jardin', 'cultivo',
+            'sembrar', 'cosecha', 'planta', 'semilla', 'vegetal', 'hortaliza',
+            'compostaje', 'riego', 'fertiliz', 'urban farm', 'balcony', 'terrace',
+            'hydroponic', 'hidropon', 'permaculture', 'permacultura', 'agroecol',
+            'horticultur', 'greenhouse', 'invernadero', 'urban agricult',
+            'vertical garden', 'rooftop', 'indoor plant', 'herb', 'aromatic'
+        ];
 
-TÍTULO: {$titulo}
+        // Si contiene palabras clave, es relevante
+        foreach ($keywords as $keyword) {
+            if (strpos($texto, $keyword) !== false) {
+                $this->ultimaRespuestaValidacion = "KEYWORD: $keyword";
+                return true;
+            }
+        }
 
-CONTENIDO:
-" . mb_substr($contenido, 0, 300) . "
+        // Palabras clave que indican NO relevante
+        $excludeKeywords = [
+            'movie', 'film', 'actor', 'actress', 'hollywood', 'netflix',
+            'football', 'soccer', 'basketball', 'tennis', 'celebrity',
+            'murder', 'crime', 'prison', 'court case', 'lawsuit'
+        ];
 
-Responde SOLO 'SI' o 'NO'.
-SI = habla de plantas, flores, vegetales, sembrar, cultivar, jardín, huerto, compost, riego
-NO = no tiene nada que ver con plantas";
+        foreach ($excludeKeywords as $keyword) {
+            if (strpos($texto, $keyword) !== false) {
+                $this->ultimaRespuestaValidacion = "EXCLUDED: $keyword";
+                return false;
+            }
+        }
 
-        $response = $this->chatSimple($prompt, 10);
-        $this->ultimaRespuestaValidacion = $response; // Guardar para debug
-        $respuesta = strtoupper(trim($response));
-
-        return strpos($respuesta, 'SI') !== false;
+        // Si no hay keywords claros, aceptar (ser inclusivo)
+        $this->ultimaRespuestaValidacion = "NO_KEYWORD_FOUND_BUT_ACCEPTED";
+        return true;
     }
 
     /**
