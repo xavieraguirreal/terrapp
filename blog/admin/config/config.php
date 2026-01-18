@@ -20,7 +20,7 @@ define('DB_CHARSET', 'utf8mb4');
 
 // API Keys
 define('TAVILY_API_KEY', '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');
-define('OPENAI_API_KEY', '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');
+define('OPENAI_API_KEY', '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');
 define('OPENAI_MODEL', 'gpt-4o-mini');
 
 // SendGrid (usa la misma config de TERRApp)
