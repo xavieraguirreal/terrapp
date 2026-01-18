@@ -137,7 +137,7 @@
 
             container.innerHTML = articles.map(art => `
                 <article class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition">
-                    <a href="../scriptum.html?titulus=${art.slug}" class="block">
+                    <a href="../scriptum.php?titulus=${art.slug}" class="block">
                         <div class="h-40 bg-gray-200 dark:bg-gray-700">
                             ${art.imagen_url
                                 ? `<img src="${art.imagen_url}" alt="" class="w-full h-full object-cover">`

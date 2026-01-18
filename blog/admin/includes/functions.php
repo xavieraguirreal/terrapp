@@ -472,7 +472,7 @@ function generarRSSFeed(): bool {
     $rss .= '  <atom:link href="' . htmlspecialchars($blogUrl) . 'feed.xml" rel="self" type="application/rss+xml"/>' . "\n";
 
     foreach ($articulos as $art) {
-        $link = $blogUrl . 'scriptum.html?titulus=' . urlencode($art['slug']);
+        $link = $blogUrl . 'scriptum.php?titulus=' . urlencode($art['slug']);
         $descripcion = mb_substr(strip_tags($art['contenido']), 0, 300) . '...';
 
         $rss .= '  <item>' . "\n";

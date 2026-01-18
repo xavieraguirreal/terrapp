@@ -105,7 +105,7 @@
 
             container.innerHTML = savedArticles.map(art => `
                 <article class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md">
-                    <a href="../scriptum.html?titulus=${art.slug}" class="block">
+                    <a href="../scriptum.php?titulus=${art.slug}" class="block">
                         <div class="h-40 bg-gray-200 dark:bg-gray-700">
                             ${art.imagen_url
                                 ? `<img src="${art.imagen_url}" alt="" class="w-full h-full object-cover">`
@@ -114,7 +114,7 @@
                         </div>
                     </a>
                     <div class="p-4">
-                        <a href="../scriptum.html?titulus=${art.slug}">
+                        <a href="../scriptum.php?titulus=${art.slug}">
                             <h3 class="font-bold mb-2 hover:text-forest-600 transition line-clamp-2">${escapeHtml(art.titulo)}</h3>
                         </a>
                         <div class="flex justify-between items-center">
