@@ -91,6 +91,9 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
 
+    <!-- Flag Icons CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -148,6 +151,21 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
 
                 <!-- Actions -->
                 <div class="flex items-center gap-3">
+                    <!-- Language Selector -->
+                    <div class="relative">
+                        <button id="langToggle" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-600" aria-label="Seleccionar idioma">
+                            <span id="currentFlag" class="fi fi-ar"></span>
+                            <span id="currentLangName" class="text-sm font-medium hidden sm:inline">Argentina</span>
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div id="langMenu" class="hidden absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-xl overflow-hidden z-50">
+                            <div class="p-2 text-xs text-gray-500 font-semibold uppercase tracking-wider border-b border-gray-100 dark:border-gray-700" data-i18n="lang_select_title">Seleccionar país</div>
+                            <div id="langOptions" class="max-h-80 overflow-y-auto"></div>
+                        </div>
+                    </div>
+
                     <!-- Save to List -->
                     <button id="saveBtn" onclick="toggleSaveArticle()" class="p-2 text-gray-600 dark:text-gray-300 hover:text-forest-600 transition" title="Guardar para después">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -342,6 +360,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
     </footer>
 
     <!-- Scripts -->
+    <script src="assets/js/i18n-blog.js"></script>
     <script src="assets/js/blog.js"></script>
     <script>
         // Cargar artículo al iniciar
