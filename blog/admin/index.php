@@ -102,6 +102,7 @@ $regionSugerida = sugerirRegion();
                     <div>
                         <p class="text-2xl font-bold text-forest-600"><?= number_format($estadisticas['total_vistas'] ?? 0) ?></p>
                         <p class="text-sm text-gray-500">Vistas totales</p>
+                        <p class="text-xs text-gray-400">(<?= number_format($estadisticas['total_vistas_unicas'] ?? 0) ?> únicas)</p>
                     </div>
                 </div>
             </div>
@@ -233,7 +234,7 @@ $regionSugerida = sugerirRegion();
                             <p class="text-xs text-gray-500 mt-1">
                                 <?= $art['region'] === 'sudamerica' ? '🌎' : '🌐' ?>
                                 <?= date('d/m/Y', strtotime($art['fecha_publicacion'])) ?>
-                                • 👁️ <?= $art['vistas'] ?>
+                                • 👁️ <?= $art['vistas'] ?> (<?= $art['vistas_unicas'] ?? 0 ?> únicas)
                             </p>
                         </div>
                     </div>

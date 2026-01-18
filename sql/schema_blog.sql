@@ -169,6 +169,18 @@ CREATE TABLE IF NOT EXISTS blog_lista_lectura (
     INDEX idx_session (session_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Tabla para trackear vistas únicas por IP
+CREATE TABLE IF NOT EXISTS blog_vistas_unicas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    articulo_id INT NOT NULL,
+    ip_hash VARCHAR(64) NOT NULL COMMENT 'Hash de la IP para privacidad',
+    fecha_vista DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (articulo_id) REFERENCES blog_articulos(id) ON DELETE CASCADE,
+    UNIQUE KEY uk_articulo_ip (articulo_id, ip_hash),
+    INDEX idx_articulo (articulo_id),
+    INDEX idx_fecha (fecha_vista)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Vista para obtener estadísticas del blog
 CREATE OR REPLACE VIEW v_blog_stats AS
 SELECT

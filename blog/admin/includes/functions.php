@@ -712,12 +712,35 @@ function generarRSSFeed(): bool {
 // ============================================
 
 /**
- * Incrementa el contador de vistas
+ * Incrementa el contador de vistas (inflado) y vistas únicas (real por IP)
  */
-function registrarVista(int $articuloId): void {
+function registrarVista(int $articuloId): array {
     $pdo = getConnection();
+    $resultado = ['vista_total' => true, 'vista_unica' => false];
+
+    // Siempre incrementar el contador de vistas totales (inflado)
     $stmt = $pdo->prepare("UPDATE blog_articulos SET vistas = vistas + 1 WHERE id = ?");
     $stmt->execute([$articuloId]);
+
+    // Intentar registrar vista única por IP
+    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $ipHash = hash('sha256', $ip . 'terrapp_salt_2026');
+
+    try {
+        // Insertar en tabla de vistas únicas (fallará si ya existe por el UNIQUE KEY)
+        $stmt = $pdo->prepare("INSERT INTO blog_vistas_unicas (articulo_id, ip_hash) VALUES (?, ?)");
+        $stmt->execute([$articuloId, $ipHash]);
+
+        // Si llegamos aquí, es una vista única nueva
+        $stmt = $pdo->prepare("UPDATE blog_articulos SET vistas_unicas = vistas_unicas + 1 WHERE id = ?");
+        $stmt->execute([$articuloId]);
+        $resultado['vista_unica'] = true;
+    } catch (PDOException $e) {
+        // Duplicate entry = ya visitó antes, no es vista única
+        // Solo registramos la vista total (ya hecho arriba)
+    }
+
+    return $resultado;
 }
 
 /**
