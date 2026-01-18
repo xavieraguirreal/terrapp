@@ -1,16 +1,19 @@
 <?php
 /**
  * TERRApp Blog - Generador de Web Stories (AMP)
+ * Crea historias visuales tipo Instagram para Google Discover
  */
 
 class WebStoryGenerator {
 
     private string $storiesPath;
     private string $blogUrl;
+    private PDO $pdo;
 
     public function __construct() {
         $this->storiesPath = __DIR__ . '/../../stories/';
         $this->blogUrl = BLOG_URL ?? 'https://terrapp.verumax.com/blog/';
+        $this->pdo = getConnection();
 
         if (!is_dir($this->storiesPath)) {
             mkdir($this->storiesPath, 0755, true);
@@ -18,126 +21,132 @@ class WebStoryGenerator {
     }
 
     /**
-     * Genera Web Story a partir de un artículo con tips
+     * Genera Web Story a partir de un artículo ID
+     * @return int|null ID de la story creada
      */
-    public function generarStory(array $articulo): ?string {
+    public function generarDesdeArticulo(int $articuloId): ?int {
+        // Obtener artículo
+        $stmt = $this->pdo->prepare("SELECT * FROM blog_articulos WHERE id = ?");
+        $stmt->execute([$articuloId]);
+        $articulo = $stmt->fetch();
+
+        if (!$articulo) {
+            throw new Exception("Artículo no encontrado");
+        }
+
         $tips = is_array($articulo['tips']) ? $articulo['tips'] : json_decode($articulo['tips'] ?? '[]', true);
 
-        // Solo generar si hay tips
         if (empty($tips)) {
-            return null;
+            throw new Exception("El artículo no tiene tips para generar una story");
         }
 
-        $storyId = $articulo['slug'];
-        $storyFile = $this->storiesPath . "story-{$storyId}.html";
+        // Generar slug único
+        $slug = $this->generarSlug($articulo['titulo']);
 
-        // Generar slides
-        $slides = $this->generarSlides($articulo, $tips);
+        // Generar slides JSON
+        $slides = $this->generarSlidesData($articulo, $tips);
 
-        $html = $this->generarHTML($articulo, $slides);
+        // Verificar si ya existe
+        $stmt = $this->pdo->prepare("SELECT id FROM blog_web_stories WHERE articulo_id = ?");
+        $stmt->execute([$articuloId]);
+        $existente = $stmt->fetch();
 
-        if (file_put_contents($storyFile, $html)) {
-            return "stories/story-{$storyId}.html";
+        if ($existente) {
+            // Actualizar existente
+            $stmt = $this->pdo->prepare("
+                UPDATE blog_web_stories
+                SET titulo = ?, slides = ?, poster_url = ?
+                WHERE id = ?
+            ");
+            $stmt->execute([
+                $articulo['titulo'],
+                json_encode($slides, JSON_UNESCAPED_UNICODE),
+                $articulo['imagen_url'],
+                $existente['id']
+            ]);
+            $storyId = $existente['id'];
+            $slug = $this->obtenerSlugPorId($storyId);
+        } else {
+            // Crear nueva
+            $stmt = $this->pdo->prepare("
+                INSERT INTO blog_web_stories (articulo_id, titulo, slug, poster_url, slides)
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $stmt->execute([
+                $articuloId,
+                $articulo['titulo'],
+                $slug,
+                $articulo['imagen_url'],
+                json_encode($slides, JSON_UNESCAPED_UNICODE)
+            ]);
+            $storyId = $this->pdo->lastInsertId();
         }
 
-        return null;
+        // Generar archivo HTML
+        $this->generarArchivoHTML($storyId, $articulo, $slides, $slug);
+
+        return (int)$storyId;
     }
 
     /**
-     * Genera los slides de la story
+     * Genera datos de slides
      */
-    private function generarSlides(array $articulo, array $tips): string {
-        $slides = '';
+    private function generarSlidesData(array $articulo, array $tips): array {
+        $slides = [];
 
-        // Slide de portada
-        $imagen = $articulo['imagen_url'] ?? '';
-        $slides .= $this->slidePortada($articulo['titulo'], $imagen);
+        // Slide portada
+        $slides[] = [
+            'tipo' => 'portada',
+            'titulo' => $articulo['titulo'],
+            'imagen' => $articulo['imagen_url'] ?: ''
+        ];
 
-        // Slide de intro
-        $slides .= $this->slideTexto(
-            'Sobre este artículo',
-            mb_substr($articulo['contenido'], 0, 200) . '...',
-            '#2d7553'
-        );
-
-        // Slides de tips
-        foreach ($tips as $i => $tip) {
-            $numero = $i + 1;
-            $slides .= $this->slideTip("Tip #{$numero}", $tip);
+        // Slides de tips (máximo 8)
+        $tipsSlice = array_slice($tips, 0, 8);
+        foreach ($tipsSlice as $i => $tip) {
+            $slides[] = [
+                'tipo' => 'tip',
+                'numero' => $i + 1,
+                'texto' => $tip
+            ];
         }
 
-        // Slide final con CTA
-        $slides .= $this->slideCTA($articulo['slug']);
+        // Slide CTA
+        $slides[] = [
+            'tipo' => 'cta',
+            'slug' => $articulo['slug']
+        ];
 
         return $slides;
     }
 
-    private function slidePortada(string $titulo, string $imagen): string {
-        $imagenHtml = $imagen
-            ? "<amp-img src=\"{$imagen}\" layout=\"fill\" object-fit=\"cover\"></amp-img>"
-            : '';
-
-        return <<<HTML
-    <amp-story-page id="cover">
-      <amp-story-grid-layer template="fill">
-        {$imagenHtml}
-      </amp-story-grid-layer>
-      <amp-story-grid-layer template="fill" class="bottom-gradient"></amp-story-grid-layer>
-      <amp-story-grid-layer template="vertical" class="bottom">
-        <h1 class="story-title">{$this->escapeHtml($titulo)}</h1>
-        <p class="story-publisher">TERRApp Blog</p>
-      </amp-story-grid-layer>
-    </amp-story-page>
-HTML;
-    }
-
-    private function slideTexto(string $titulo, string $texto, string $color): string {
-        return <<<HTML
-    <amp-story-page id="intro">
-      <amp-story-grid-layer template="fill" style="background: {$color};"></amp-story-grid-layer>
-      <amp-story-grid-layer template="vertical" class="center">
-        <h2 class="slide-title">{$this->escapeHtml($titulo)}</h2>
-        <p class="slide-text">{$this->escapeHtml($texto)}</p>
-      </amp-story-grid-layer>
-    </amp-story-page>
-HTML;
-    }
-
-    private function slideTip(string $titulo, string $tip): string {
-        $id = 'tip-' . md5($tip);
-        return <<<HTML
-    <amp-story-page id="{$id}">
-      <amp-story-grid-layer template="fill" style="background: linear-gradient(135deg, #558b2f 0%, #2d7553 100%);"></amp-story-grid-layer>
-      <amp-story-grid-layer template="vertical" class="center">
-        <div class="tip-icon">💡</div>
-        <h2 class="tip-title">{$this->escapeHtml($titulo)}</h2>
-        <p class="tip-text">{$this->escapeHtml($tip)}</p>
-      </amp-story-grid-layer>
-    </amp-story-page>
-HTML;
-    }
-
-    private function slideCTA(string $slug): string {
-        $url = $this->blogUrl . "scriptum.php?titulus={$slug}";
-        return <<<HTML
-    <amp-story-page id="cta">
-      <amp-story-grid-layer template="fill" style="background: #1a1a1a;"></amp-story-grid-layer>
-      <amp-story-grid-layer template="vertical" class="center">
-        <div class="cta-icon">🌱</div>
-        <h2 class="cta-title">¿Te gustó?</h2>
-        <p class="cta-text">Lee el artículo completo en nuestro blog</p>
-        <a href="{$url}" class="cta-button">Leer más</a>
-      </amp-story-grid-layer>
-    </amp-story-page>
-HTML;
+    /**
+     * Genera archivo HTML de la story
+     */
+    private function generarArchivoHTML(int $storyId, array $articulo, array $slides, string $slug): void {
+        $html = $this->renderHTML($articulo, $slides, $slug);
+        $filename = "story-{$slug}.html";
+        file_put_contents($this->storiesPath . $filename, $html);
     }
 
     /**
-     * Genera el HTML completo de la Web Story
+     * Renderiza HTML completo de la story
      */
-    private function generarHTML(array $articulo, string $slides): string {
-        $titulo = $this->escapeHtml($articulo['titulo']);
-        $imagen = $articulo['imagen_url'] ?? '';
+    private function renderHTML(array $articulo, array $slides, string $slug): string {
+        $titulo = $this->esc($articulo['titulo']);
+        $imagen = $articulo['imagen_url'] ?: '';
+        $slidesHtml = '';
+
+        foreach ($slides as $i => $slide) {
+            $pageId = 'page-' . ($i + 1);
+            if ($slide['tipo'] === 'portada') {
+                $slidesHtml .= $this->slidePortada($pageId, $slide);
+            } elseif ($slide['tipo'] === 'tip') {
+                $slidesHtml .= $this->slideTip($pageId, $slide);
+            } elseif ($slide['tipo'] === 'cta') {
+                $slidesHtml .= $this->slideCTA($pageId, $slide);
+            }
+        }
 
         return <<<HTML
 <!DOCTYPE html>
@@ -149,79 +158,222 @@ HTML;
   <title>{$titulo} - TERRApp</title>
   <link rel="canonical" href="{$this->blogUrl}scriptum.php?titulus={$articulo['slug']}">
   <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-  <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+  <link rel="icon" type="image/png" href="../landing/assets/images/logo_terrapp_icono.png">
+  <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>
+  <noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
   <style amp-custom>
     * { box-sizing: border-box; }
     body { font-family: 'Segoe UI', Arial, sans-serif; }
-
-    .bottom-gradient {
-      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
-    }
-
+    .gradient { background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%); }
     .bottom { justify-content: flex-end; padding-bottom: 60px; }
     .center { justify-content: center; align-items: center; text-align: center; padding: 20px; }
-
-    .story-title {
-      color: white;
-      font-size: 28px;
-      font-weight: bold;
-      line-height: 1.3;
-      margin: 0;
-      padding: 0 20px;
-    }
-
-    .story-publisher {
-      color: rgba(255,255,255,0.8);
-      font-size: 14px;
-      margin-top: 10px;
-    }
-
-    .slide-title, .tip-title, .cta-title {
-      color: white;
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-
-    .slide-text, .tip-text, .cta-text {
-      color: rgba(255,255,255,0.9);
-      font-size: 18px;
-      line-height: 1.6;
-    }
-
-    .tip-icon, .cta-icon {
-      font-size: 48px;
-      margin-bottom: 20px;
-    }
-
-    .cta-button {
-      display: inline-block;
-      margin-top: 30px;
-      padding: 15px 30px;
-      background: #2d7553;
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-    }
+    .story-title { color: white; font-size: 28px; font-weight: bold; line-height: 1.3; margin: 0; padding: 0 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+    .story-pub { color: rgba(255,255,255,0.8); font-size: 14px; margin-top: 10px; }
+    .tip-num { font-size: 64px; font-weight: bold; color: #4ade80; margin-bottom: 10px; }
+    .tip-text { color: white; font-size: 22px; line-height: 1.5; padding: 0 15px; }
+    .cta-icon { font-size: 64px; margin-bottom: 20px; }
+    .cta-title { color: white; font-size: 28px; font-weight: bold; margin-bottom: 15px; }
+    .cta-text { color: rgba(255,255,255,0.9); font-size: 18px; margin-bottom: 25px; }
+    .cta-btn { display: inline-block; padding: 15px 35px; background: #2d7553; color: white; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 16px; }
+    .bg-green { background: linear-gradient(135deg, #2d7553 0%, #3d9268 100%); }
+    .bg-dark { background: #1a1a1a; }
   </style>
 </head>
 <body>
   <amp-story standalone
     title="{$titulo}"
     publisher="TERRApp"
-    publisher-logo-src="{$this->blogUrl}../landing/assets/images/logo_terrapp_icono.png"
+    publisher-logo-src="https://terrapp.verumax.com/landing/assets/images/logo_terrapp_icono.png"
     poster-portrait-src="{$imagen}">
-
-{$slides}
-
+{$slidesHtml}
   </amp-story>
 </body>
 </html>
 HTML;
     }
 
-    private function escapeHtml(string $text): string {
-        return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+    private function slidePortada(string $id, array $slide): string {
+        $titulo = $this->esc($slide['titulo']);
+        $imgHtml = !empty($slide['imagen'])
+            ? '<amp-img src="' . $this->esc($slide['imagen']) . '" layout="fill" object-fit="cover"></amp-img>'
+            : '';
+
+        return <<<HTML
+
+    <amp-story-page id="{$id}">
+      <amp-story-grid-layer template="fill">{$imgHtml}</amp-story-grid-layer>
+      <amp-story-grid-layer template="fill" class="gradient"></amp-story-grid-layer>
+      <amp-story-grid-layer template="vertical" class="bottom">
+        <h1 class="story-title">{$titulo}</h1>
+        <p class="story-pub">TERRApp Blog</p>
+      </amp-story-grid-layer>
+    </amp-story-page>
+HTML;
+    }
+
+    private function slideTip(string $id, array $slide): string {
+        $num = (int)$slide['numero'];
+        $texto = $this->esc($slide['texto']);
+
+        return <<<HTML
+
+    <amp-story-page id="{$id}">
+      <amp-story-grid-layer template="fill" class="bg-green"></amp-story-grid-layer>
+      <amp-story-grid-layer template="vertical" class="center">
+        <div class="tip-num">#{$num}</div>
+        <p class="tip-text">{$texto}</p>
+      </amp-story-grid-layer>
+    </amp-story-page>
+HTML;
+    }
+
+    private function slideCTA(string $id, array $slide): string {
+        $url = $this->blogUrl . 'scriptum.php?titulus=' . urlencode($slide['slug']);
+
+        return <<<HTML
+
+    <amp-story-page id="{$id}">
+      <amp-story-grid-layer template="fill" class="bg-dark"></amp-story-grid-layer>
+      <amp-story-grid-layer template="vertical" class="center">
+        <div class="cta-icon">🌱</div>
+        <h2 class="cta-title">¿Te gustó?</h2>
+        <p class="cta-text">Lee el artículo completo en nuestro blog</p>
+        <a href="{$url}" class="cta-btn">Leer más</a>
+      </amp-story-grid-layer>
+    </amp-story-page>
+HTML;
+    }
+
+    /**
+     * Publica una story
+     */
+    public function publicar(int $storyId): bool {
+        $stmt = $this->pdo->prepare("UPDATE blog_web_stories SET estado = 'publicado', fecha_publicacion = NOW() WHERE id = ?");
+        $result = $stmt->execute([$storyId]);
+        if ($result) {
+            $this->exportarJSON();
+        }
+        return $result;
+    }
+
+    /**
+     * Obtiene todas las stories
+     */
+    public function obtenerStories(?string $estado = null): array {
+        $sql = "SELECT s.*, a.titulo as articulo_titulo, a.imagen_url as articulo_imagen
+                FROM blog_web_stories s
+                JOIN blog_articulos a ON s.articulo_id = a.id";
+
+        if ($estado) {
+            $sql .= " WHERE s.estado = ?";
+            $stmt = $this->pdo->prepare($sql . " ORDER BY s.fecha_creacion DESC");
+            $stmt->execute([$estado]);
+        } else {
+            $stmt = $this->pdo->query($sql . " ORDER BY s.fecha_creacion DESC");
+        }
+
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Obtiene artículos que pueden generar stories (tienen tips y no tienen story)
+     */
+    public function obtenerArticulosSinStory(): array {
+        $stmt = $this->pdo->query("
+            SELECT a.id, a.titulo, a.tips, a.imagen_url, a.fecha_publicacion
+            FROM blog_articulos a
+            LEFT JOIN blog_web_stories s ON a.id = s.articulo_id
+            WHERE a.estado = 'publicado'
+              AND a.tips IS NOT NULL
+              AND a.tips != '[]'
+              AND s.id IS NULL
+            ORDER BY a.fecha_publicacion DESC
+            LIMIT 20
+        ");
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Elimina una story
+     */
+    public function eliminar(int $storyId): bool {
+        $stmt = $this->pdo->prepare("SELECT slug FROM blog_web_stories WHERE id = ?");
+        $stmt->execute([$storyId]);
+        $story = $stmt->fetch();
+
+        if ($story) {
+            $file = $this->storiesPath . "story-{$story['slug']}.html";
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+
+        $stmt = $this->pdo->prepare("DELETE FROM blog_web_stories WHERE id = ?");
+        $result = $stmt->execute([$storyId]);
+
+        if ($result) {
+            $this->exportarJSON();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Exporta stories publicadas a JSON
+     */
+    public function exportarJSON(): void {
+        $stories = $this->obtenerStories('publicado');
+
+        $data = array_map(function($s) {
+            return [
+                'id' => (int)$s['id'],
+                'titulo' => $s['titulo'],
+                'slug' => $s['slug'],
+                'poster' => $s['poster_url'] ?: $s['articulo_imagen'],
+                'url' => $this->blogUrl . 'stories/story-' . $s['slug'] . '.html',
+                'fecha' => $s['fecha_publicacion'],
+                'vistas' => (int)$s['vistas']
+            ];
+        }, $stories);
+
+        file_put_contents(
+            $this->storiesPath . 'stories.json',
+            json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+        );
+    }
+
+    /**
+     * Genera slug único
+     */
+    private function generarSlug(string $titulo): string {
+        $slug = mb_strtolower($titulo);
+        $slug = preg_replace('/[^a-z0-9\s-]/', '', $slug);
+        $slug = preg_replace('/[\s-]+/', '-', $slug);
+        $slug = trim($slug, '-');
+        $slug = mb_substr($slug, 0, 50);
+
+        $base = $slug;
+        $i = 1;
+        while ($this->slugExiste($slug)) {
+            $slug = $base . '-' . $i++;
+        }
+
+        return $slug;
+    }
+
+    private function slugExiste(string $slug): bool {
+        $stmt = $this->pdo->prepare("SELECT 1 FROM blog_web_stories WHERE slug = ?");
+        $stmt->execute([$slug]);
+        return (bool)$stmt->fetch();
+    }
+
+    private function obtenerSlugPorId(int $id): string {
+        $stmt = $this->pdo->prepare("SELECT slug FROM blog_web_stories WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetchColumn() ?: '';
+    }
+
+    private function esc(string $s): string {
+        return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
     }
 }

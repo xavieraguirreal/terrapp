@@ -22,6 +22,9 @@
             }
         }
     </script>
+    <style>
+        .story-card { aspect-ratio: 9/16; }
+    </style>
 </head>
 <body class="bg-earth-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans min-h-screen">
     <!-- Header -->
@@ -34,58 +37,62 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                         </svg>
                     </a>
-                    <h1 class="text-xl font-bold">Web Stories</h1>
+                    <div>
+                        <h1 class="text-xl font-bold">Web Stories</h1>
+                        <p class="text-sm text-gray-500">Tips visuales de agricultura urbana</p>
+                    </div>
                 </div>
+                <a href="../../landing/" class="flex items-center gap-2">
+                    <img src="../../landing/assets/images/logo_terrapp_icono.png" alt="TERRApp" class="w-8 h-8">
+                </a>
             </div>
         </div>
     </header>
 
     <main class="container mx-auto px-4 py-8">
-        <p class="text-gray-600 dark:text-gray-400 mb-8">
-            Historias visuales con tips rápidos sobre agricultura urbana. Formato tipo Instagram Stories.
-        </p>
-
         <div id="storiesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            <!-- Se llena dinámicamente -->
+            <!-- Skeleton loaders -->
+            <div class="story-card bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
+            <div class="story-card bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
+            <div class="story-card bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
+            <div class="story-card bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
         </div>
 
         <div id="noStories" class="hidden text-center py-16">
             <div class="text-6xl mb-4">📱</div>
             <h2 class="text-xl font-bold text-gray-700 dark:text-gray-300 mb-2">Próximamente</h2>
-            <p class="text-gray-500">Estamos preparando historias visuales para ti</p>
+            <p class="text-gray-500">Estamos preparando historias visuales para vos</p>
+            <a href="../" class="inline-block mt-4 text-forest-600 hover:underline">Ver artículos del blog →</a>
         </div>
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // Cargar artículos con tips para mostrar stories disponibles
+            const container = document.getElementById('storiesGrid');
+            const noStories = document.getElementById('noStories');
+
             try {
-                const response = await fetch('../data/articulos.json');
-                const data = await response.json();
-                const articulos = data.articulos || [];
+                const response = await fetch('stories.json');
+                if (!response.ok) throw new Error('No hay stories');
 
-                // Filtrar los que tienen tips
-                const conTips = articulos.filter(a => a.tips && a.tips.length > 0);
+                const stories = await response.json();
 
-                const container = document.getElementById('storiesGrid');
-                const noStories = document.getElementById('noStories');
-
-                if (conTips.length === 0) {
+                if (!stories || stories.length === 0) {
                     container.classList.add('hidden');
                     noStories.classList.remove('hidden');
                     return;
                 }
 
-                container.innerHTML = conTips.map(art => `
-                    <a href="story-${art.slug}.html" class="block aspect-[9/16] rounded-xl overflow-hidden shadow-lg hover:scale-105 transition-transform relative group">
+                container.innerHTML = stories.map(story => `
+                    <a href="${story.url}" class="story-card block rounded-xl overflow-hidden shadow-lg hover:scale-105 transition-transform relative group">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10"></div>
-                        ${art.imagen_url
-                            ? `<img src="${art.imagen_url}" alt="" class="w-full h-full object-cover">`
+                        ${story.poster
+                            ? `<img src="${story.poster}" alt="" class="w-full h-full object-cover">`
                             : '<div class="w-full h-full bg-gradient-to-br from-forest-600 to-forest-700 flex items-center justify-center text-4xl">🌱</div>'
                         }
                         <div class="absolute bottom-0 left-0 right-0 p-3 z-20">
-                            <p class="text-white text-sm font-medium line-clamp-2">${art.titulo}</p>
-                            <p class="text-white/70 text-xs mt-1">${art.tips.length} tips</p>
+                            <p class="text-white text-sm font-medium line-clamp-2">${story.titulo}</p>
+                            <p class="text-white/70 text-xs mt-1">👁️ ${story.vistas || 0} vistas</p>
                         </div>
                         <div class="absolute top-2 right-2 w-8 h-8 bg-white/20 backdrop-blur rounded-full flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition">
                             <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -96,9 +103,9 @@
                 `).join('');
 
             } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('storiesGrid').classList.add('hidden');
-                document.getElementById('noStories').classList.remove('hidden');
+                console.log('No hay stories:', error);
+                container.classList.add('hidden');
+                noStories.classList.remove('hidden');
             }
         });
     </script>
