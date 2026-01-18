@@ -1,0 +1,2630 @@
+<!DOCTYPE html>
+<html lang="es" data-lang="es_AR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Analytics (GA4) -->
+    <!-- IMPORTANTE: Reemplazar G-XXXXXXXXXX con tu ID de medición de Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+
+    <!-- SEO Meta Tags -->
+    <title>TERRApp - Inteligencia Nativa para tu Suelo | App de Agricultura Urbana para Sudamérica</title>
+    <meta name="description" content="TERRApp es la app de agricultura urbana diseñada para Sudamérica. Calendarios de siembra locales, fichas de cultivo, biopreparados, asociaciones de plantas y seguimiento de tu huerta. Desarrollado con el Técnico Agrónomo Mauricio Navarro. Próximamente disponible.">
+    <meta name="keywords" content="agricultura urbana, huerta urbana, app huerta, agroecología, calendario siembra, cultivo orgánico, sudamérica, argentina, brasil, chile, colombia, terrapp, verumax, IA social, soberanía alimentaria, huerto casero, permacultura, biopreparados">
+    <meta name="author" content="VERUMax - Impulsada por la Cooperativa de Trabajo Liberté Ltda.">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://terrapp.verumax.com/">
+
+    <!-- Hreflang para versiones de idioma (todos los países de Sudamérica) -->
+    <link rel="alternate" hreflang="es-AR" href="https://terrapp.verumax.com/?lang=es_AR">
+    <link rel="alternate" hreflang="es-BO" href="https://terrapp.verumax.com/?lang=es_BO">
+    <link rel="alternate" hreflang="pt-BR" href="https://terrapp.verumax.com/?lang=pt_BR">
+    <link rel="alternate" hreflang="es-CL" href="https://terrapp.verumax.com/?lang=es_CL">
+    <link rel="alternate" hreflang="es-CO" href="https://terrapp.verumax.com/?lang=es_CO">
+    <link rel="alternate" hreflang="es-EC" href="https://terrapp.verumax.com/?lang=es_EC">
+    <link rel="alternate" hreflang="en-GY" href="https://terrapp.verumax.com/?lang=en_GY">
+    <link rel="alternate" hreflang="fr-GF" href="https://terrapp.verumax.com/?lang=fr_GF">
+    <link rel="alternate" hreflang="es-PY" href="https://terrapp.verumax.com/?lang=es_PY">
+    <link rel="alternate" hreflang="es-PE" href="https://terrapp.verumax.com/?lang=es_PE">
+    <link rel="alternate" hreflang="nl-SR" href="https://terrapp.verumax.com/?lang=nl_SR">
+    <link rel="alternate" hreflang="es-UY" href="https://terrapp.verumax.com/?lang=es_UY">
+    <link rel="alternate" hreflang="es-VE" href="https://terrapp.verumax.com/?lang=es_VE">
+    <link rel="alternate" hreflang="x-default" href="https://terrapp.verumax.com/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://terrapp.verumax.com/">
+    <meta property="og:title" content="TERRApp - App de Agricultura Urbana para Sudamérica">
+    <meta property="og:description" content="Cultivá tu propia huerta con TERRApp: calendarios de siembra adaptados a tu clima, fichas de cultivo, biopreparados naturales y seguimiento inteligente. Diseñado especialmente para Sudamérica. Próximamente disponible.">
+    <meta property="og:image" content="https://terrapp.verumax.com/landing/assets/images/logo_terrapp_icono.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="TERRApp - Inteligencia nativa para tu suelo">
+    <meta property="og:site_name" content="TERRApp by VERUMax">
+    <meta property="og:locale" content="es_AR">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TERRApp - App de Agricultura Urbana para Sudamérica">
+    <meta name="twitter:description" content="Cultivá tu propia huerta con calendarios de siembra locales, fichas de cultivo y biopreparados. Diseñado para Sudamérica. Próximamente.">
+    <meta name="twitter:image" content="https://terrapp.verumax.com/landing/assets/images/logo_terrapp_icono.png">
+    <meta name="twitter:image:alt" content="TERRApp - Inteligencia nativa para tu suelo">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/logo_terrapp_icono.png?v=2">
+    <link rel="apple-touch-icon" href="assets/images/logo_terrapp_icono.png?v=2">
+
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <!-- Flag Icons CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'earth': {
+                            50: '#faf6f1',
+                            100: '#f0e6d8',
+                            200: '#e0ccb0',
+                            300: '#cfb088',
+                            400: '#c19a6b',
+                            500: '#a67c52',
+                            600: '#8b6442',
+                            700: '#6f4f35',
+                            800: '#5a3f2b',
+                            900: '#4a3425',
+                        },
+                        'forest': {
+                            50: '#f0f9f4',
+                            100: '#dcf0e4',
+                            200: '#bbe0cb',
+                            300: '#8dc9a9',
+                            400: '#5dab82',
+                            500: '#3d9268',
+                            600: '#2d7553',
+                            700: '#265e44',
+                            800: '#224b39',
+                            900: '#1d3e30',
+                        },
+                        'leaf': {
+                            light: '#7cb342',
+                            DEFAULT: '#558b2f',
+                            dark: '#33691e',
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'display': ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="bg-earth-50 text-earth-900 font-sans antialiased">
+
+    <!-- Loader -->
+    <div id="page-loader" class="fixed inset-0 bg-earth-50 z-[9999] flex items-center justify-center transition-opacity duration-500">
+        <div class="text-center">
+            <div class="relative mb-6">
+                <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-forest-600 to-leaf opacity-20 animate-ping"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <img src="assets/images/logo_terrapp_icono.png" alt="TERRApp" class="w-16 h-16 animate-pulse">
+                </div>
+            </div>
+            <p class="text-forest-700 text-sm font-semibold tracking-widest">TERRAPP</p>
+            <div class="mt-4 w-48 h-1 bg-earth-200 rounded-full overflow-hidden mx-auto">
+                <div class="h-full bg-gradient-to-r from-forest-600 via-leaf to-forest-600 rounded-full animate-loading"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Share Buttons -->
+    <div id="shareButtons" class="fixed left-0 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-2 p-2 bg-white/90 backdrop-blur-sm rounded-r-xl shadow-lg border border-l-0 border-earth-200 transition-all duration-300 opacity-0 -translate-x-full" data-visible="false">
+        <span class="text-xs text-earth-500 font-medium text-center px-1 mb-1" data-i18n="share_title">Compartir</span>
+
+        <!-- WhatsApp -->
+        <button onclick="shareOn('whatsapp')" class="w-10 h-10 flex items-center justify-center rounded-lg bg-green-500 hover:bg-green-600 text-white transition-all hover:scale-110" title="WhatsApp">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </button>
+
+        <!-- Facebook -->
+        <button onclick="shareOn('facebook')" class="w-10 h-10 flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-all hover:scale-110" title="Facebook">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </button>
+
+        <!-- Twitter/X -->
+        <button onclick="shareOn('twitter')" class="w-10 h-10 flex items-center justify-center rounded-lg bg-black hover:bg-gray-800 text-white transition-all hover:scale-110" title="X (Twitter)">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </button>
+
+        <!-- LinkedIn -->
+        <button onclick="shareOn('linkedin')" class="w-10 h-10 flex items-center justify-center rounded-lg bg-blue-700 hover:bg-blue-800 text-white transition-all hover:scale-110" title="LinkedIn">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </button>
+
+        <!-- Copy Link -->
+        <button onclick="copyLink()" class="w-10 h-10 flex items-center justify-center rounded-lg bg-earth-600 hover:bg-earth-700 text-white transition-all hover:scale-110 relative" title="Copiar link" id="copyLinkBtn">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+            <span id="copyTooltip" class="absolute left-full ml-2 px-2 py-1 bg-earth-800 text-white text-xs rounded opacity-0 pointer-events-none transition-opacity whitespace-nowrap" data-i18n="share_copied">¡Copiado!</span>
+        </button>
+    </div>
+
+    <!-- Mobile Share Button (floating) -->
+    <button id="mobileShareBtn" class="lg:hidden fixed bottom-24 right-4 z-40 w-14 h-14 bg-forest-600 hover:bg-forest-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 opacity-0 translate-y-4" data-visible="false">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+    </button>
+
+    <!-- Mobile Share Menu -->
+    <div id="mobileShareMenu" class="lg:hidden fixed inset-0 z-50 hidden">
+        <div id="mobileShareOverlay" class="absolute inset-0 bg-earth-900/60 backdrop-blur-sm"></div>
+        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6 transform translate-y-full transition-transform duration-300" id="mobileShareSheet">
+            <div class="w-12 h-1 bg-earth-300 rounded-full mx-auto mb-4"></div>
+            <h3 class="text-lg font-bold text-earth-800 mb-4 text-center" data-i18n="share_title_full">Compartí TERRApp</h3>
+            <div class="grid grid-cols-4 gap-4 mb-4">
+                <button onclick="shareOn('whatsapp')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-earth-50 transition-colors">
+                    <div class="w-12 h-12 flex items-center justify-center rounded-full bg-green-500 text-white">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    </div>
+                    <span class="text-xs text-earth-600">WhatsApp</span>
+                </button>
+                <button onclick="shareOn('facebook')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-earth-50 transition-colors">
+                    <div class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-600 text-white">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </div>
+                    <span class="text-xs text-earth-600">Facebook</span>
+                </button>
+                <button onclick="shareOn('twitter')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-earth-50 transition-colors">
+                    <div class="w-12 h-12 flex items-center justify-center rounded-full bg-black text-white">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </div>
+                    <span class="text-xs text-earth-600">X</span>
+                </button>
+                <button onclick="shareOn('linkedin')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-earth-50 transition-colors">
+                    <div class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-700 text-white">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </div>
+                    <span class="text-xs text-earth-600">LinkedIn</span>
+                </button>
+            </div>
+            <button onclick="copyLink(); closeMobileShare();" class="w-full py-3 bg-earth-100 hover:bg-earth-200 rounded-xl text-earth-700 font-medium transition-colors flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                <span data-i18n="share_copy_link">Copiar enlace</span>
+            </button>
+            <button onclick="closeMobileShare()" class="w-full py-3 mt-2 text-earth-500 font-medium" data-i18n="share_cancel">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-earth-200 sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center gap-3">
+                    <img src="assets/images/logo_terrapp_icono.png" alt="TERRApp" class="w-10 h-10 rounded-xl shadow-lg">
+                    <div>
+                        <h1 class="text-xl font-bold text-forest-700">TERRApp</h1>
+                        <p class="text-xs text-earth-500" data-i18n="nav_by_verumax">por VERUMax</p>
+                    </div>
+                </div>
+
+                <!-- Language Selector -->
+                <div class="relative">
+                    <button id="langToggle" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-earth-100 transition-colors border border-earth-200" aria-label="Seleccionar idioma">
+                        <span id="currentFlag" class="fi fi-ar"></span>
+                        <span id="currentLangName" class="text-sm font-medium hidden sm:inline">Argentina</span>
+                        <svg class="w-4 h-4 text-earth-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="langMenu" class="hidden absolute right-0 mt-2 w-56 bg-white border border-earth-200 rounded-xl shadow-xl overflow-hidden z-50">
+                        <div class="p-2 text-xs text-earth-500 font-semibold uppercase tracking-wider border-b border-earth-100" data-i18n="lang_select_title">Seleccionar idioma</div>
+                        <div id="langOptions" class="max-h-80 overflow-y-auto"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[90vh] flex items-center overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-20 left-10 w-64 h-64 bg-forest-400 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-20 right-10 w-80 h-80 bg-leaf rounded-full blur-3xl"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-earth-400 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="container mx-auto px-4 sm:px-6 py-16 relative z-10">
+            <div class="max-w-4xl mx-auto text-center">
+                <!-- Badge -->
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-forest-100 border border-forest-200 rounded-full mb-4">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-forest-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-forest-500"></span>
+                    </span>
+                    <span class="text-forest-700 text-sm font-semibold" data-i18n="hero_badge">Proximamente</span>
+                </div>
+
+                <!-- Counter -->
+                <div id="interestCounter" class="inline-flex items-center gap-2 px-5 py-2 bg-earth-100 border border-earth-200 rounded-full mb-8">
+                    <svg class="w-5 h-5 text-earth-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span class="text-earth-700 text-sm font-medium" data-i18n="counter_text">Ya somos</span>
+                    <span id="counterNumber" class="text-forest-700 font-bold text-lg">+0</span>
+                    <span class="text-earth-700 text-sm font-medium" data-i18n="counter_waiting">esperando</span>
+                </div>
+
+                <!-- Main Title -->
+                <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight hero-title">
+                    <span class="text-earth-800" data-i18n="hero_title_1">Inteligencia</span>
+                    <span class="bg-gradient-to-r from-forest-600 to-leaf bg-clip-text text-transparent" data-i18n="hero_title_2"> nativa</span>
+                    <br>
+                    <span class="text-earth-700" data-i18n="hero_title_3">para tu suelo</span>
+                </h1>
+
+                <!-- Subtitle -->
+                <p class="text-lg sm:text-xl text-earth-600 mb-8 max-w-2xl mx-auto leading-relaxed hero-subtitle" data-i18n="hero_subtitle">
+                    El ecosistema digital social que empodera a agricultores urbanos, huerteros y pequeños productores de Sudamérica con herramientas inteligentes y contextualizadas.
+                </p>
+
+                <!-- Feature Pills -->
+                <div class="flex flex-wrap justify-center gap-3 mb-10">
+                    <div class="flex items-center gap-2 bg-white border border-earth-200 px-4 py-2 rounded-full shadow-sm">
+                        <svg class="w-5 h-5 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm font-medium text-earth-700" data-i18n="pill_contextual">Contextualizado</span>
+                    </div>
+                    <div class="flex items-center gap-2 bg-white border border-earth-200 px-4 py-2 rounded-full shadow-sm">
+                        <svg class="w-5 h-5 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                        <span class="text-sm font-medium text-earth-700" data-i18n="pill_hybrid">Inteligencia Hibrida</span>
+                    </div>
+                    <div class="flex items-center gap-2 bg-white border border-earth-200 px-4 py-2 rounded-full shadow-sm">
+                        <svg class="w-5 h-5 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                        <span class="text-sm font-medium text-earth-700" data-i18n="pill_agroeco">Agroecologico</span>
+                    </div>
+                </div>
+
+                <!-- Email Registration Form in Hero -->
+                <div class="max-w-xl mx-auto mb-8 hero-cta">
+                    <p class="text-earth-600 mb-4 font-medium" data-i18n="hero_cta_text">Dejá tu email y sé de las primeras personas en probar TERRApp:</p>
+                    <form id="heroNotifyForm" class="bg-white/80 backdrop-blur-sm rounded-2xl p-5 border border-earth-200 shadow-lg space-y-4">
+                        <!-- Email field -->
+                        <div>
+                            <label class="block text-sm font-medium text-earth-700 mb-2" data-i18n="form_email_label">Tu email</label>
+                            <input
+                                type="email"
+                                id="heroEmailInput"
+                                placeholder="tu@correo.com"
+                                required
+                                class="w-full px-4 py-3 rounded-xl bg-white border-2 border-earth-200 text-earth-800 placeholder-earth-400 focus:outline-none focus:border-forest-500 focus:ring-2 focus:ring-forest-200 transition-all"
+                                data-i18n-placeholder="notify_placeholder"
+                            >
+                        </div>
+                        <!-- Comment field (optional, always visible) -->
+                        <div>
+                            <label class="block text-sm font-medium text-earth-700 mb-2">
+                                <span data-i18n="form_comment_label">¿Alguna sugerencia?</span>
+                                <span class="text-earth-400 font-normal" data-i18n="form_optional">(opcional)</span>
+                            </label>
+                            <textarea
+                                id="heroCommentInput"
+                                rows="2"
+                                placeholder="¿Qué te gustaría ver en TERRApp?"
+                                class="w-full px-4 py-3 rounded-xl bg-white border-2 border-earth-200 text-earth-800 placeholder-earth-400 focus:outline-none focus:border-forest-500 focus:ring-2 focus:ring-forest-200 transition-all resize-none text-sm"
+                                data-i18n-placeholder="comment_placeholder"
+                            ></textarea>
+                        </div>
+                        <!-- Submit button -->
+                        <button type="submit" class="w-full px-8 py-4 bg-gradient-to-r from-forest-600 to-forest-500 hover:from-forest-700 hover:to-forest-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-forest-500/30 hover:shadow-xl hover:shadow-forest-500/40 transform hover:-translate-y-0.5 ripple">
+                            <span data-i18n="notify_button">Avisame</span>
+                        </button>
+                    </form>
+                    <div id="heroFormSuccess" class="hidden mt-4 p-4 bg-forest-100 border border-forest-200 rounded-xl text-forest-700">
+                        <svg class="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <p class="font-semibold text-center" data-i18n="notify_success">¡Excelente! Te avisaremos cuando TERRApp esté disponible.</p>
+                    </div>
+                </div>
+
+                <!-- CTA secundario -->
+                <div class="flex justify-center">
+                    <a href="#about" class="inline-flex items-center gap-2 text-earth-600 hover:text-forest-600 font-medium transition-colors">
+                        <span data-i18n="cta_learn">Conocer más</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 scroll-indicator">
+            <svg class="w-6 h-6 text-earth-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- For Who Section -->
+    <section id="about" class="py-20 bg-white">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-16 reveal">
+                    <span class="inline-block px-4 py-1.5 bg-forest-100 text-forest-700 rounded-full text-sm font-semibold mb-4" data-i18n="forwho_badge">Para vos</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-earth-800 mb-4" data-i18n="forwho_title">TERRApp es para quienes quieren cultivar vida</h2>
+                    <p class="text-earth-600 text-lg max-w-2xl mx-auto" data-i18n="forwho_subtitle">No importa si tenés un patio grande o solo unas macetas en el balcón. Si querés alimentarte sano y cuidar el planeta, esta app es para vos.</p>
+                </div>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
+                    <!-- Card 1: Huerta familiar -->
+                    <div class="bg-gradient-to-br from-forest-50 to-earth-50 rounded-2xl p-6 border border-earth-200 hover:shadow-lg transition-all group feature-card">
+                        <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform">
+                            <svg class="w-7 h-7 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-earth-800 mb-2" data-i18n="forwho_1_title">Huerta familiar en el patio</h3>
+                        <p class="text-earth-600 text-sm leading-relaxed" data-i18n="forwho_1_desc">Tenes un pedacito de tierra en tu casa y queres aprovecharlo para cultivar tus propios alimentos. TERRApp te guia paso a paso.</p>
+                    </div>
+
+                    <!-- Card 2: Balcon/Macetas -->
+                    <div class="bg-gradient-to-br from-earth-50 to-forest-50 rounded-2xl p-6 border border-earth-200 hover:shadow-lg transition-all group feature-card">
+                        <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform">
+                            <svg class="w-7 h-7 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-earth-800 mb-2" data-i18n="forwho_2_title">Macetas en el balcón</h3>
+                        <p class="text-earth-600 text-sm leading-relaxed" data-i18n="forwho_2_desc">Vivís en departamento pero no renunciás a cultivar. Con las especies correctas y nuestros consejos, tu balcón puede ser productivo.</p>
+                    </div>
+
+                    <!-- Card 3: Alimentacion sana -->
+                    <div class="bg-gradient-to-br from-forest-50 to-earth-50 rounded-2xl p-6 border border-earth-200 hover:shadow-lg transition-all group feature-card">
+                        <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform">
+                            <svg class="w-7 h-7 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-earth-800 mb-2" data-i18n="forwho_3_title">Alimentacion sana y consciente</h3>
+                        <p class="text-earth-600 text-sm leading-relaxed" data-i18n="forwho_3_desc">Queres saber que comes y de donde viene. Cultivar tus propios alimentos es el primer paso hacia una alimentacion libre de agroquimicos.</p>
+                    </div>
+
+                    <!-- Card 4: Medio ambiente -->
+                    <div class="bg-gradient-to-br from-earth-50 to-forest-50 rounded-2xl p-6 border border-earth-200 hover:shadow-lg transition-all group feature-card">
+                        <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform">
+                            <svg class="w-7 h-7 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-earth-800 mb-2" data-i18n="forwho_4_title">Cuidado del medio ambiente</h3>
+                        <p class="text-earth-600 text-sm leading-relaxed" data-i18n="forwho_4_desc">Te preocupa el planeta y queres reducir tu huella ecologica. Cultivar local, sin transporte ni empaques, es un acto de amor por la tierra.</p>
+                    </div>
+
+                    <!-- Card 5: Agroecologia -->
+                    <div class="bg-gradient-to-br from-forest-50 to-earth-50 rounded-2xl p-6 border border-earth-200 hover:shadow-lg transition-all group feature-card">
+                        <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform">
+                            <svg class="w-7 h-7 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-earth-800 mb-2" data-i18n="forwho_5_title">Personas apasionadas por la agroecologia</h3>
+                        <p class="text-earth-600 text-sm leading-relaxed" data-i18n="forwho_5_desc">Crees en la produccion sin quimicos, en la biodiversidad y en el equilibrio natural. TERRApp comparte tu filosofia y te acompana.</p>
+                    </div>
+
+                    <!-- Card 6: Principiantes -->
+                    <div class="bg-gradient-to-br from-earth-50 to-forest-50 rounded-2xl p-6 border border-earth-200 hover:shadow-lg transition-all group feature-card">
+                        <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform">
+                            <svg class="w-7 h-7 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-earth-800 mb-2" data-i18n="forwho_6_title">Personas principiantes con ganas de aprender</h3>
+                        <p class="text-earth-600 text-sm leading-relaxed" data-i18n="forwho_6_desc">Nunca cultivaste nada pero queres empezar. TERRApp te ensena desde cero, con instrucciones claras y sin tecnicismos innecesarios.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quiz Section -->
+    <section id="quiz-section" class="py-16 bg-gradient-to-br from-forest-600 via-forest-700 to-forest-800 relative overflow-hidden">
+        <!-- Background decoration -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl"></div>
+            <div class="absolute bottom-10 right-10 w-60 h-60 bg-leaf rounded-full blur-3xl"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-yellow-300 rounded-full blur-3xl animate-pulse"></div>
+        </div>
+
+        <div class="container mx-auto px-4 sm:px-6 relative z-10">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white/10 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-white/20">
+                    <div class="flex flex-col lg:flex-row items-center gap-8">
+                        <!-- Left side - Animated illustration -->
+                        <div class="flex-shrink-0">
+                            <div class="relative">
+                                <div class="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-2xl animate-bounce-slow">
+                                    <span class="text-6xl md:text-7xl">🌱</span>
+                                </div>
+                                <div class="absolute -top-2 -right-2 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                                    <span class="text-2xl">❓</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right side - Content -->
+                        <div class="flex-1 text-center lg:text-left">
+                            <span class="inline-block px-4 py-1.5 bg-yellow-400 text-yellow-900 rounded-full text-sm font-bold mb-4 animate-pulse" data-i18n="quiz_badge">🎯 Test de 30 segundos</span>
+                            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-3" data-i18n="quiz_title">¿Sabés qué tipo de huertero/a sos?</h2>
+                            <p class="text-forest-100 text-lg mb-6" data-i18n="quiz_subtitle">Descubrí tu perfil y recibí consejos personalizados para empezar o mejorar tu huerta.</p>
+
+                            <!-- Benefits -->
+                            <div class="flex flex-wrap justify-center lg:justify-start gap-4 mb-6">
+                                <span class="inline-flex items-center gap-1 text-white/90 text-sm">
+                                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                    <span data-i18n="quiz_benefit_1">4 preguntas</span>
+                                </span>
+                                <span class="inline-flex items-center gap-1 text-white/90 text-sm">
+                                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                    <span data-i18n="quiz_benefit_2">Resultado inmediato</span>
+                                </span>
+                                <span class="inline-flex items-center gap-1 text-white/90 text-sm">
+                                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                    <span data-i18n="quiz_benefit_3">Consejos personalizados</span>
+                                </span>
+                            </div>
+
+                            <button id="startQuizBtn" class="group px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-earth-900 font-bold rounded-xl hover:from-yellow-300 hover:to-orange-400 transition-all shadow-lg transform hover:-translate-y-1 hover:shadow-2xl inline-flex items-center gap-3 text-lg">
+                                <span data-i18n="quiz_start_btn">¡Quiero saber mi perfil!</span>
+                                <svg class="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                </svg>
+                            </button>
+
+                            <p class="text-white/60 text-sm mt-4 flex items-center justify-center lg:justify-start gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                <span data-i18n="quiz_privacy">Sin registro, 100% anónimo</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-bounce-slow {
+            animation: bounce-slow 3s ease-in-out infinite;
+        }
+    </style>
+
+    <!-- Quiz Modal -->
+    <div id="quizModal" class="fixed inset-0 z-[9999] hidden">
+        <div id="quizOverlay" class="absolute inset-0 bg-earth-900/80 backdrop-blur-sm"></div>
+
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div id="quizContainer" class="relative bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden transform scale-95 opacity-0 transition-all duration-300">
+
+                <!-- Close button -->
+                <button id="quizClose" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-earth-400 hover:text-earth-600 hover:bg-earth-100 rounded-full transition-colors z-10">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+
+                <!-- Progress bar -->
+                <div class="h-2 bg-earth-100">
+                    <div id="quizProgress" class="h-full bg-gradient-to-r from-forest-500 to-leaf transition-all duration-500" style="width: 0%"></div>
+                </div>
+
+                <!-- Quiz content -->
+                <div class="p-6 sm:p-8">
+                    <!-- Question container -->
+                    <div id="quizQuestions">
+
+                        <!-- Question 1: Space -->
+                        <div class="quiz-question" data-question="1">
+                            <p class="text-sm text-forest-600 font-medium mb-2" data-i18n="quiz_q1_label">Pregunta 1 de 4</p>
+                            <h3 class="text-xl font-bold text-earth-800 mb-6" data-i18n="quiz_q1">¿Qué espacio tenés disponible para cultivar?</h3>
+                            <div class="space-y-3">
+                                <button class="quiz-option w-full p-4 rounded-xl border-2 border-earth-200 hover:border-forest-500 hover:bg-forest-50 transition-all text-left flex items-center gap-4" data-value="yard">
+                                    <span class="text-3xl">🏡</span>
+                                    <div>
+                                        <span class="font-semibold text-earth-800" data-i18n="quiz_q1_a1">Patio o jardín</span>
+                                        <p class="text-sm text-earth-500" data-i18n="quiz_q1_a1_desc">Tengo espacio al aire libre</p>
+                                    </div>
+                                </button>
+                                <button class="quiz-option w-full p-4 rounded-xl border-2 border-earth-200 hover:border-forest-500 hover:bg-forest-50 transition-all text-left flex items-center gap-4" data-value="balcony">
+                                    <span class="text-3xl">🌿</span>
+                                    <div>
+                                        <span class="font-semibold text-earth-800" data-i18n="quiz_q1_a2">Balcón o terraza</span>
+                                        <p class="text-sm text-earth-500" data-i18n="quiz_q1_a2_desc">Espacio reducido pero con luz</p>
+                                    </div>
+                                </button>
+                                <button class="quiz-option w-full p-4 rounded-xl border-2 border-earth-200 hover:border-forest-500 hover:bg-forest-50 transition-all text-left flex items-center gap-4" data-value="indoor">
+                                    <span class="text-3xl">🪴</span>
+                                    <div>
+                                        <span class="font-semibold text-earth-800" data-i18n="quiz_q1_a3">Interior / Ventana</span>
+                                        <p class="text-sm text-earth-500" data-i18n="quiz_q1_a3_desc">Solo tengo espacio adentro</p>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Question 2: Experience -->
+                        <div class="quiz-question hidden" data-question="2">
+                            <p class="text-sm text-forest-600 font-medium mb-2" data-i18n="quiz_q2_label">Pregunta 2 de 4</p>
+                            <h3 class="text-xl font-bold text-earth-800 mb-6" data-i18n="quiz_q2">¿Cuánta experiencia tenés cultivando?</h3>
+                            <div class="space-y-3">
+                                <button class="quiz-option w-full p-4 rounded-xl border-2 border-earth-200 hover:border-forest-500 hover:bg-forest-50 transition-all text-left flex items-center gap-4" data-value="none">
+                                    <span class="text-3xl">🌱</span>
+                                    <div>
+                                        <span class="font-semibold text-earth-800" data-i18n="quiz_q2_a1">Soy principiante</span>
+                                        <p class="text-sm text-earth-500" data-i18n="quiz_q2_a1_desc">Nunca cultivé o apenas estoy empezando</p>
+                                    </div>
+                                </button>
+                                <button class="quiz-option w-full p-4 rounded-xl border-2 border-earth-200 hover:border-forest-500 hover:bg-forest-50 transition-all text-left flex items-center gap-4" data-value="some">
+                                    <span class="text-3xl">🥬</span>
+                                    <div>
+                                        <span class="font-semibold text-earth-800" data-i18n="quiz_q2_a2">Algo de experiencia</span>
+                                        <p class="text-sm text-earth-500" data-i18n="quiz_q2_a2_desc">He cultivado algunas cosas</p>
+                                    </div>
+                                </button>
+                                <button class="quiz-option w-full p-4 rounded-xl border-2 border-earth-200 hover:border-forest-500 hover:bg-forest-50 transition-all text-left flex items-center gap-4" data-value="experienced">
+                                    <span class="text-3xl">👨‍🌾</span>
+                                    <div>
+                                        <span class="font-semibold text-earth-800" data-i18n="quiz_q2_a3">Con experiencia</span>
+                                        <p class="text-sm text-earth-500" data-i18n="quiz_q2_a3_desc">Cultivo regularmente hace tiempo</p>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Question 3: Goal -->
+                        <div class="quiz-question hidden" data-question="3">
+                            <p class="text-sm text-forest-600 font-medium mb-2" data-i18n="quiz_q3_label">Pregunta 3 de 4</p>
+                            <h3 class="text-xl font-bold text-earth-800 mb-6" data-i18n="quiz_q3">¿Qué te gustaría cultivar principalmente?</h3>
+                            <div class="space-y-3">
+                                <button class="quiz-option w-full p-4 rounded-xl border-2 border-earth-200 hover:border-forest-500 hover:bg-forest-50 transition-all text-left flex items-center gap-4" data-value="vegetables">
+                                    <span class="text-3xl">🥕</span>
+                                    <div>
+                                        <span class="font-semibold text-earth-800" data-i18n="quiz_q3_a1">Verduras y hortalizas</span>
+                                        <p class="text-sm text-earth-500" data-i18n="quiz_q3_a1_desc">Tomates, lechugas, zanahorias...</p>
+                                    </div>
+                                </button>
+                                <button class="quiz-option w-full p-4 rounded-xl border-2 border-earth-200 hover:border-forest-500 hover:bg-forest-50 transition-all text-left flex items-center gap-4" data-value="herbs">
+                                    <span class="text-3xl">🌿</span>
+                                    <div>
+                                        <span class="font-semibold text-earth-800" data-i18n="quiz_q3_a2">Hierbas aromáticas</span>
+                                        <p class="text-sm text-earth-500" data-i18n="quiz_q3_a2_desc">Albahaca, romero, menta...</p>
+                                    </div>
+                                </button>
+                                <button class="quiz-option w-full p-4 rounded-xl border-2 border-earth-200 hover:border-forest-500 hover:bg-forest-50 transition-all text-left flex items-center gap-4" data-value="mixed">
+                                    <span class="text-3xl">🌻</span>
+                                    <div>
+                                        <span class="font-semibold text-earth-800" data-i18n="quiz_q3_a3">De todo un poco</span>
+                                        <p class="text-sm text-earth-500" data-i18n="quiz_q3_a3_desc">Quiero variedad en mi huerta</p>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Question 4: Time -->
+                        <div class="quiz-question hidden" data-question="4">
+                            <p class="text-sm text-forest-600 font-medium mb-2" data-i18n="quiz_q4_label">Pregunta 4 de 4</p>
+                            <h3 class="text-xl font-bold text-earth-800 mb-6" data-i18n="quiz_q4">¿Cuánto tiempo podés dedicarle a tu huerta?</h3>
+                            <div class="space-y-3">
+                                <button class="quiz-option w-full p-4 rounded-xl border-2 border-earth-200 hover:border-forest-500 hover:bg-forest-50 transition-all text-left flex items-center gap-4" data-value="little">
+                                    <span class="text-3xl">⏰</span>
+                                    <div>
+                                        <span class="font-semibold text-earth-800" data-i18n="quiz_q4_a1">Poco tiempo</span>
+                                        <p class="text-sm text-earth-500" data-i18n="quiz_q4_a1_desc">Algunos minutos por semana</p>
+                                    </div>
+                                </button>
+                                <button class="quiz-option w-full p-4 rounded-xl border-2 border-earth-200 hover:border-forest-500 hover:bg-forest-50 transition-all text-left flex items-center gap-4" data-value="moderate">
+                                    <span class="text-3xl">🕐</span>
+                                    <div>
+                                        <span class="font-semibold text-earth-800" data-i18n="quiz_q4_a2">Tiempo moderado</span>
+                                        <p class="text-sm text-earth-500" data-i18n="quiz_q4_a2_desc">Puedo dedicarle unas horas</p>
+                                    </div>
+                                </button>
+                                <button class="quiz-option w-full p-4 rounded-xl border-2 border-earth-200 hover:border-forest-500 hover:bg-forest-50 transition-all text-left flex items-center gap-4" data-value="plenty">
+                                    <span class="text-3xl">💚</span>
+                                    <div>
+                                        <span class="font-semibold text-earth-800" data-i18n="quiz_q4_a3">Bastante tiempo</span>
+                                        <p class="text-sm text-earth-500" data-i18n="quiz_q4_a3_desc">La huerta es mi hobby principal</p>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results container (hidden initially) -->
+                    <div id="quizResults" class="hidden">
+                        <div class="text-center mb-6">
+                            <div id="quizResultIcon" class="w-20 h-20 mx-auto bg-forest-100 rounded-full flex items-center justify-center mb-4">
+                                <span class="text-4xl">🌱</span>
+                            </div>
+                            <h3 id="quizResultTitle" class="text-2xl font-bold text-earth-800 mb-2"></h3>
+                            <p id="quizResultDesc" class="text-earth-600"></p>
+                        </div>
+
+                        <div id="quizResultFeatures" class="bg-forest-50 rounded-xl p-4 mb-6">
+                            <p class="text-sm font-semibold text-forest-700 mb-3" data-i18n="quiz_result_features">TERRApp te ayudará con:</p>
+                            <ul id="quizFeatureList" class="space-y-2 text-sm text-earth-700">
+                                <!-- Features populated by JS -->
+                            </ul>
+                        </div>
+
+                        <!-- Email capture -->
+                        <form id="quizEmailForm" class="space-y-4">
+                            <p class="text-sm text-earth-600 text-center" data-i18n="quiz_email_prompt">Dejá tu email para recibir consejos personalizados cuando lancemos:</p>
+                            <input
+                                type="email"
+                                id="quizEmailInput"
+                                placeholder="tu@correo.com"
+                                required
+                                class="w-full px-4 py-3 rounded-xl bg-earth-50 border-2 border-earth-200 text-earth-800 placeholder-earth-400 focus:outline-none focus:border-forest-500 focus:ring-2 focus:ring-forest-200 transition-all"
+                                data-i18n-placeholder="notify_placeholder"
+                            >
+                            <button type="submit" class="w-full px-6 py-3 bg-gradient-to-r from-forest-600 to-forest-500 hover:from-forest-700 hover:to-forest-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-forest-500/30">
+                                <span data-i18n="quiz_submit_btn">Quiero ser de los primeros</span>
+                            </button>
+                        </form>
+
+                        <!-- Success message (hidden) -->
+                        <div id="quizSuccess" class="hidden text-center py-4">
+                            <div class="w-16 h-16 mx-auto bg-forest-100 rounded-full flex items-center justify-center mb-4">
+                                <svg class="w-8 h-8 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <h4 class="text-xl font-bold text-earth-800 mb-2" data-i18n="quiz_success_title">¡Perfecto!</h4>
+                            <p class="text-earth-600" data-i18n="quiz_success_desc">Te contactaremos con consejos personalizados para tu perfil.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- What You Get Section -->
+    <section class="py-20 bg-gradient-to-b from-earth-50 to-white">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-16 reveal">
+                    <span class="inline-block px-4 py-1.5 bg-earth-200 text-earth-700 rounded-full text-sm font-semibold mb-4" data-i18n="whatget_badge">Funcionalidades</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-earth-800 mb-4" data-i18n="whatget_title">Todo lo que vas a encontrar en TERRApp</h2>
+                    <p class="text-earth-600 text-lg max-w-2xl mx-auto" data-i18n="whatget_subtitle">Consejos practicos, seguimiento de tus cultivos, informacion nutricional y mucho mas. Todo pensado para nuestra region.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Feature 1: Consejos y tips -->
+                    <div class="flex gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 bg-forest-100 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-earth-800 mb-2" data-i18n="whatget_1_title">Consejos y tips practicos</h3>
+                            <p class="text-earth-600 text-sm leading-relaxed" data-i18n="whatget_1_desc">Aprende trucos de huerteros experimentados: cuando sembrar, como regar, que hacer ante las heladas, como aprovechar mejor el espacio y los recursos que ya tenes.</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 2: Instrucciones paso a paso -->
+                    <div class="flex gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 bg-forest-100 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-earth-800 mb-2" data-i18n="whatget_2_title">Instrucciones paso a paso</h3>
+                            <p class="text-earth-600 text-sm leading-relaxed" data-i18n="whatget_2_desc">Guias detalladas para cada etapa del cultivo: preparacion del suelo, siembra, trasplante, cuidados y cosecha. Sin jerga tecnica, explicado de forma simple.</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 3: Seguimiento de cultivos -->
+                    <div class="flex gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 bg-forest-100 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-earth-800 mb-2" data-i18n="whatget_3_title">Seguimiento de tu huerta</h3>
+                            <p class="text-earth-600 text-sm leading-relaxed" data-i18n="whatget_3_desc">Registra que plantaste, cuando lo hiciste y como va evolucionando. Recibe recordatorios de riego, alertas de clima y sugerencias personalizadas.</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 4: Info nutricional -->
+                    <div class="flex gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 bg-forest-100 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-earth-800 mb-2" data-i18n="whatget_4_title">Informacion nutricional</h3>
+                            <p class="text-earth-600 text-sm leading-relaxed" data-i18n="whatget_4_desc">Descubri los beneficios de cada especie para tu salud: vitaminas, minerales, propiedades medicinales. Sabe para que sirve lo que cultivas y como aprovecharlo mejor.</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 5: Aprovechamiento de recursos -->
+                    <div class="flex gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 bg-forest-100 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-earth-800 mb-2" data-i18n="whatget_5_title">Aprovechamiento de recursos</h3>
+                            <p class="text-earth-600 text-sm leading-relaxed" data-i18n="whatget_5_desc">Aprende a compostar, reutilizar agua, hacer tus propios abonos y biopreparados. Economia circular aplicada a tu huerta para gastar menos y cuidar mas.</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 6: Asociaciones beneficas -->
+                    <div class="flex gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 bg-forest-100 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-earth-800 mb-2" data-i18n="whatget_6_title">Companeras de cultivo</h3>
+                            <p class="text-earth-600 text-sm leading-relaxed" data-i18n="whatget_6_desc">Descubri que especies se benefician mutuamente y cuales no deben ir juntas. Arma policultivos inteligentes que se protegen entre si y mejoran el rendimiento.</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 7: Biopreparados -->
+                    <div class="flex gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 bg-forest-100 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-earth-800 mb-2" data-i18n="whatget_7_title">Recetas de biopreparados</h3>
+                            <p class="text-earth-600 text-sm leading-relaxed" data-i18n="whatget_7_desc">Prepara tus propios fertilizantes y repelentes naturales con ingredientes que tenes en casa. Purines, infusiones, caldos: todo explicado paso a paso.</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 8: Calendario local -->
+                    <div class="flex gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 bg-forest-100 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-earth-800 mb-2" data-i18n="whatget_8_title">Calendario de siembra local</h3>
+                            <p class="text-earth-600 text-sm leading-relaxed" data-i18n="whatget_8_desc">Sabe exactamente que sembrar en cada momento segun tu ubicacion. Calendarios adaptados a tu clima real, no copiados del Hemisferio Norte.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-16 reveal">
+                    <span class="inline-block px-4 py-1.5 bg-red-100 text-red-700 rounded-full text-sm font-semibold mb-4" data-i18n="problem_badge">El problema</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-earth-800 mb-4" data-i18n="problem_title">Las apps agricolas globales no nos entienden</h2>
+                    <p class="text-earth-600 text-lg" data-i18n="problem_subtitle">Fueron disenadas para el Hemisferio Norte y generan una colonizacion digital de nuestras practicas</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6 stagger-children">
+                    <div class="bg-red-50 border border-red-100 rounded-2xl p-6 hover:shadow-lg transition-shadow feature-card">
+                        <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-red-800 mb-2" data-i18n="problem_1_title">Calendarios invertidos</h3>
+                        <p class="text-red-700 text-sm leading-relaxed" data-i18n="problem_1_desc">Ignoran que en el sur julio es invierno. Sus recomendaciones de siembra estan completamente desfasadas.</p>
+                    </div>
+
+                    <div class="bg-red-50 border border-red-100 rounded-2xl p-6 hover:shadow-lg transition-shadow feature-card">
+                        <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-red-800 mb-2" data-i18n="problem_2_title">Desconexion climatica</h3>
+                        <p class="text-red-700 text-sm leading-relaxed" data-i18n="problem_2_desc">No entienden los pisos termicos del norte ni las condiciones extremas de la Patagonia y el Cono Sur.</p>
+                    </div>
+
+                    <div class="bg-red-50 border border-red-100 rounded-2xl p-6 hover:shadow-lg transition-shadow feature-card">
+                        <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-red-800 mb-2" data-i18n="problem_3_title">Insumos extractivistas</h3>
+                        <p class="text-red-700 text-sm leading-relaxed" data-i18n="problem_3_desc">Promueven pesticidas quimicos y compras internacionales en lugar de biopreparados y economia circular local.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="py-20 bg-gradient-to-b from-forest-50 to-earth-50">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-16 reveal">
+                    <span class="inline-block px-4 py-1.5 bg-forest-100 text-forest-700 rounded-full text-sm font-semibold mb-4" data-i18n="solution_badge">La solucion</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-earth-800 mb-4" data-i18n="solution_title">TERRApp: hecho para nuestra tierra</h2>
+                    <p class="text-earth-600 text-lg" data-i18n="solution_subtitle">Una aplicacion que entiende tu territorio, tu clima y tus practicas</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 stagger-children">
+                    <div class="bg-white rounded-2xl p-8 shadow-lg border border-earth-100 hover:shadow-xl transition-shadow feature-card">
+                        <div class="w-14 h-14 bg-gradient-to-br from-forest-500 to-leaf rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-forest-500/20 icon-bounce">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-earth-800 mb-3" data-i18n="feature_1_title">Geolocalizacion inteligente</h3>
+                        <p class="text-earth-600 leading-relaxed" data-i18n="feature_1_desc">Detecta automaticamente tu zona y activa el modo estacional correcto. Si estas en el sur, invierte los calendarios. Si estas en zonas de altura, considera los pisos termicos.</p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-8 shadow-lg border border-earth-100 hover:shadow-xl transition-shadow feature-card">
+                        <div class="w-14 h-14 bg-gradient-to-br from-forest-500 to-leaf rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-forest-500/20 icon-bounce">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-earth-800 mb-3" data-i18n="feature_2_title">Inteligencia Hibrida</h3>
+                        <p class="text-earth-600 leading-relaxed" data-i18n="feature_2_desc">La IA amplifica pero no decide. Cada recomendacion es validada por expertise humano agroecologico. Los algoritmos procesan datos, pero el tecnico tiene la ultima palabra.</p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-8 shadow-lg border border-earth-100 hover:shadow-xl transition-shadow feature-card">
+                        <div class="w-14 h-14 bg-gradient-to-br from-forest-500 to-leaf rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-forest-500/20 icon-bounce">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-earth-800 mb-3" data-i18n="feature_3_title">Catalogo contextualizado</h3>
+                        <p class="text-earth-600 leading-relaxed" data-i18n="feature_3_desc">Fichas tecnicas de especies adaptadas a tu region. Con informacion de asociaciones beneficas, requerimientos reales y practicas agroecologicas validadas localmente.</p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-8 shadow-lg border border-earth-100 hover:shadow-xl transition-shadow feature-card">
+                        <div class="w-14 h-14 bg-gradient-to-br from-forest-500 to-leaf rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-forest-500/20 icon-bounce">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-earth-800 mb-3" data-i18n="feature_4_title">Doctor Botanico</h3>
+                        <p class="text-earth-600 leading-relaxed" data-i18n="feature_4_desc">No vendemos quimicos. Ensenamos a preparar remedios caseros y biopreparados. Las plagas son desequilibrios del sistema, no enemigos a exterminar.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Preview Section -->
+    <section id="preview" class="py-20 bg-gradient-to-b from-white to-earth-50 overflow-hidden">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-12 reveal">
+                    <span class="inline-block px-4 py-1.5 bg-forest-100 text-forest-700 rounded-full text-sm font-semibold mb-4" data-i18n="preview_badge">Preview</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-earth-800 mb-4" data-i18n="preview_title">Así se verá TERRApp</h2>
+                    <p class="text-earth-600 text-lg max-w-2xl mx-auto" data-i18n="preview_subtitle">Una interfaz simple e intuitiva, pensada para que cultivar sea fácil.</p>
+                </div>
+
+                <!-- Mockups Grid -->
+                <div class="flex flex-wrap justify-center gap-6 lg:gap-10 stagger-children mockup-container">
+                    <!-- Dashboard -->
+                    <div class="group relative reveal-scale">
+                        <div class="absolute -inset-2 bg-gradient-to-r from-forest-400 to-leaf rounded-3xl opacity-20 group-hover:opacity-40 blur transition-opacity"></div>
+                        <div class="relative bg-white p-2 rounded-3xl shadow-xl mockup-phone">
+                            <img id="mockup-dashboard" src="assets/images/mockup-dashboard.svg" alt="Dashboard de TERRApp" class="w-48 sm:w-56 h-auto rounded-2xl"/>
+                        </div>
+                        <p class="text-center mt-4 text-sm font-medium text-earth-700" data-i18n="mockup_1_label">Tu huerta</p>
+                    </div>
+
+                    <!-- Calendar -->
+                    <div class="group relative reveal-scale float-delay-1">
+                        <div class="absolute -inset-2 bg-gradient-to-r from-earth-400 to-earth-300 rounded-3xl opacity-20 group-hover:opacity-40 blur transition-opacity"></div>
+                        <div class="relative bg-white p-2 rounded-3xl shadow-xl mockup-phone">
+                            <img id="mockup-calendar" src="assets/images/mockup-calendar.svg" alt="Calendario de siembra" class="w-48 sm:w-56 h-auto rounded-2xl"/>
+                        </div>
+                        <p class="text-center mt-4 text-sm font-medium text-earth-700" data-i18n="mockup_2_label">Calendario local</p>
+                    </div>
+
+                    <!-- Species -->
+                    <div class="group relative reveal-scale float-delay-2">
+                        <div class="absolute -inset-2 bg-gradient-to-r from-leaf to-forest-400 rounded-3xl opacity-20 group-hover:opacity-40 blur transition-opacity"></div>
+                        <div class="relative bg-white p-2 rounded-3xl shadow-xl mockup-phone">
+                            <img id="mockup-species" src="assets/images/mockup-species.svg" alt="Ficha de especie" class="w-48 sm:w-56 h-auto rounded-2xl"/>
+                        </div>
+                        <p class="text-center mt-4 text-sm font-medium text-earth-700" data-i18n="mockup_3_label">Fichas de cultivo</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Environmental Impact Section -->
+    <section id="impact" class="py-20 bg-gradient-to-br from-leaf/10 via-forest-50 to-earth-50 relative overflow-hidden">
+        <!-- Background decoration -->
+        <div class="absolute inset-0 opacity-30">
+            <div class="absolute top-20 left-10 w-32 h-32 bg-leaf rounded-full blur-3xl"></div>
+            <div class="absolute bottom-20 right-10 w-40 h-40 bg-forest-300 rounded-full blur-3xl"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-earth-200 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="container mx-auto px-4 sm:px-6 relative z-10">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-12 reveal">
+                    <span class="inline-block px-4 py-1.5 bg-leaf/20 text-forest-700 rounded-full text-sm font-semibold mb-4" data-i18n="impact_badge">Impacto ambiental</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-earth-800 mb-4" data-i18n="impact_title">Cultivar en casa hace la diferencia</h2>
+                    <p class="text-earth-600 text-lg max-w-2xl mx-auto" data-i18n="impact_subtitle">Cada huerta urbana contribuye a un planeta más saludable. Estos son los impactos estimados de una huerta familiar promedio por año:</p>
+                </div>
+
+                <!-- Impact Cards -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
+                    <!-- Water Saved -->
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-earth-100 text-center group hover:shadow-xl hover:-translate-y-1 transition-all impact-card">
+                        <div class="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"/>
+                            </svg>
+                        </div>
+                        <div class="text-3xl sm:text-4xl font-bold text-blue-600 mb-1">
+                            <span class="impact-counter" data-target="2500" data-suffix=" L">0</span>
+                        </div>
+                        <p class="text-sm text-earth-600 font-medium" data-i18n="impact_water">Litros de agua ahorrados</p>
+                        <p class="text-xs text-earth-400 mt-1" data-i18n="impact_water_desc">vs. agricultura industrial</p>
+                    </div>
+
+                    <!-- CO2 Reduced -->
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-earth-100 text-center group hover:shadow-xl hover:-translate-y-1 transition-all impact-card">
+                        <div class="w-16 h-16 mx-auto bg-forest-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-8 h-8 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="text-3xl sm:text-4xl font-bold text-forest-600 mb-1">
+                            <span class="impact-counter" data-target="150" data-suffix=" kg">0</span>
+                        </div>
+                        <p class="text-sm text-earth-600 font-medium" data-i18n="impact_co2">CO₂ no emitido</p>
+                        <p class="text-xs text-earth-400 mt-1" data-i18n="impact_co2_desc">Sin transporte ni refrigeración</p>
+                    </div>
+
+                    <!-- Food KM -->
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-earth-100 text-center group hover:shadow-xl hover:-translate-y-1 transition-all impact-card">
+                        <div class="w-16 h-16 mx-auto bg-earth-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-8 h-8 text-earth-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                            </svg>
+                        </div>
+                        <div class="text-3xl sm:text-4xl font-bold text-earth-600 mb-1">
+                            <span class="impact-counter" data-target="1200" data-suffix=" km">0</span>
+                        </div>
+                        <p class="text-sm text-earth-600 font-medium" data-i18n="impact_km">Kilómetros de comida evitados</p>
+                        <p class="text-xs text-earth-400 mt-1" data-i18n="impact_km_desc">Del campo a tu mesa: 0 km</p>
+                    </div>
+
+                    <!-- Pesticide Free -->
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-earth-100 text-center group hover:shadow-xl hover:-translate-y-1 transition-all impact-card">
+                        <div class="w-16 h-16 mx-auto bg-leaf/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-8 h-8 text-leaf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                        <div class="text-3xl sm:text-4xl font-bold text-leaf mb-1">
+                            <span class="impact-counter" data-target="100" data-suffix="%">0</span>
+                        </div>
+                        <p class="text-sm text-earth-600 font-medium" data-i18n="impact_organic">Libre de agrotóxicos</p>
+                        <p class="text-xs text-earth-400 mt-1" data-i18n="impact_organic_desc">Alimentos sanos para tu familia</p>
+                    </div>
+                </div>
+
+                <!-- Additional Info -->
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-earth-200 shadow-lg">
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="flex-shrink-0">
+                            <div class="w-20 h-20 bg-gradient-to-br from-forest-500 to-leaf rounded-full flex items-center justify-center">
+                                <span class="text-4xl">🌍</span>
+                            </div>
+                        </div>
+                        <div class="flex-1 text-center md:text-left">
+                            <h3 class="text-xl font-bold text-earth-800 mb-2" data-i18n="impact_cta_title">Cada huerta cuenta</h3>
+                            <p class="text-earth-600" data-i18n="impact_cta_desc">Si el 10% de las familias urbanas de Sudamérica cultivara sus propios alimentos, reduciríamos millones de toneladas de CO₂ al año. TERRApp te ayuda a ser parte de ese cambio.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="max-w-4xl mx-auto text-center reveal">
+                <span class="inline-block px-4 py-1.5 bg-earth-100 text-earth-700 rounded-full text-sm font-semibold mb-4" data-i18n="team_badge">Equipo</span>
+                <h2 class="text-3xl sm:text-4xl font-bold text-earth-800 mb-4" data-i18n="team_title">Desarrollado junto a expertos</h2>
+                <p class="text-earth-600 text-lg mb-12" data-i18n="team_subtitle">Combinamos tecnologia con conocimiento agroecologico real</p>
+
+                <div class="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto stagger-children">
+                    <div class="bg-gradient-to-br from-forest-50 to-earth-50 rounded-2xl p-8 border border-earth-200 feature-card">
+                        <div class="w-20 h-20 mx-auto bg-gradient-to-br from-forest-400 to-leaf rounded-full flex items-center justify-center mb-4 shadow-lg">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-earth-800 mb-2">Mauricio Navarro</h3>
+                        <p class="text-forest-600 font-medium mb-3" data-i18n="team_mauricio_role">Tecnico Agronomo y militante agroecologico</p>
+                        <p class="text-earth-600 text-sm" data-i18n="team_mauricio_desc">Responsable de la validacion tecnica y el enfoque agroecologico de TERRApp. Su experiencia garantiza recomendaciones contextualizadas y eticamente responsables.</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-earth-50 to-forest-50 rounded-2xl p-8 border border-earth-200 feature-card">
+                        <div class="w-20 h-20 mx-auto bg-gradient-to-br from-earth-400 to-earth-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-earth-800 mb-2">Xavier Aguirreal</h3>
+                        <p class="text-earth-600 font-medium mb-3" data-i18n="team_xavier_role">Especialista en Inteligencia Hibrida</p>
+                        <p class="text-earth-600 text-sm" data-i18n="team_xavier_desc">Disenador del modelo de inteligencia hibrida que combina IA con validacion humana experta, garantizando recomendaciones eticas y precisas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-20 bg-white overflow-hidden">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-12 reveal">
+                    <span class="inline-block px-4 py-1.5 bg-earth-100 text-earth-700 rounded-full text-sm font-semibold mb-4" data-i18n="testimonials_badge">Expectativas</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-earth-800 mb-4" data-i18n="testimonials_title">¿Qué esperan de TERRApp?</h2>
+                    <p class="text-earth-600 text-lg max-w-2xl mx-auto" data-i18n="testimonials_subtitle">Personas que comparten sus necesidades y lo que esperan de una herramienta como esta.</p>
+                </div>
+
+                <!-- Carousel Container -->
+                <div class="relative">
+                    <!-- Arrow Left -->
+                    <button id="testimonialPrev" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 md:-translate-x-6 z-10 w-12 h-12 bg-white rounded-full shadow-lg border border-earth-200 flex items-center justify-center text-earth-600 hover:text-forest-600 hover:border-forest-300 transition-all hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+
+                    <!-- Arrow Right -->
+                    <button id="testimonialNext" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 md:translate-x-6 z-10 w-12 h-12 bg-white rounded-full shadow-lg border border-earth-200 flex items-center justify-center text-earth-600 hover:text-forest-600 hover:border-forest-300 transition-all hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+
+                    <!-- Carousel Track -->
+                    <div class="overflow-hidden mx-8 md:mx-12">
+                        <div id="testimonialTrack" class="flex transition-transform duration-500 ease-out">
+                            <!-- Testimonial 1 - Mauricio -->
+                            <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-3">
+                                <div class="bg-gradient-to-br from-forest-50 to-earth-50 rounded-2xl p-6 border border-earth-200 h-full">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <div class="w-14 h-14 bg-forest-200 rounded-full flex items-center justify-center">
+                                            <span class="text-forest-700 font-bold text-xl">MN</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-earth-800">Mauricio Navarro</h4>
+                                            <p class="text-sm text-earth-600">Técnico Agrónomo</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-earth-700 italic">"Sueño con una herramienta que ponga el conocimiento agroecológico al alcance de todas las personas, respetando los saberes locales. Eso es TERRApp."</p>
+                                </div>
+                            </div>
+
+                            <!-- Testimonial 2 - Carmen -->
+                            <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-3">
+                                <div class="bg-gradient-to-br from-earth-50 to-forest-50 rounded-2xl p-6 border border-earth-200 h-full">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <div class="w-14 h-14 bg-earth-200 rounded-full flex items-center justify-center">
+                                            <span class="text-earth-700 font-bold text-xl">CR</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-earth-800">Carmen Rodríguez</h4>
+                                            <p class="text-sm text-earth-600">Huertera urbana, Uruguay</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-earth-700 italic">"Hace años que cultivo en mi balcón pero siempre me costó encontrar información adaptada a nuestra realidad. Los calendarios de internet están pensados para el hemisferio norte."</p>
+                                </div>
+                            </div>
+
+                            <!-- Testimonial 3 - Roberto -->
+                            <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-3">
+                                <div class="bg-gradient-to-br from-forest-50 to-earth-50 rounded-2xl p-6 border border-earth-200 h-full">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <div class="w-14 h-14 bg-forest-200 rounded-full flex items-center justify-center">
+                                            <span class="text-forest-700 font-bold text-xl">RF</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-earth-800">Roberto Fernández</h4>
+                                            <p class="text-sm text-earth-600">Pequeño productor, Argentina</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-earth-700 italic">"Espero que TERRApp entienda nuestros pisos térmicos. Acá en el norte argentino el clima es muy diferente al de Buenos Aires, y las apps de afuera no tienen idea de eso."</p>
+                                </div>
+                            </div>
+
+                            <!-- Testimonial 4 - Ana Paula (Brasil) -->
+                            <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-3">
+                                <div class="bg-gradient-to-br from-earth-50 to-forest-50 rounded-2xl p-6 border border-earth-200 h-full">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <div class="w-14 h-14 bg-green-200 rounded-full flex items-center justify-center">
+                                            <span class="text-green-700 font-bold text-xl">AP</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-earth-800">Ana Paula Silva</h4>
+                                            <p class="text-sm text-earth-600">Horticultora urbana, São Paulo, Brasil</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-earth-700 italic">"Procuro uma ferramenta que entenda o clima tropical brasileiro. Aqui em São Paulo temos condições muito diferentes do sul do país, e preciso de orientações específicas para minha região."</p>
+                                </div>
+                            </div>
+
+                            <!-- Testimonial 5 - Diego (Colombia) -->
+                            <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-3">
+                                <div class="bg-gradient-to-br from-forest-50 to-earth-50 rounded-2xl p-6 border border-earth-200 h-full">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <div class="w-14 h-14 bg-amber-200 rounded-full flex items-center justify-center">
+                                            <span class="text-amber-700 font-bold text-xl">DM</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-earth-800">Diego Morales</h4>
+                                            <p class="text-sm text-earth-600">Agricultor familiar, Medellín, Colombia</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-earth-700 italic">"En Colombia tenemos microclimas muy diversos. Espero que TERRApp me ayude a planificar mis cultivos según la altitud y las lluvias de mi zona, no con calendarios genéricos."</p>
+                                </div>
+                            </div>
+
+                            <!-- Testimonial 6 - Priya (Guyana) -->
+                            <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-3">
+                                <div class="bg-gradient-to-br from-earth-50 to-forest-50 rounded-2xl p-6 border border-earth-200 h-full">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <div class="w-14 h-14 bg-teal-200 rounded-full flex items-center justify-center">
+                                            <span class="text-teal-700 font-bold text-xl">PR</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-earth-800">Priya Ramdas</h4>
+                                            <p class="text-sm text-earth-600">Home gardener, Georgetown, Guyana</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-earth-700 italic">"I've been looking for a gardening app that understands our Caribbean climate. Most apps are designed for temperate zones and don't consider our year-round growing season."</p>
+                                </div>
+                            </div>
+
+                            <!-- Testimonial 7 - Marie (Guyane) -->
+                            <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-3">
+                                <div class="bg-gradient-to-br from-forest-50 to-earth-50 rounded-2xl p-6 border border-earth-200 h-full">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <div class="w-14 h-14 bg-indigo-200 rounded-full flex items-center justify-center">
+                                            <span class="text-indigo-700 font-bold text-xl">MD</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-earth-800">Marie Dubois</h4>
+                                            <p class="text-sm text-earth-600">Jardinière amateur, Cayenne, Guyane</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-earth-700 italic">"En Guyane, nous avons un climat équatorial unique. J'attends une application qui comprenne nos saisons des pluies et nous guide avec des conseils adaptés à l'Amazonie."</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dots Indicator -->
+                    <div id="testimonialDots" class="flex justify-center gap-2 mt-8">
+                        <!-- Dots generated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-20 bg-gradient-to-b from-earth-50 to-white">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-center mb-12 reveal">
+                    <span class="inline-block px-4 py-1.5 bg-forest-100 text-forest-700 rounded-full text-sm font-semibold mb-4" data-i18n="faq_badge">Preguntas frecuentes</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-earth-800 mb-4" data-i18n="faq_title">¿Tenés dudas?</h2>
+                    <p class="text-earth-600 text-lg" data-i18n="faq_subtitle">Respondemos las preguntas más comunes sobre TERRApp.</p>
+                </div>
+
+                <div id="faqContainer" class="space-y-4 stagger-children">
+                    <!-- FAQs -->
+                    <details class="group bg-white rounded-xl border border-earth-200 overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer hover:bg-earth-50 transition-colors">
+                            <span class="font-semibold text-earth-800" data-i18n="faq_1_q">¿TERRApp es gratis?</span>
+                            <svg class="w-5 h-5 text-earth-500 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </summary>
+                        <div class="px-5 pb-5 text-earth-600" data-i18n="faq_1_a">
+                            TERRApp tendrá una versión gratuita con todas las funcionalidades básicas. Nuestro compromiso es que la herramienta sea accesible para todas las personas.
+                        </div>
+                    </details>
+
+                    <details class="group bg-white rounded-xl border border-earth-200 overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer hover:bg-earth-50 transition-colors">
+                            <span class="font-semibold text-earth-800" data-i18n="faq_2_q">¿Necesito experiencia previa en agricultura?</span>
+                            <svg class="w-5 h-5 text-earth-500 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </summary>
+                        <div class="px-5 pb-5 text-earth-600" data-i18n="faq_2_a">
+                            No, TERRApp está diseñado tanto para personas principiantes como para huerteros y huerteras con experiencia. Las instrucciones son paso a paso y sin tecnicismos innecesarios.
+                        </div>
+                    </details>
+
+                    <details class="group bg-white rounded-xl border border-earth-200 overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer hover:bg-earth-50 transition-colors">
+                            <span class="font-semibold text-earth-800" data-i18n="faq_3_q">¿Funciona en mi país?</span>
+                            <svg class="w-5 h-5 text-earth-500 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </summary>
+                        <div class="px-5 pb-5 text-earth-600" data-i18n="faq_3_a">
+                            TERRApp está diseñado específicamente para Sudamérica. Detecta automáticamente tu ubicación y adapta los calendarios de siembra, consejos y recomendaciones a tu clima y región específica.
+                        </div>
+                    </details>
+
+                    <details class="group bg-white rounded-xl border border-earth-200 overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer hover:bg-earth-50 transition-colors">
+                            <span class="font-semibold text-earth-800" data-i18n="faq_4_q">¿Cuándo estará disponible?</span>
+                            <svg class="w-5 h-5 text-earth-500 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </summary>
+                        <div class="px-5 pb-5 text-earth-600" data-i18n="faq_4_a">
+                            Estamos trabajando intensamente para lanzar la versión beta durante 2026. Si dejás tu email, serás de las primeras personas en probarla.
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Notification Section -->
+    <section id="notify" class="py-20 bg-gradient-to-br from-forest-600 to-forest-800 text-white">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="max-w-2xl mx-auto text-center reveal">
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 rounded-full mb-8">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                    </span>
+                    <span class="text-sm font-semibold" data-i18n="notify_badge">Proximamente en 2026</span>
+                </div>
+
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="notify_title">Se el primero en probar TERRApp</h2>
+                <p class="text-forest-100 text-lg mb-8" data-i18n="notify_subtitle">Dejanos tu correo y te avisaremos cuando este lista la version beta. Sin spam, solo novedades importantes.</p>
+
+                <form id="notifyForm" class="max-w-md mx-auto">
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input
+                            type="email"
+                            id="emailInput"
+                            placeholder="tu@correo.com"
+                            required
+                            class="flex-1 px-5 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-white/50 focus:bg-white/20 transition-all"
+                            data-i18n-placeholder="notify_placeholder"
+                        >
+                        <button type="submit" class="px-8 py-4 bg-white text-forest-700 font-bold rounded-xl hover:bg-forest-50 transition-all shadow-lg">
+                            <span data-i18n="notify_button">Avisarme</span>
+                        </button>
+                    </div>
+                    <p class="text-forest-200 text-sm mt-4" data-i18n="notify_privacy">Al registrarte aceptas recibir novedades de TERRApp. Podes darte de baja en cualquier momento.</p>
+
+                    <!-- Security Badges -->
+                    <div class="flex flex-wrap items-center justify-center gap-4 mt-6">
+                        <div class="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-xs text-forest-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                            <span data-i18n="badge_ssl">SSL/HTTPS</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-xs text-forest-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                            <span data-i18n="badge_secure_data">Datos seguros</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-xs text-forest-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                            </svg>
+                            <span data-i18n="badge_no_spam">Sin spam</span>
+                        </div>
+                        <a href="privacy.html" class="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-xs text-forest-100 hover:bg-white/20 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span data-i18n="badge_privacy_policy">Política de privacidad</span>
+                        </a>
+                    </div>
+                </form>
+
+                <div id="formSuccess" class="hidden mt-6 p-4 bg-white/10 border border-white/20 rounded-xl">
+                    <svg class="w-12 h-12 mx-auto text-white mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="font-semibold" data-i18n="notify_success">Excelente! Te avisaremos cuando TERRApp este disponible.</p>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mt-12 p-6 bg-white/10 border border-white/20 rounded-2xl">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm font-medium text-forest-100" data-i18n="progress_title">Estado del desarrollo</span>
+                        <span id="progressPercent" class="text-sm font-bold text-white">35%</span>
+                    </div>
+                    <div class="w-full bg-white/20 rounded-full h-3 overflow-hidden progress-bar">
+                        <div id="progressBar" class="bg-gradient-to-r from-white to-forest-200 h-3 rounded-full transition-all duration-1000 progress-fill" style="width: 35%" data-width="35%"></div>
+                    </div>
+                    <p class="text-xs text-forest-200 mt-2">
+                        <span data-i18n="progress_phase">Fase actual</span>: <span id="progressPhase" class="font-medium text-white">Diseno y Planificacion</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Badges Section -->
+    <section class="py-16 bg-earth-50 border-t border-earth-200">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="max-w-4xl mx-auto">
+                <!-- Main Quote -->
+                <div class="text-center mb-12 reveal">
+                    <blockquote class="relative">
+                        <span class="text-6xl text-forest-200 absolute -top-4 left-1/2 -translate-x-1/2 font-serif">"</span>
+                        <p class="text-2xl sm:text-3xl font-bold text-forest-700 italic mb-4 pt-8" data-i18n="badge_quote">Nuestro norte es el sur</p>
+                        <footer class="text-earth-600">
+                            <cite class="not-italic">
+                                <span class="font-medium">Joaquín Torres-García</span>
+                                <span class="inline-block ml-2 cursor-help group relative">
+                                    <svg class="w-5 h-5 text-earth-400 hover:text-forest-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <!-- Tooltip -->
+                                    <span class="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 p-3 bg-earth-800 text-white text-xs rounded-lg shadow-lg z-10">
+                                        <span data-i18n="badge_quote_tooltip">Un manifiesto cultural que invita a mirar la identidad latinoamericana como guía, en lugar de seguir modelos externos. Su obra "América Invertida" (1943) es la representación visual más famosa de esta idea.</span>
+                                        <span class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-earth-800"></span>
+                                    </span>
+                                </span>
+                            </cite>
+                        </footer>
+                    </blockquote>
+                </div>
+
+                <!-- Badges Row -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 items-center justify-items-center">
+                    <!-- Made in the South -->
+                    <div class="flex flex-col items-center text-center p-4">
+                        <div class="w-16 h-16 bg-forest-100 rounded-full flex items-center justify-center mb-3">
+                            <svg class="w-8 h-8 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-semibold text-earth-700" data-i18n="badge_made_south">Hecho en el Sur</span>
+                        <span class="text-xs text-earth-500" data-i18n="badge_for_south">para el Sur</span>
+                    </div>
+
+                    <!-- VERUMax Logo -->
+                    <div class="flex flex-col items-center text-center p-4">
+                        <div class="w-16 h-16 bg-earth-100 rounded-full flex items-center justify-center mb-3">
+                            <span class="text-xl font-bold text-earth-700">V</span>
+                        </div>
+                        <span class="text-sm font-semibold text-earth-700">VERUMax</span>
+                        <span class="text-xs text-earth-500" data-i18n="badge_tech_social">Tecnología social</span>
+                    </div>
+
+                    <!-- Cooperativa -->
+                    <div class="flex flex-col items-center text-center p-4">
+                        <div class="w-16 h-16 bg-leaf/20 rounded-full flex items-center justify-center mb-3">
+                            <svg class="w-8 h-8 text-leaf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-semibold text-earth-700" data-i18n="badge_coop">Economía solidaria</span>
+                        <span class="text-xs text-earth-500">Coop. Liberté</span>
+                    </div>
+
+                    <!-- Open Source / Agroecología -->
+                    <div class="flex flex-col items-center text-center p-4">
+                        <div class="w-16 h-16 bg-forest-100 rounded-full flex items-center justify-center mb-3">
+                            <svg class="w-8 h-8 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-semibold text-earth-700" data-i18n="badge_agroeco">Agroecológico</span>
+                        <span class="text-xs text-earth-500" data-i18n="badge_no_agro">Sin agrotóxicos</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" class="py-16 bg-white">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="max-w-6xl mx-auto">
+                <!-- Header -->
+                <div class="text-center mb-12">
+                    <span class="inline-block px-4 py-1 bg-forest-100 text-forest-700 rounded-full text-sm font-medium mb-4">
+                        Blog TERRApp
+                    </span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-earth-900 mb-4" data-i18n="blog_title">
+                        Noticias de Agricultura Urbana
+                    </h2>
+                    <p class="text-earth-600 max-w-2xl mx-auto" data-i18n="blog_subtitle">
+                        Tips, noticias y consejos sobre huertos urbanos para Sudamérica
+                    </p>
+                </div>
+
+                <!-- Articles Grid -->
+                <div id="blogCarousel" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Loading skeleton -->
+                    <div class="bg-earth-50 rounded-xl overflow-hidden shadow-md animate-pulse">
+                        <div class="h-48 bg-earth-200"></div>
+                        <div class="p-5">
+                            <div class="h-4 bg-earth-200 rounded w-1/4 mb-3"></div>
+                            <div class="h-6 bg-earth-200 rounded w-3/4 mb-2"></div>
+                            <div class="h-4 bg-earth-200 rounded w-full"></div>
+                        </div>
+                    </div>
+                    <div class="bg-earth-50 rounded-xl overflow-hidden shadow-md animate-pulse">
+                        <div class="h-48 bg-earth-200"></div>
+                        <div class="p-5">
+                            <div class="h-4 bg-earth-200 rounded w-1/4 mb-3"></div>
+                            <div class="h-6 bg-earth-200 rounded w-3/4 mb-2"></div>
+                            <div class="h-4 bg-earth-200 rounded w-full"></div>
+                        </div>
+                    </div>
+                    <div class="bg-earth-50 rounded-xl overflow-hidden shadow-md animate-pulse">
+                        <div class="h-48 bg-earth-200"></div>
+                        <div class="p-5">
+                            <div class="h-4 bg-earth-200 rounded w-1/4 mb-3"></div>
+                            <div class="h-6 bg-earth-200 rounded w-3/4 mb-2"></div>
+                            <div class="h-4 bg-earth-200 rounded w-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA -->
+                <div class="text-center">
+                    <a href="../blog/" class="inline-flex items-center gap-2 px-6 py-3 bg-forest-600 hover:bg-forest-700 text-white font-semibold rounded-lg transition-colors" data-i18n="blog_view_all">
+                        Ver todos los artículos
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-earth-900 text-earth-200 py-16">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-12 mb-12">
+                    <!-- Brand -->
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 bg-gradient-to-br from-forest-500 to-leaf rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white">TERRApp</h3>
+                                <p class="text-xs text-earth-400" data-i18n="footer_slogan">Inteligencia nativa para tu suelo</p>
+                            </div>
+                        </div>
+                        <p class="text-earth-400 text-sm leading-relaxed" data-i18n="footer_desc">Un ecosistema digital social para democratizar la agricultura urbana en Sudamerica.</p>
+                    </div>
+
+                    <!-- Organization -->
+                    <div>
+                        <h4 class="text-white font-semibold mb-4" data-i18n="footer_org_title">Una solución de</h4>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-earth-800 rounded-lg flex items-center justify-center">
+                                <span class="text-forest-400 font-bold">V</span>
+                            </div>
+                            <div>
+                                <p class="text-white font-medium text-lg">VERUMax</p>
+                                <p class="text-earth-400 text-sm" data-i18n="footer_verumax_desc">Soluciones tecnológicas sociales</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom -->
+                <div class="border-t border-earth-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p class="text-earth-500 text-sm" data-i18n="footer_copyright">&copy; 2026 TERRApp - VERUMax. Todos los derechos reservados.</p>
+                    <div class="flex items-center gap-4 text-sm">
+                        <a href="privacy.html" class="text-earth-400 hover:text-white transition-colors" data-i18n="footer_privacy">Política de Privacidad</a>
+                        <span class="text-earth-600">|</span>
+                        <a href="terms.html" class="text-earth-400 hover:text-white transition-colors" data-i18n="footer_terms">Términos y Condiciones</a>
+                        <span class="text-earth-600">|</span>
+                        <a href="https://verumax.com" target="_blank" class="text-earth-400 hover:text-white transition-colors">verumax.com</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Exit Intent Popup -->
+    <div id="exitPopup" class="fixed inset-0 z-[9998] hidden">
+        <!-- Overlay -->
+        <div id="exitPopupOverlay" class="absolute inset-0 bg-earth-900/70 backdrop-blur-sm"></div>
+
+        <!-- Modal -->
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div id="exitPopupModal" class="relative bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform scale-95 opacity-0 transition-all duration-300">
+                <!-- Close button -->
+                <button id="exitPopupClose" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-earth-400 hover:text-earth-600 hover:bg-earth-100 rounded-full transition-colors z-10">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+
+                <!-- Header with gradient -->
+                <div class="bg-gradient-to-br from-forest-600 to-forest-700 px-6 py-8 text-center">
+                    <div class="w-20 h-20 mx-auto bg-white/20 rounded-full flex items-center justify-center mb-4">
+                        <img src="assets/images/logo_terrapp_icono.png" alt="TERRApp" class="w-12 h-12">
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2" data-i18n="exit_title">¡Espera!</h3>
+                    <p class="text-forest-100" data-i18n="exit_subtitle">¿Te vas sin dejarnos tu email?</p>
+                </div>
+
+                <!-- Content -->
+                <div class="px-6 py-6">
+                    <p class="text-earth-600 text-center mb-6" data-i18n="exit_desc">Sé de las primeras personas en probar TERRApp cuando esté lista. Sin spam, solo novedades importantes.</p>
+
+                    <form id="exitPopupForm" class="space-y-4">
+                        <input
+                            type="email"
+                            id="exitEmailInput"
+                            placeholder="tu@correo.com"
+                            required
+                            class="w-full px-4 py-3 rounded-xl bg-earth-50 border-2 border-earth-200 text-earth-800 placeholder-earth-400 focus:outline-none focus:border-forest-500 focus:ring-2 focus:ring-forest-200 transition-all"
+                            data-i18n-placeholder="notify_placeholder"
+                        >
+                        <button type="submit" class="w-full px-6 py-3 bg-gradient-to-r from-forest-600 to-forest-500 hover:from-forest-700 hover:to-forest-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-forest-500/30">
+                            <span data-i18n="exit_button">Quiero enterarme primero</span>
+                        </button>
+                    </form>
+
+                    <button id="exitPopupDismiss" class="w-full mt-3 py-2 text-sm text-earth-400 hover:text-earth-600 transition-colors" data-i18n="exit_dismiss">No gracias, prefiero esperar</button>
+                </div>
+
+                <!-- Success state (hidden by default) -->
+                <div id="exitPopupSuccess" class="hidden px-6 py-8 text-center">
+                    <div class="w-16 h-16 mx-auto bg-forest-100 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-bold text-earth-800 mb-2" data-i18n="exit_success_title">¡Excelente!</h4>
+                    <p class="text-earth-600" data-i18n="exit_success_desc">Te avisaremos cuando TERRApp esté lista.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollTopBtn" class="fixed bottom-6 right-6 z-50 w-12 h-12 bg-forest-600 hover:bg-forest-700 text-white rounded-full shadow-lg shadow-forest-600/30 flex items-center justify-center transition-all opacity-0 pointer-events-none" aria-label="Volver arriba">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+        </svg>
+    </button>
+
+    <!-- Language System -->
+    <script src="assets/js/i18n.js"></script>
+
+    <!-- Main Script -->
+    <script>
+        // Page Loader
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('page-loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }, 800);
+
+            // Load Blog Articles
+            loadBlogArticles();
+        });
+
+        // Blog Carousel
+        async function loadBlogArticles() {
+            const container = document.getElementById('blogCarousel');
+            if (!container) return;
+
+            try {
+                const response = await fetch('../blog/data/articulos.json');
+                if (!response.ok) throw new Error('No articles');
+
+                const data = await response.json();
+                const articulos = (data.articulos || []).slice(0, 3);
+
+                if (articulos.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-3 text-center py-12">
+                            <div class="text-5xl mb-4">🌱</div>
+                            <p class="text-earth-600">Próximamente publicaremos artículos</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = articulos.map(art => {
+                    const fecha = new Date(art.fecha_publicacion).toLocaleDateString('es-AR', {
+                        day: 'numeric', month: 'short', year: 'numeric'
+                    });
+                    return `
+                        <a href="../blog/articulo.html?slug=${art.slug}" class="block bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
+                            <div class="h-48 bg-forest-100 overflow-hidden">
+                                ${art.imagen_url
+                                    ? `<img src="${art.imagen_url}" alt="${art.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
+                                    : '<div class="w-full h-full flex items-center justify-center text-5xl">🌱</div>'
+                                }
+                            </div>
+                            <div class="p-5">
+                                <div class="text-sm text-earth-500 mb-2">${fecha} · ${art.tiempo_lectura} min</div>
+                                <h3 class="font-bold text-earth-900 mb-2 group-hover:text-forest-600 transition-colors line-clamp-2">${art.titulo}</h3>
+                                <p class="text-earth-600 text-sm line-clamp-2">${art.contenido.substring(0, 100)}...</p>
+                            </div>
+                        </a>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.log('Blog not loaded:', error.message);
+                container.innerHTML = `
+                    <div class="col-span-3 text-center py-12">
+                        <div class="text-5xl mb-4">🌱</div>
+                        <p class="text-earth-600">Próximamente publicaremos artículos</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Share Buttons Functionality
+        const shareUrl = encodeURIComponent(window.location.href);
+        const shareTitle = encodeURIComponent('TERRApp - Inteligencia nativa para tu suelo');
+        const shareText = encodeURIComponent('Descubrí TERRApp, la app de agricultura urbana diseñada para Sudamérica. ¡Sumate a la lista de espera!');
+
+        function shareOn(platform) {
+            let url = '';
+            switch(platform) {
+                case 'whatsapp':
+                    url = `https://wa.me/?text=${shareText}%20${shareUrl}`;
+                    break;
+                case 'facebook':
+                    url = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+                    break;
+                case 'twitter':
+                    url = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
+                    break;
+                case 'linkedin':
+                    url = `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`;
+                    break;
+            }
+            if (url) {
+                window.open(url, '_blank', 'width=600,height=400');
+            }
+            closeMobileShare();
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const tooltip = document.getElementById('copyTooltip');
+                if (tooltip) {
+                    tooltip.style.opacity = '1';
+                    setTimeout(() => { tooltip.style.opacity = '0'; }, 2000);
+                }
+                // Also show alert on mobile
+                if (window.innerWidth < 1024) {
+                    alert('¡Enlace copiado!');
+                }
+            });
+        }
+
+        // Mobile share menu
+        const mobileShareBtn = document.getElementById('mobileShareBtn');
+        const mobileShareMenu = document.getElementById('mobileShareMenu');
+        const mobileShareOverlay = document.getElementById('mobileShareOverlay');
+        const mobileShareSheet = document.getElementById('mobileShareSheet');
+
+        if (mobileShareBtn) {
+            mobileShareBtn.addEventListener('click', () => {
+                mobileShareMenu.classList.remove('hidden');
+                setTimeout(() => {
+                    mobileShareSheet.style.transform = 'translateY(0)';
+                }, 10);
+            });
+        }
+
+        if (mobileShareOverlay) {
+            mobileShareOverlay.addEventListener('click', closeMobileShare);
+        }
+
+        function closeMobileShare() {
+            if (mobileShareSheet) {
+                mobileShareSheet.style.transform = 'translateY(100%)';
+                setTimeout(() => {
+                    mobileShareMenu.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        // Show share buttons on scroll
+        const shareButtons = document.getElementById('shareButtons');
+        const mobileShareBtnEl = document.getElementById('mobileShareBtn');
+        let lastScrollY = 0;
+
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+
+            // Show after scrolling 300px
+            if (scrollY > 300) {
+                if (shareButtons && shareButtons.dataset.visible === 'false') {
+                    shareButtons.dataset.visible = 'true';
+                    shareButtons.style.opacity = '1';
+                    shareButtons.style.transform = 'translateY(-50%) translateX(0)';
+                }
+                if (mobileShareBtnEl && mobileShareBtnEl.dataset.visible === 'false') {
+                    mobileShareBtnEl.dataset.visible = 'true';
+                    mobileShareBtnEl.style.opacity = '1';
+                    mobileShareBtnEl.style.transform = 'translateY(0)';
+                }
+            } else {
+                if (shareButtons && shareButtons.dataset.visible === 'true') {
+                    shareButtons.dataset.visible = 'false';
+                    shareButtons.style.opacity = '0';
+                    shareButtons.style.transform = 'translateY(-50%) translateX(-100%)';
+                }
+                if (mobileShareBtnEl && mobileShareBtnEl.dataset.visible === 'true') {
+                    mobileShareBtnEl.dataset.visible = 'false';
+                    mobileShareBtnEl.style.opacity = '0';
+                    mobileShareBtnEl.style.transform = 'translateY(1rem)';
+                }
+            }
+
+            lastScrollY = scrollY;
+        });
+
+        // Language Menu Toggle
+        const langToggle = document.getElementById('langToggle');
+        const langMenu = document.getElementById('langMenu');
+
+        langToggle.addEventListener('click', () => {
+            langMenu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!langToggle.contains(e.target) && !langMenu.contains(e.target)) {
+                langMenu.classList.add('hidden');
+            }
+        });
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Testimonials Carousel
+        (function() {
+            const track = document.getElementById('testimonialTrack');
+            const prevBtn = document.getElementById('testimonialPrev');
+            const nextBtn = document.getElementById('testimonialNext');
+            const dotsContainer = document.getElementById('testimonialDots');
+
+            if (!track || !prevBtn || !nextBtn) return;
+
+            const slides = track.children;
+            const totalSlides = slides.length;
+            let currentIndex = 0;
+            let slidesPerView = 3;
+            let autoplayInterval;
+
+            // Calculate slides per view based on screen width
+            function updateSlidesPerView() {
+                if (window.innerWidth < 768) {
+                    slidesPerView = 1;
+                } else if (window.innerWidth < 1024) {
+                    slidesPerView = 2;
+                } else {
+                    slidesPerView = 3;
+                }
+                updateCarousel();
+                createDots();
+            }
+
+            // Get max index
+            function getMaxIndex() {
+                return Math.max(0, totalSlides - slidesPerView);
+            }
+
+            // Update carousel position
+            function updateCarousel() {
+                const slideWidth = 100 / slidesPerView;
+                track.style.transform = `translateX(-${currentIndex * slideWidth}%)`;
+
+                // Update buttons state
+                prevBtn.disabled = currentIndex === 0;
+                nextBtn.disabled = currentIndex >= getMaxIndex();
+
+                // Update dots
+                updateDots();
+            }
+
+            // Create dots
+            function createDots() {
+                dotsContainer.innerHTML = '';
+                const numDots = getMaxIndex() + 1;
+
+                for (let i = 0; i < numDots; i++) {
+                    const dot = document.createElement('button');
+                    dot.className = `w-2.5 h-2.5 rounded-full transition-all ${i === currentIndex ? 'bg-forest-600 w-6' : 'bg-earth-300 hover:bg-earth-400'}`;
+                    dot.addEventListener('click', () => {
+                        currentIndex = i;
+                        updateCarousel();
+                        resetAutoplay();
+                    });
+                    dotsContainer.appendChild(dot);
+                }
+            }
+
+            // Update dots state
+            function updateDots() {
+                const dots = dotsContainer.children;
+                for (let i = 0; i < dots.length; i++) {
+                    if (i === currentIndex) {
+                        dots[i].className = 'w-6 h-2.5 rounded-full bg-forest-600 transition-all';
+                    } else {
+                        dots[i].className = 'w-2.5 h-2.5 rounded-full bg-earth-300 hover:bg-earth-400 transition-all';
+                    }
+                }
+            }
+
+            // Navigation
+            prevBtn.addEventListener('click', () => {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateCarousel();
+                    resetAutoplay();
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentIndex < getMaxIndex()) {
+                    currentIndex++;
+                    updateCarousel();
+                    resetAutoplay();
+                }
+            });
+
+            // Autoplay
+            function startAutoplay() {
+                autoplayInterval = setInterval(() => {
+                    if (currentIndex < getMaxIndex()) {
+                        currentIndex++;
+                    } else {
+                        currentIndex = 0;
+                    }
+                    updateCarousel();
+                }, 5000);
+            }
+
+            function resetAutoplay() {
+                clearInterval(autoplayInterval);
+                startAutoplay();
+            }
+
+            // Touch/Swipe support
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            track.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            track.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, { passive: true });
+
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0 && currentIndex < getMaxIndex()) {
+                        currentIndex++;
+                    } else if (diff < 0 && currentIndex > 0) {
+                        currentIndex--;
+                    }
+                    updateCarousel();
+                    resetAutoplay();
+                }
+            }
+
+            // Init
+            window.addEventListener('resize', updateSlidesPerView);
+            updateSlidesPerView();
+            startAutoplay();
+        })();
+
+        // API Base URL
+        const API_BASE = window.location.hostname === 'localhost'
+            ? '/appTerrapp/api'
+            : '/api';
+
+        // Cargar datos iniciales
+        async function loadInitialData() {
+            try {
+                // Cargar contador
+                const counterResponse = await fetch(API_BASE + '/counter.php');
+                if (counterResponse.ok) {
+                    const counterData = await counterResponse.json();
+                    if (counterData.display !== undefined) {
+                        updateCounter(counterData.display);
+                    }
+                }
+            } catch (error) {
+                console.log('API no disponible, usando valores por defecto');
+            }
+        }
+
+        // Actualizar contador con animacion
+        function updateCounter(value) {
+            const counterEl = document.getElementById('counterNumber');
+            const startValue = parseInt(counterEl.textContent.replace('+', '')) || 0;
+            const endValue = value;
+            const duration = 1500;
+            const startTime = performance.now();
+
+            function animate(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(startValue + (endValue - startValue) * easeOut);
+                counterEl.textContent = '+' + current.toLocaleString('es-AR');
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        // Cargar datos al iniciar
+        setTimeout(loadInitialData, 500);
+
+        // Form Submit con API
+        document.getElementById('notifyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('emailInput').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            // Estado de carga
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+
+            try {
+                const response = await fetch(API_BASE + '/subscribe.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        lang: TERRAPP_I18N.currentLang || 'es_AR',
+                        source: 'form_bottom'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('notifyForm').classList.add('hidden');
+                    document.getElementById('formSuccess').classList.remove('hidden');
+
+                    // Actualizar contador
+                    if (result.counter) {
+                        updateCounter(result.counter.display);
+                    }
+                } else {
+                    alert(result.error || 'Error al registrar');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            } catch (error) {
+                // Fallback si la API no esta disponible
+                console.log('API no disponible, mostrando exito de todos modos');
+                document.getElementById('notifyForm').classList.add('hidden');
+                document.getElementById('formSuccess').classList.remove('hidden');
+            }
+        });
+
+        // Hero Form Submit (formulario en el hero)
+        document.getElementById('heroNotifyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('heroEmailInput').value;
+            const comment = document.getElementById('heroCommentInput').value.trim();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+
+            try {
+                const payload = {
+                    email: email,
+                    lang: TERRAPP_I18N.currentLang || 'es_AR',
+                    source: 'form_hero'
+                };
+                if (comment) {
+                    payload.comment = comment;
+                }
+                const response = await fetch(API_BASE + '/subscribe.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('heroNotifyForm').classList.add('hidden');
+                    document.getElementById('heroFormSuccess').classList.remove('hidden');
+                    // También ocultar el formulario de abajo
+                    document.getElementById('notifyForm').classList.add('hidden');
+                    document.getElementById('formSuccess').classList.remove('hidden');
+
+                    if (result.counter) {
+                        updateCounter(result.counter.display);
+                    }
+                } else {
+                    alert(result.error || 'Error al registrar');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.log('API no disponible');
+                document.getElementById('heroNotifyForm').classList.add('hidden');
+                document.getElementById('heroFormSuccess').classList.remove('hidden');
+            }
+        });
+
+        // Quiz Interactivo
+        const quizModal = document.getElementById('quizModal');
+        const quizContainer = document.getElementById('quizContainer');
+        const quizOverlay = document.getElementById('quizOverlay');
+        const quizClose = document.getElementById('quizClose');
+        const quizProgress = document.getElementById('quizProgress');
+        const quizQuestions = document.querySelectorAll('.quiz-question');
+        const quizResults = document.getElementById('quizResults');
+        let currentQuestion = 1;
+        let quizAnswers = {};
+
+        // Quiz result profiles
+        const quizProfiles = {
+            beginner_small: {
+                icon: '🌱',
+                title: 'Huertero/a en potencia',
+                desc: 'Tenés todo para empezar tu huerta urbana. Con poco espacio y ganas de aprender, TERRApp será tu guía perfecta.',
+                features: ['Guías paso a paso para principiantes', 'Especies ideales para espacios pequeños', 'Recordatorios de riego personalizados', 'Diagnóstico de problemas con fotos']
+            },
+            beginner_large: {
+                icon: '🏡',
+                title: 'Futuro/a huertero/a con espacio',
+                desc: 'Tenés el espacio ideal para una huerta productiva. TERRApp te enseñará desde cero a aprovecharlo al máximo.',
+                features: ['Planificación de huerta desde cero', 'Calendario de siembra para tu región', 'Rotación de cultivos simplificada', 'Comunidad de huerteros cerca tuyo']
+            },
+            intermediate: {
+                icon: '🥬',
+                title: 'Huertero/a en crecimiento',
+                desc: 'Ya sabés lo básico, ahora podés llevar tu huerta al siguiente nivel con técnicas más avanzadas.',
+                features: ['Asociaciones de cultivos beneficiosas', 'Control de plagas agroecológico', 'Optimización de espacio y tiempo', 'Registro y seguimiento de cosechas']
+            },
+            experienced: {
+                icon: '👨‍🌾',
+                title: 'Huertero/a experimentado/a',
+                desc: 'Tu experiencia es valiosa. TERRApp te ayudará a optimizar y compartir tu conocimiento con la comunidad.',
+                features: ['Datos climáticos hiperlocales', 'Planificación avanzada de temporadas', 'Conexión con otros productores', 'Herramientas de registro profesional']
+            }
+        };
+
+        function openQuiz() {
+            quizModal.classList.remove('hidden');
+            setTimeout(() => {
+                quizContainer.classList.remove('scale-95', 'opacity-0');
+                quizContainer.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            resetQuiz();
+        }
+
+        function closeQuiz() {
+            quizContainer.classList.remove('scale-100', 'opacity-100');
+            quizContainer.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                quizModal.classList.add('hidden');
+            }, 300);
+        }
+
+        let quizSessionId = null;
+
+        function resetQuiz() {
+            currentQuestion = 1;
+            quizAnswers = {};
+            quizSessionId = null;
+            quizProgress.style.width = '0%';
+            quizQuestions.forEach((q, i) => {
+                q.classList.toggle('hidden', i !== 0);
+            });
+            quizResults.classList.add('hidden');
+            document.getElementById('quizQuestions').classList.remove('hidden');
+            document.getElementById('quizEmailForm').classList.remove('hidden');
+            document.getElementById('quizSuccess').classList.add('hidden');
+        }
+
+        function selectAnswer(questionNum, value) {
+            quizAnswers[questionNum] = value;
+
+            // Visual feedback
+            const question = document.querySelector(`.quiz-question[data-question="${questionNum}"]`);
+            question.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('border-forest-500', 'bg-forest-50');
+                if (opt.dataset.value === value) {
+                    opt.classList.add('border-forest-500', 'bg-forest-50');
+                }
+            });
+
+            // Move to next question or show results
+            setTimeout(() => {
+                if (questionNum < 4) {
+                    currentQuestion = questionNum + 1;
+                    quizProgress.style.width = `${(currentQuestion - 1) * 25}%`;
+
+                    quizQuestions.forEach((q, i) => {
+                        q.classList.toggle('hidden', i !== currentQuestion - 1);
+                    });
+                } else {
+                    showQuizResults();
+                }
+            }, 300);
+        }
+
+        function getProfile() {
+            const space = quizAnswers[1];
+            const experience = quizAnswers[2];
+
+            if (experience === 'none') {
+                return space === 'yard' ? 'beginner_large' : 'beginner_small';
+            } else if (experience === 'some') {
+                return 'intermediate';
+            } else {
+                return 'experienced';
+            }
+        }
+
+        async function showQuizResults() {
+            quizProgress.style.width = '100%';
+            document.getElementById('quizQuestions').classList.add('hidden');
+            quizResults.classList.remove('hidden');
+
+            const profile = getProfile();
+            const data = quizProfiles[profile];
+
+            document.getElementById('quizResultIcon').innerHTML = `<span class="text-4xl">${data.icon}</span>`;
+            document.getElementById('quizResultTitle').textContent = data.title;
+            document.getElementById('quizResultDesc').textContent = data.desc;
+
+            const featureList = document.getElementById('quizFeatureList');
+            featureList.innerHTML = data.features.map(f => `<li class="flex items-center gap-2"><svg class="w-4 h-4 text-forest-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>${f}</li>`).join('');
+
+            // Guardar quiz (anónimo por ahora, se vinculará si deja email)
+            try {
+                const response = await fetch(API_BASE + '/quiz.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        answers: quizAnswers,
+                        profile: profile,
+                        lang: TERRAPP_I18N.currentLang || 'es_AR'
+                    })
+                });
+                const result = await response.json();
+                if (result.success && result.session_id) {
+                    quizSessionId = result.session_id;
+                }
+            } catch (error) {
+                console.log('Error guardando quiz:', error);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('startQuizBtn').addEventListener('click', openQuiz);
+        quizClose.addEventListener('click', closeQuiz);
+        quizOverlay.addEventListener('click', closeQuiz);
+
+        document.querySelectorAll('.quiz-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const question = this.closest('.quiz-question');
+                const questionNum = parseInt(question.dataset.question);
+                selectAnswer(questionNum, this.dataset.value);
+            });
+        });
+
+        // Quiz email form
+        document.getElementById('quizEmailForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('quizEmailInput').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+
+            const profile = getProfile();
+            const quizData = `Perfil: ${profile}, Espacio: ${quizAnswers[1]}, Experiencia: ${quizAnswers[2]}, Cultivos: ${quizAnswers[3]}, Tiempo: ${quizAnswers[4]}`;
+
+            try {
+                const payload = {
+                    email: email,
+                    lang: TERRAPP_I18N.currentLang || 'es_AR',
+                    source: 'quiz',
+                    comment: quizData
+                };
+                // Vincular con quiz si tenemos session_id
+                if (quizSessionId) {
+                    payload.quiz_session_id = quizSessionId;
+                }
+                const response = await fetch(API_BASE + '/subscribe.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('quizEmailForm').classList.add('hidden');
+                    document.getElementById('quizSuccess').classList.remove('hidden');
+
+                    // Mark other forms as done
+                    document.getElementById('heroNotifyForm').classList.add('hidden');
+                    document.getElementById('heroFormSuccess').classList.remove('hidden');
+                    document.getElementById('notifyForm').classList.add('hidden');
+                    document.getElementById('formSuccess').classList.remove('hidden');
+
+                    if (result.counter) {
+                        updateCounter(result.counter.display);
+                    }
+
+                    // Close after 3 seconds
+                    setTimeout(closeQuiz, 3000);
+                } else {
+                    alert(result.error || 'Error al registrar');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            } catch (error) {
+                document.getElementById('quizEmailForm').classList.add('hidden');
+                document.getElementById('quizSuccess').classList.remove('hidden');
+                setTimeout(closeQuiz, 3000);
+            }
+        });
+
+        // ESC closes quiz
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !quizModal.classList.contains('hidden')) {
+                closeQuiz();
+            }
+        });
+
+        // Exit Intent Popup
+        const exitPopup = document.getElementById('exitPopup');
+        const exitPopupModal = document.getElementById('exitPopupModal');
+        const exitPopupOverlay = document.getElementById('exitPopupOverlay');
+        const exitPopupClose = document.getElementById('exitPopupClose');
+        const exitPopupDismiss = document.getElementById('exitPopupDismiss');
+        const exitPopupForm = document.getElementById('exitPopupForm');
+        let exitPopupShown = sessionStorage.getItem('exitPopupShown') === 'true';
+        let exitPopupEnabled = true;
+
+        // Show popup function
+        function showExitPopup() {
+            if (exitPopupShown || !exitPopupEnabled) return;
+            exitPopupShown = true;
+            sessionStorage.setItem('exitPopupShown', 'true');
+
+            exitPopup.classList.remove('hidden');
+            // Trigger animation
+            setTimeout(() => {
+                exitPopupModal.classList.remove('scale-95', 'opacity-0');
+                exitPopupModal.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        // Hide popup function
+        function hideExitPopup() {
+            exitPopupModal.classList.remove('scale-100', 'opacity-100');
+            exitPopupModal.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                exitPopup.classList.add('hidden');
+            }, 300);
+        }
+
+        // Exit intent detection (desktop only)
+        document.addEventListener('mouseout', (e) => {
+            if (e.clientY <= 0 && !exitPopupShown) {
+                showExitPopup();
+            }
+        });
+
+        // Also trigger after 45 seconds on page (mobile fallback)
+        setTimeout(() => {
+            if (!exitPopupShown && !document.querySelector('#heroFormSuccess:not(.hidden), #formSuccess:not(.hidden)')) {
+                showExitPopup();
+            }
+        }, 45000);
+
+        // Close handlers
+        exitPopupClose.addEventListener('click', hideExitPopup);
+        exitPopupDismiss.addEventListener('click', hideExitPopup);
+        exitPopupOverlay.addEventListener('click', hideExitPopup);
+
+        // ESC key closes popup
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !exitPopup.classList.contains('hidden')) {
+                hideExitPopup();
+            }
+        });
+
+        // Exit popup form submit
+        exitPopupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('exitEmailInput').value;
+            const submitBtn = exitPopupForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+
+            try {
+                const response = await fetch(API_BASE + '/subscribe.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        lang: TERRAPP_I18N.currentLang || 'es_AR',
+                        source: 'exit_popup'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Show success state
+                    exitPopupForm.classList.add('hidden');
+                    document.getElementById('exitPopupDismiss').classList.add('hidden');
+                    document.getElementById('exitPopupSuccess').classList.remove('hidden');
+
+                    // Also mark main forms as done
+                    document.getElementById('heroNotifyForm').classList.add('hidden');
+                    document.getElementById('heroFormSuccess').classList.remove('hidden');
+                    document.getElementById('notifyForm').classList.add('hidden');
+                    document.getElementById('formSuccess').classList.remove('hidden');
+
+                    if (result.counter) {
+                        updateCounter(result.counter.display);
+                    }
+
+                    // Close after 3 seconds
+                    setTimeout(hideExitPopup, 3000);
+                } else {
+                    alert(result.error || 'Error al registrar');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.log('API no disponible');
+                exitPopupForm.classList.add('hidden');
+                document.getElementById('exitPopupDismiss').classList.add('hidden');
+                document.getElementById('exitPopupSuccess').classList.remove('hidden');
+                setTimeout(hideExitPopup, 3000);
+            }
+        });
+
+        // Disable exit popup if user already subscribed
+        if (document.querySelector('#heroFormSuccess:not(.hidden), #formSuccess:not(.hidden)')) {
+            exitPopupEnabled = false;
+        }
+
+        // Impact Counter Animation
+        const impactCounters = document.querySelectorAll('.impact-counter');
+        let impactAnimated = false;
+
+        function animateCounter(element) {
+            const target = parseInt(element.dataset.target);
+            const suffix = element.dataset.suffix || '';
+            const duration = 2000;
+            const steps = 60;
+            const stepValue = target / steps;
+            let current = 0;
+            let step = 0;
+
+            const timer = setInterval(() => {
+                step++;
+                current = Math.min(Math.round(stepValue * step), target);
+                element.textContent = current.toLocaleString() + suffix;
+
+                if (step >= steps) {
+                    clearInterval(timer);
+                    element.textContent = target.toLocaleString() + suffix;
+                }
+            }, duration / steps);
+        }
+
+        const impactObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !impactAnimated) {
+                    impactAnimated = true;
+                    impactCounters.forEach((counter, index) => {
+                        setTimeout(() => animateCounter(counter), index * 150);
+                    });
+                }
+            });
+        }, { threshold: 0.3 });
+
+        const impactSection = document.getElementById('impact');
+        if (impactSection) {
+            impactObserver.observe(impactSection);
+        }
+
+        // Scroll to Top Button
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 500) {
+                scrollTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+                scrollTopBtn.classList.add('opacity-100');
+            } else {
+                scrollTopBtn.classList.add('opacity-0', 'pointer-events-none');
+                scrollTopBtn.classList.remove('opacity-100');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Scroll Reveal Animation
+        function initScrollReveal() {
+            const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger-children');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            revealElements.forEach(el => observer.observe(el));
+        }
+
+        // Initialize after page load
+        window.addEventListener('load', () => {
+            setTimeout(initScrollReveal, 100);
+        });
+
+        // FAQ Accordion functionality
+        document.querySelectorAll('#faqContainer details').forEach(detail => {
+            detail.addEventListener('toggle', function() {
+                if (this.open) {
+                    document.querySelectorAll('#faqContainer details').forEach(d => {
+                        if (d !== this) d.removeAttribute('open');
+                    });
+                }
+            });
+        });
+
+        // Progress bar animation on scroll
+        const progressObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const bar = document.getElementById('progressBar');
+                    if (bar) {
+                        bar.style.width = '0%';
+                        setTimeout(() => {
+                            bar.style.width = bar.dataset.width || '35%';
+                        }, 100);
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const progressSection = document.querySelector('#notify .p-6');
+        if (progressSection) {
+            progressObserver.observe(progressSection);
+        }
+
+        // Counter animation on scroll
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = document.getElementById('interestCounter');
+                    if (counter && !counter.classList.contains('animated')) {
+                        counter.classList.add('animated', 'counter-pulse');
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const counterElement = document.getElementById('interestCounter');
+        if (counterElement) {
+            counterObserver.observe(counterElement);
+        }
+    </script>
+</body>
+</html>

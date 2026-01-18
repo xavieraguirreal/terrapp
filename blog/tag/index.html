@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tags - TERRApp Blog</title>
+    <meta name="description" content="Explora artículos por etiquetas">
+    <link rel="icon" type="image/png" href="../../landing/assets/images/logo_terrapp_icono.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: ['class', '[data-theme="dark"]'],
+            theme: {
+                extend: {
+                    colors: {
+                        'earth': { 50: '#faf6f1' },
+                        'forest': { 500: '#3d9268', 600: '#2d7553', 700: '#265e44' }
+                    },
+                    fontFamily: { 'sans': ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../assets/css/blog.css">
+</head>
+<body class="bg-earth-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans min-h-screen">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <a href="../" class="text-gray-600 dark:text-gray-300 hover:text-forest-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                    </a>
+                    <h1 class="text-xl font-bold" id="pageTitle">Tags</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Info del tag -->
+        <div id="tagInfo" class="hidden mb-8 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md">
+            <h2 id="tagName" class="text-2xl font-bold mb-2"></h2>
+            <p id="tagCount" class="text-gray-500"></p>
+        </div>
+
+        <!-- Nube de tags o artículos -->
+        <div id="content">
+            <!-- Se llena dinámicamente -->
+        </div>
+    </main>
+
+    <script src="../assets/js/blog.js"></script>
+    <script>
+        let allArticles = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            loadThemePreference();
+
+            try {
+                const response = await fetch('../data/articulos.json');
+                const data = await response.json();
+                allArticles = data.articulos || [];
+
+                const params = new URLSearchParams(window.location.search);
+                const tag = params.get('t');
+
+                if (tag) {
+                    showTag(tag);
+                } else {
+                    showAllTags();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        function showAllTags() {
+            document.getElementById('pageTitle').textContent = 'Todos los Tags';
+            document.getElementById('tagInfo').classList.add('hidden');
+
+            // Contar tags
+            const tagCounts = {};
+            allArticles.forEach(art => {
+                (art.tags || []).forEach(tag => {
+                    tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+                });
+            });
+
+            const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+
+            const container = document.getElementById('content');
+            container.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                    <h2 class="text-lg font-bold mb-4">Nube de Tags</h2>
+                    <div class="flex flex-wrap gap-3">
+                        ${sortedTags.map(([tag, count]) => `
+                            <a href="?t=${encodeURIComponent(tag)}"
+                               class="tag text-sm"
+                               style="font-size: ${Math.min(1.5, 0.875 + count * 0.1)}rem">
+                                #${escapeHtml(tag)} <span class="text-gray-400">(${count})</span>
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function showTag(tag) {
+            const articles = allArticles.filter(a => (a.tags || []).includes(tag));
+
+            document.getElementById('pageTitle').textContent = `#${tag}`;
+            document.getElementById('tagInfo').classList.remove('hidden');
+            document.getElementById('tagName').textContent = `#${tag}`;
+            document.getElementById('tagCount').textContent = `${articles.length} artículos`;
+
+            const container = document.getElementById('content');
+            if (articles.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <p class="text-gray-500">No hay artículos con este tag</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    ${articles.map(art => `
+                        <article class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition">
+                            <a href="../articulo.html?slug=${art.slug}" class="block">
+                                <div class="h-40 bg-gray-200 dark:bg-gray-700">
+                                    ${art.imagen_url
+                                        ? `<img src="${art.imagen_url}" alt="" class="w-full h-full object-cover">`
+                                        : '<div class="w-full h-full flex items-center justify-center text-4xl">🌱</div>'
+                                    }
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="font-bold mb-2 line-clamp-2">${escapeHtml(art.titulo)}</h3>
+                                    <p class="text-sm text-gray-500">${art.tiempo_lectura} min</p>
+                                </div>
+                            </a>
+                        </article>
+                    `).join('')}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,646 @@
+<?php
+/**
+ * TERRApp Blog - Funciones auxiliares
+ */
+
+require_once __DIR__ . '/../config/database.php';
+
+// ============================================
+// FUNCIONES DE URLs Y DUPLICADOS
+// ============================================
+
+/**
+ * Verifica si una URL ya fue procesada
+ */
+function urlYaProcesada(string $url): bool {
+    $pdo = getConnection();
+    $stmt = $pdo->prepare("SELECT id FROM blog_urls_procesadas WHERE url = ?");
+    $stmt->execute([$url]);
+    return $stmt->fetch() !== false;
+}
+
+/**
+ * Registra una URL como procesada
+ */
+function registrarUrl(string $url): void {
+    $pdo = getConnection();
+    $stmt = $pdo->prepare("INSERT IGNORE INTO blog_urls_procesadas (url) VALUES (?)");
+    $stmt->execute([$url]);
+}
+
+/**
+ * Verifica si un título es muy similar a uno existente
+ */
+function tituloEsSimilar(string $titulo): bool {
+    $pdo = getConnection();
+    $stmt = $pdo->query("SELECT titulo FROM blog_articulos WHERE estado IN ('publicado', 'rechazado', 'borrador')");
+    $titulosExistentes = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    $tituloNormalizado = normalizarTexto($titulo);
+
+    foreach ($titulosExistentes as $existente) {
+        $existenteNormalizado = normalizarTexto($existente);
+        similar_text($tituloNormalizado, $existenteNormalizado, $porcentaje);
+
+        if ($porcentaje > 65) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Normaliza texto para comparación
+ */
+function normalizarTexto(string $texto): string {
+    $texto = mb_strtolower($texto);
+    $texto = preg_replace('/[áàäâã]/u', 'a', $texto);
+    $texto = preg_replace('/[éèëê]/u', 'e', $texto);
+    $texto = preg_replace('/[íìïî]/u', 'i', $texto);
+    $texto = preg_replace('/[óòöôõ]/u', 'o', $texto);
+    $texto = preg_replace('/[úùüû]/u', 'u', $texto);
+    $texto = preg_replace('/[ñ]/u', 'n', $texto);
+    $texto = preg_replace('/[ç]/u', 'c', $texto);
+    $texto = preg_replace('/[^a-z0-9\s]/u', '', $texto);
+    $texto = preg_replace('/\s+/', ' ', $texto);
+    return trim($texto);
+}
+
+/**
+ * Genera slug a partir de título
+ */
+function generarSlug(string $titulo): string {
+    $slug = normalizarTexto($titulo);
+    $slug = preg_replace('/\s+/', '-', $slug);
+    $slug = substr($slug, 0, 100);
+
+    // Verificar unicidad
+    $pdo = getConnection();
+    $baseSlug = $slug;
+    $contador = 1;
+
+    while (true) {
+        $stmt = $pdo->prepare("SELECT id FROM blog_articulos WHERE slug = ?");
+        $stmt->execute([$slug]);
+        if (!$stmt->fetch()) {
+            break;
+        }
+        $slug = $baseSlug . '-' . $contador;
+        $contador++;
+    }
+
+    return $slug;
+}
+
+// ============================================
+// FUNCIONES DE NOTICIAS PENDIENTES (CACHE)
+// ============================================
+
+/**
+ * Guarda candidatas de Tavily en la tabla de pendientes
+ */
+function guardarCandidatasPendientes(array $candidatas): int {
+    $pdo = getConnection();
+    $guardadas = 0;
+
+    foreach ($candidatas as $c) {
+        $url = $c['url'] ?? '';
+        if (empty($url)) continue;
+
+        if (urlYaProcesada($url)) continue;
+
+        $titulo = $c['title'] ?? $c['titulo'] ?? '';
+        if (!empty($titulo) && tituloEsSimilar($titulo)) continue;
+
+        // Detectar región por dominio
+        $region = detectarRegionPorDominio($url);
+
+        try {
+            $stmt = $pdo->prepare("
+                INSERT IGNORE INTO blog_noticias_pendientes
+                (url, titulo, descripcion, contenido, imagen_url, fuente, region)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ");
+            $stmt->execute([
+                $url,
+                $titulo,
+                mb_substr($c['content'] ?? '', 0, 1000),
+                $c['raw_content'] ?? $c['content'] ?? '',
+                $c['image'] ?? null,
+                parse_url($url, PHP_URL_HOST),
+                $region
+            ]);
+            if ($stmt->rowCount() > 0) $guardadas++;
+        } catch (Exception $e) {
+            // Ignorar duplicados
+        }
+    }
+
+    return $guardadas;
+}
+
+/**
+ * Detecta región por dominio
+ */
+function detectarRegionPorDominio(string $url): string {
+    $host = parse_url($url, PHP_URL_HOST) ?? '';
+    $dominiosSudamerica = DOMINIOS_SUDAMERICA ?? ['.ar', '.br', '.cl', '.co', '.pe', '.ec', '.uy', '.py', '.bo', '.ve'];
+
+    foreach ($dominiosSudamerica as $tld) {
+        if (str_ends_with($host, $tld)) {
+            return 'sudamerica';
+        }
+    }
+    return 'internacional';
+}
+
+/**
+ * Obtiene la siguiente noticia pendiente para procesar
+ */
+function obtenerPendiente(): ?array {
+    $pdo = getConnection();
+    $stmt = $pdo->query("SELECT * FROM blog_noticias_pendientes WHERE usado = 0 ORDER BY fecha_obtenida ASC LIMIT 1");
+    $pendiente = $stmt->fetch();
+    return $pendiente ?: null;
+}
+
+/**
+ * Marca una pendiente como usada
+ */
+function marcarPendienteUsada(int $id): void {
+    $pdo = getConnection();
+    $stmt = $pdo->prepare("UPDATE blog_noticias_pendientes SET usado = 1 WHERE id = ?");
+    $stmt->execute([$id]);
+}
+
+/**
+ * Cuenta pendientes disponibles
+ */
+function contarPendientes(): int {
+    $pdo = getConnection();
+    $stmt = $pdo->query("SELECT COUNT(*) FROM blog_noticias_pendientes WHERE usado = 0");
+    return (int) $stmt->fetchColumn();
+}
+
+// ============================================
+// FUNCIONES DE ARTÍCULOS
+// ============================================
+
+/**
+ * Guarda un artículo en la base de datos
+ */
+function guardarArticulo(array $datos): int {
+    $pdo = getConnection();
+
+    $slug = generarSlug($datos['titulo']);
+    $tips = !empty($datos['tips']) ? json_encode($datos['tips'], JSON_UNESCAPED_UNICODE) : null;
+    $tags = !empty($datos['tags']) ? json_encode($datos['tags'], JSON_UNESCAPED_UNICODE) : null;
+
+    // Calcular tiempo de lectura
+    $palabras = str_word_count(strip_tags($datos['contenido']));
+    $tiempoLectura = max(1, ceil($palabras / 200));
+
+    $stmt = $pdo->prepare("
+        INSERT INTO blog_articulos
+        (titulo, slug, contenido, opinion_editorial, tips, contenido_original,
+         fuente_nombre, fuente_url, imagen_url, region, pais_origen,
+         categoria, tags, estado, tiempo_lectura)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'borrador', ?)
+    ");
+
+    $stmt->execute([
+        $datos['titulo'],
+        $slug,
+        $datos['contenido'],
+        $datos['opinion_editorial'] ?? null,
+        $tips,
+        $datos['contenido_original'] ?? null,
+        $datos['fuente_nombre'] ?? null,
+        $datos['fuente_url'] ?? null,
+        $datos['imagen_url'] ?? null,
+        $datos['region'] ?? 'internacional',
+        $datos['pais_origen'] ?? null,
+        $datos['categoria'] ?? 'noticias',
+        $tags,
+        $tiempoLectura
+    ]);
+
+    return (int) $pdo->lastInsertId();
+}
+
+/**
+ * Obtiene todos los artículos con filtro opcional
+ */
+function obtenerArticulos(?string $estado = null, int $limite = 100): array {
+    $pdo = getConnection();
+
+    if ($estado) {
+        $stmt = $pdo->prepare("SELECT * FROM blog_articulos WHERE estado = ? ORDER BY fecha_creacion DESC LIMIT ?");
+        $stmt->execute([$estado, $limite]);
+    } else {
+        $stmt = $pdo->prepare("SELECT * FROM blog_articulos ORDER BY fecha_creacion DESC LIMIT ?");
+        $stmt->execute([$limite]);
+    }
+
+    return $stmt->fetchAll();
+}
+
+/**
+ * Obtiene un artículo por ID
+ */
+function obtenerArticulo(int $id): ?array {
+    $pdo = getConnection();
+    $stmt = $pdo->prepare("SELECT * FROM blog_articulos WHERE id = ?");
+    $stmt->execute([$id]);
+    $articulo = $stmt->fetch();
+
+    if ($articulo) {
+        // Decodificar JSON fields
+        $articulo['tips'] = json_decode($articulo['tips'] ?? '[]', true) ?: [];
+        $articulo['tags'] = json_decode($articulo['tags'] ?? '[]', true) ?: [];
+    }
+
+    return $articulo ?: null;
+}
+
+/**
+ * Obtiene un artículo por slug
+ */
+function obtenerArticuloPorSlug(string $slug): ?array {
+    $pdo = getConnection();
+    $stmt = $pdo->prepare("SELECT * FROM blog_articulos WHERE slug = ?");
+    $stmt->execute([$slug]);
+    $articulo = $stmt->fetch();
+
+    if ($articulo) {
+        $articulo['tips'] = json_decode($articulo['tips'] ?? '[]', true) ?: [];
+        $articulo['tags'] = json_decode($articulo['tags'] ?? '[]', true) ?: [];
+    }
+
+    return $articulo ?: null;
+}
+
+/**
+ * Cambia el estado de un artículo
+ */
+function cambiarEstadoArticulo(int $id, string $estado, bool $saltearCriterio = false): bool {
+    $pdo = getConnection();
+    $articulo = obtenerArticulo($id);
+
+    if (!$articulo) return false;
+
+    if ($estado === 'publicado') {
+        // Actualizar contador regional
+        if (!$saltearCriterio) {
+            actualizarContadorRegional($articulo['region']);
+        }
+
+        $stmt = $pdo->prepare("UPDATE blog_articulos SET estado = ?, fecha_publicacion = NOW() WHERE id = ?");
+        $stmt->execute([$estado, $id]);
+
+        // Exportar JSON automáticamente
+        exportarArticulosJSON();
+    } else {
+        $stmt = $pdo->prepare("UPDATE blog_articulos SET estado = ?, fecha_publicacion = NULL WHERE id = ?");
+        $stmt->execute([$estado, $id]);
+    }
+
+    return $stmt->rowCount() > 0;
+}
+
+/**
+ * Actualiza el contenido de un artículo
+ */
+function actualizarArticulo(int $id, array $datos): bool {
+    $pdo = getConnection();
+
+    $tips = !empty($datos['tips']) ? json_encode($datos['tips'], JSON_UNESCAPED_UNICODE) : null;
+    $tags = !empty($datos['tags']) ? json_encode($datos['tags'], JSON_UNESCAPED_UNICODE) : null;
+
+    $stmt = $pdo->prepare("
+        UPDATE blog_articulos
+        SET titulo = ?, contenido = ?, opinion_editorial = ?, tips = ?, categoria = ?, tags = ?
+        WHERE id = ?
+    ");
+
+    return $stmt->execute([
+        $datos['titulo'],
+        $datos['contenido'],
+        $datos['opinion_editorial'] ?? null,
+        $tips,
+        $datos['categoria'] ?? 'noticias',
+        $tags,
+        $id
+    ]);
+}
+
+// ============================================
+// FUNCIONES DE CONTADOR REGIONAL
+// ============================================
+
+/**
+ * Obtiene el contador regional actual
+ */
+function obtenerContadorRegional(): array {
+    $pdo = getConnection();
+    $stmt = $pdo->query("SELECT * FROM blog_contador_regional WHERE id = 1");
+    $contador = $stmt->fetch();
+
+    if (!$contador) {
+        return [
+            'contador_sudamerica' => 0,
+            'contador_internacional' => 0,
+            'ratio_objetivo' => RATIO_REGIONAL_OBJETIVO ?? 3.5,
+            'ratio_actual' => 0
+        ];
+    }
+
+    $contador['ratio_actual'] = $contador['contador_internacional'] > 0
+        ? round($contador['contador_sudamerica'] / $contador['contador_internacional'], 1)
+        : $contador['contador_sudamerica'];
+
+    return $contador;
+}
+
+/**
+ * Actualiza el contador regional
+ */
+function actualizarContadorRegional(string $region): void {
+    $pdo = getConnection();
+
+    if ($region === 'sudamerica') {
+        $pdo->query("UPDATE blog_contador_regional SET contador_sudamerica = contador_sudamerica + 1 WHERE id = 1");
+    } else {
+        $pdo->query("UPDATE blog_contador_regional SET contador_internacional = contador_internacional + 1 WHERE id = 1");
+    }
+}
+
+/**
+ * Sugiere qué región debería ser la próxima publicación
+ */
+function sugerirRegion(): string {
+    $contador = obtenerContadorRegional();
+    $ratioActual = $contador['ratio_actual'];
+    $ratioObjetivo = $contador['ratio_objetivo'];
+
+    // Si el ratio actual es menor que el objetivo, sugerir sudamericana
+    if ($ratioActual < $ratioObjetivo) {
+        return 'sudamerica';
+    }
+
+    return 'internacional';
+}
+
+// ============================================
+// FUNCIONES DE EXPORTACIÓN
+// ============================================
+
+/**
+ * Exporta artículos publicados a JSON para el frontend
+ */
+function exportarArticulosJSON(): bool {
+    $pdo = getConnection();
+
+    // Obtener artículos publicados
+    $stmt = $pdo->query("
+        SELECT
+            id, titulo, slug, contenido, opinion_editorial, tips,
+            fuente_nombre, fuente_url, imagen_url,
+            region, pais_origen, categoria, tags,
+            fecha_publicacion, vistas, tiempo_lectura,
+            reaccion_interesante, reaccion_encanta, reaccion_importante,
+            (shares_whatsapp + shares_facebook + shares_twitter + shares_linkedin + shares_copy) as total_shares
+        FROM blog_articulos
+        WHERE estado = 'publicado'
+          AND (fecha_programada IS NULL OR fecha_programada <= NOW())
+        ORDER BY fecha_publicacion DESC
+    ");
+
+    $articulos = $stmt->fetchAll();
+
+    // Procesar cada artículo
+    foreach ($articulos as &$art) {
+        $art['tips'] = json_decode($art['tips'] ?? '[]', true) ?: [];
+        $art['tags'] = json_decode($art['tags'] ?? '[]', true) ?: [];
+        $art['fecha_publicacion'] = date('c', strtotime($art['fecha_publicacion']));
+    }
+
+    $json = json_encode([
+        'generado' => date('c'),
+        'total' => count($articulos),
+        'articulos' => $articulos
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+    $rutaJSON = __DIR__ . '/../../data/articulos.json';
+
+    // Crear directorio si no existe
+    $dir = dirname($rutaJSON);
+    if (!is_dir($dir)) {
+        mkdir($dir, 0755, true);
+    }
+
+    return file_put_contents($rutaJSON, $json) !== false;
+}
+
+/**
+ * Genera el RSS Feed
+ */
+function generarRSSFeed(): bool {
+    $pdo = getConnection();
+
+    $stmt = $pdo->query("
+        SELECT id, titulo, slug, contenido, fecha_publicacion, imagen_url
+        FROM blog_articulos
+        WHERE estado = 'publicado'
+        ORDER BY fecha_publicacion DESC
+        LIMIT 20
+    ");
+
+    $articulos = $stmt->fetchAll();
+
+    $blogUrl = BLOG_URL ?? 'https://terrapp.verumax.com/blog/';
+
+    $rss = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+    $rss .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">' . "\n";
+    $rss .= '<channel>' . "\n";
+    $rss .= '  <title>TERRApp Blog - Agricultura Urbana</title>' . "\n";
+    $rss .= '  <link>' . htmlspecialchars($blogUrl) . '</link>' . "\n";
+    $rss .= '  <description>Noticias y tips sobre huertos urbanos y agricultura en ciudades para Sudamérica</description>' . "\n";
+    $rss .= '  <language>es</language>' . "\n";
+    $rss .= '  <lastBuildDate>' . date('r') . '</lastBuildDate>' . "\n";
+    $rss .= '  <atom:link href="' . htmlspecialchars($blogUrl) . 'feed.xml" rel="self" type="application/rss+xml"/>' . "\n";
+
+    foreach ($articulos as $art) {
+        $link = $blogUrl . 'articulo.html?slug=' . urlencode($art['slug']);
+        $descripcion = mb_substr(strip_tags($art['contenido']), 0, 300) . '...';
+
+        $rss .= '  <item>' . "\n";
+        $rss .= '    <title>' . htmlspecialchars($art['titulo']) . '</title>' . "\n";
+        $rss .= '    <link>' . htmlspecialchars($link) . '</link>' . "\n";
+        $rss .= '    <guid isPermaLink="true">' . htmlspecialchars($link) . '</guid>' . "\n";
+        $rss .= '    <pubDate>' . date('r', strtotime($art['fecha_publicacion'])) . '</pubDate>' . "\n";
+        $rss .= '    <description>' . htmlspecialchars($descripcion) . '</description>' . "\n";
+
+        if (!empty($art['imagen_url'])) {
+            $rss .= '    <enclosure url="' . htmlspecialchars($art['imagen_url']) . '" type="image/jpeg"/>' . "\n";
+        }
+
+        $rss .= '  </item>' . "\n";
+    }
+
+    $rss .= '</channel>' . "\n";
+    $rss .= '</rss>';
+
+    $rutaRSS = __DIR__ . '/../../feed.xml';
+
+    return file_put_contents($rutaRSS, $rss) !== false;
+}
+
+// ============================================
+// FUNCIONES DE MÉTRICAS
+// ============================================
+
+/**
+ * Incrementa el contador de vistas
+ */
+function registrarVista(int $articuloId): void {
+    $pdo = getConnection();
+    $stmt = $pdo->prepare("UPDATE blog_articulos SET vistas = vistas + 1 WHERE id = ?");
+    $stmt->execute([$articuloId]);
+}
+
+/**
+ * Registra una reacción
+ */
+function registrarReaccion(int $articuloId, string $tipo): bool {
+    $pdo = getConnection();
+
+    $columnas = [
+        'interesante' => 'reaccion_interesante',
+        'encanta' => 'reaccion_encanta',
+        'importante' => 'reaccion_importante'
+    ];
+
+    if (!isset($columnas[$tipo])) {
+        return false;
+    }
+
+    $columna = $columnas[$tipo];
+    $stmt = $pdo->prepare("UPDATE blog_articulos SET {$columna} = {$columna} + 1 WHERE id = ?");
+    return $stmt->execute([$articuloId]);
+}
+
+/**
+ * Registra un share
+ */
+function registrarShare(int $articuloId, string $red): bool {
+    $pdo = getConnection();
+
+    $columnas = [
+        'whatsapp' => 'shares_whatsapp',
+        'facebook' => 'shares_facebook',
+        'twitter' => 'shares_twitter',
+        'linkedin' => 'shares_linkedin',
+        'copy' => 'shares_copy'
+    ];
+
+    if (!isset($columnas[$red])) {
+        return false;
+    }
+
+    $columna = $columnas[$red];
+    $stmt = $pdo->prepare("UPDATE blog_articulos SET {$columna} = {$columna} + 1 WHERE id = ?");
+    return $stmt->execute([$articuloId]);
+}
+
+// ============================================
+// FUNCIONES DE TOKENS PARA ACCIONES EMAIL
+// ============================================
+
+/**
+ * Genera token para acción desde email
+ */
+function generarTokenAccion(int $articuloId, string $accion): string {
+    $pdo = getConnection();
+    $token = bin2hex(random_bytes(32));
+
+    $stmt = $pdo->prepare("INSERT INTO blog_tokens_accion (token, articulo_id, accion) VALUES (?, ?, ?)");
+    $stmt->execute([$token, $articuloId, $accion]);
+
+    return $token;
+}
+
+/**
+ * Valida y ejecuta acción desde token
+ */
+function ejecutarAccionToken(string $token): array {
+    $pdo = getConnection();
+
+    $stmt = $pdo->prepare("SELECT * FROM blog_tokens_accion WHERE token = ? AND usado = 0");
+    $stmt->execute([$token]);
+    $tokenData = $stmt->fetch();
+
+    if (!$tokenData) {
+        return ['success' => false, 'error' => 'Token inválido o ya usado'];
+    }
+
+    // Marcar como usado
+    $stmt = $pdo->prepare("UPDATE blog_tokens_accion SET usado = 1, fecha_uso = NOW() WHERE id = ?");
+    $stmt->execute([$tokenData['id']]);
+
+    // Ejecutar acción
+    $articuloId = $tokenData['articulo_id'];
+    $accion = $tokenData['accion'];
+
+    switch ($accion) {
+        case 'aprobar':
+            cambiarEstadoArticulo($articuloId, 'publicado');
+            return ['success' => true, 'accion' => 'Artículo aprobado y publicado'];
+
+        case 'rechazar':
+            cambiarEstadoArticulo($articuloId, 'rechazado');
+            return ['success' => true, 'accion' => 'Artículo rechazado'];
+
+        case 'saltear':
+            cambiarEstadoArticulo($articuloId, 'publicado', true);
+            return ['success' => true, 'accion' => 'Artículo publicado (criterio regional omitido)'];
+
+        default:
+            return ['success' => false, 'error' => 'Acción desconocida'];
+    }
+}
+
+// ============================================
+// FUNCIONES DE ESTADÍSTICAS
+// ============================================
+
+/**
+ * Obtiene estadísticas del blog
+ */
+function obtenerEstadisticas(): array {
+    $pdo = getConnection();
+
+    $stmt = $pdo->query("SELECT * FROM v_blog_stats");
+    return $stmt->fetch() ?: [];
+}
+
+/**
+ * Obtiene categorías con conteo
+ */
+function obtenerCategorias(): array {
+    $pdo = getConnection();
+
+    $stmt = $pdo->query("
+        SELECT
+            c.*,
+            COUNT(a.id) as total_articulos
+        FROM blog_categorias c
+        LEFT JOIN blog_articulos a ON a.categoria = c.slug AND a.estado = 'publicado'
+        WHERE c.activo = 1
+        GROUP BY c.id
+        ORDER BY c.orden
+    ");
+
+    return $stmt->fetchAll();
+}

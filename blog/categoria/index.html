@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categorías - TERRApp Blog</title>
+    <meta name="description" content="Explora artículos por categoría: huertos urbanos, compostaje, riego, plantas y más">
+    <link rel="icon" type="image/png" href="../../landing/assets/images/logo_terrapp_icono.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: ['class', '[data-theme="dark"]'],
+            theme: {
+                extend: {
+                    colors: {
+                        'earth': { 50: '#faf6f1' },
+                        'forest': { 500: '#3d9268', 600: '#2d7553', 700: '#265e44' }
+                    },
+                    fontFamily: { 'sans': ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../assets/css/blog.css">
+</head>
+<body class="bg-earth-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans min-h-screen">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <a href="../" class="text-gray-600 dark:text-gray-300 hover:text-forest-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                    </a>
+                    <h1 class="text-xl font-bold" id="pageTitle">Categorías</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Descripción de categoría -->
+        <div id="categoryInfo" class="hidden mb-8 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md">
+            <div class="flex items-center gap-4 mb-4">
+                <span id="categoryIcon" class="text-4xl"></span>
+                <div>
+                    <h2 id="categoryName" class="text-2xl font-bold"></h2>
+                    <p id="categoryCount" class="text-gray-500"></p>
+                </div>
+            </div>
+            <p id="categoryDesc" class="text-gray-600 dark:text-gray-400"></p>
+        </div>
+
+        <!-- Lista de categorías o artículos -->
+        <div id="content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Se llena dinámicamente -->
+        </div>
+    </main>
+
+    <script src="../assets/js/blog.js"></script>
+    <script>
+        const CATEGORIAS_INFO = {
+            'huertos-urbanos': { nombre: 'Huertos Urbanos', icono: '🌱', desc: 'Todo sobre cultivo en ciudades, balcones y terrazas' },
+            'compostaje': { nombre: 'Compostaje', icono: '🌿', desc: 'Compost, vermicompost y gestión de residuos orgánicos' },
+            'riego': { nombre: 'Riego y Agua', icono: '💧', desc: 'Sistemas de riego, ahorro de agua y automatización' },
+            'plantas': { nombre: 'Plantas y Cultivos', icono: '🌻', desc: 'Aromáticas, medicinales y hortalizas' },
+            'tecnologia': { nombre: 'Tecnología', icono: '📱', desc: 'Apps, sensores e innovación en agricultura urbana' },
+            'recetas': { nombre: 'Recetas', icono: '🍳', desc: 'Cocina con productos de tu huerta' },
+            'comunidad': { nombre: 'Comunidad', icono: '🤝', desc: 'Huertos comunitarios y proyectos sociales' },
+            'noticias': { nombre: 'Noticias', icono: '📰', desc: 'Actualidad del mundo de la agricultura urbana' }
+        };
+
+        let allArticles = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            loadThemePreference();
+
+            try {
+                const response = await fetch('../data/articulos.json');
+                const data = await response.json();
+                allArticles = data.articulos || [];
+
+                const params = new URLSearchParams(window.location.search);
+                const cat = params.get('c');
+
+                if (cat && CATEGORIAS_INFO[cat]) {
+                    showCategory(cat);
+                } else {
+                    showAllCategories();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        function showAllCategories() {
+            document.getElementById('pageTitle').textContent = 'Categorías';
+            document.getElementById('categoryInfo').classList.add('hidden');
+
+            const container = document.getElementById('content');
+            container.innerHTML = Object.entries(CATEGORIAS_INFO).map(([slug, cat]) => {
+                const count = allArticles.filter(a => a.categoria === slug).length;
+                return `
+                    <a href="?c=${slug}" class="block p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition">
+                        <span class="text-4xl block mb-3">${cat.icono}</span>
+                        <h3 class="text-xl font-bold mb-2">${cat.nombre}</h3>
+                        <p class="text-gray-500 text-sm mb-2">${cat.desc}</p>
+                        <span class="text-forest-600 font-medium">${count} artículos</span>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        function showCategory(slug) {
+            const cat = CATEGORIAS_INFO[slug];
+            const articles = allArticles.filter(a => a.categoria === slug);
+
+            document.getElementById('pageTitle').textContent = cat.nombre;
+            document.getElementById('categoryInfo').classList.remove('hidden');
+            document.getElementById('categoryIcon').textContent = cat.icono;
+            document.getElementById('categoryName').textContent = cat.nombre;
+            document.getElementById('categoryCount').textContent = `${articles.length} artículos`;
+            document.getElementById('categoryDesc').textContent = cat.desc;
+
+            const container = document.getElementById('content');
+            if (articles.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <p class="text-gray-500">No hay artículos en esta categoría aún</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = articles.map(art => `
+                <article class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition">
+                    <a href="../articulo.html?slug=${art.slug}" class="block">
+                        <div class="h-40 bg-gray-200 dark:bg-gray-700">
+                            ${art.imagen_url
+                                ? `<img src="${art.imagen_url}" alt="" class="w-full h-full object-cover">`
+                                : '<div class="w-full h-full flex items-center justify-center text-4xl">🌱</div>'
+                            }
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold mb-2 line-clamp-2">${escapeHtml(art.titulo)}</h3>
+                            <p class="text-sm text-gray-500">${art.tiempo_lectura} min • ${art.vistas} vistas</p>
+                        </div>
+                    </a>
+                </article>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

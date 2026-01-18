@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Stories - TERRApp Blog</title>
+    <meta name="description" content="Historias visuales sobre agricultura urbana">
+    <link rel="icon" type="image/png" href="../../landing/assets/images/logo_terrapp_icono.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: ['class', '[data-theme="dark"]'],
+            theme: {
+                extend: {
+                    colors: {
+                        'earth': { 50: '#faf6f1' },
+                        'forest': { 500: '#3d9268', 600: '#2d7553', 700: '#265e44' }
+                    },
+                    fontFamily: { 'sans': ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-earth-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans min-h-screen">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <a href="../" class="text-gray-600 dark:text-gray-300 hover:text-forest-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                    </a>
+                    <h1 class="text-xl font-bold">Web Stories</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <p class="text-gray-600 dark:text-gray-400 mb-8">
+            Historias visuales con tips rápidos sobre agricultura urbana. Formato tipo Instagram Stories.
+        </p>
+
+        <div id="storiesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <!-- Se llena dinámicamente -->
+        </div>
+
+        <div id="noStories" class="hidden text-center py-16">
+            <div class="text-6xl mb-4">📱</div>
+            <h2 class="text-xl font-bold text-gray-700 dark:text-gray-300 mb-2">Próximamente</h2>
+            <p class="text-gray-500">Estamos preparando historias visuales para ti</p>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Cargar artículos con tips para mostrar stories disponibles
+            try {
+                const response = await fetch('../data/articulos.json');
+                const data = await response.json();
+                const articulos = data.articulos || [];
+
+                // Filtrar los que tienen tips
+                const conTips = articulos.filter(a => a.tips && a.tips.length > 0);
+
+                const container = document.getElementById('storiesGrid');
+                const noStories = document.getElementById('noStories');
+
+                if (conTips.length === 0) {
+                    container.classList.add('hidden');
+                    noStories.classList.remove('hidden');
+                    return;
+                }
+
+                container.innerHTML = conTips.map(art => `
+                    <a href="story-${art.slug}.html" class="block aspect-[9/16] rounded-xl overflow-hidden shadow-lg hover:scale-105 transition-transform relative group">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10"></div>
+                        ${art.imagen_url
+                            ? `<img src="${art.imagen_url}" alt="" class="w-full h-full object-cover">`
+                            : '<div class="w-full h-full bg-gradient-to-br from-forest-600 to-forest-700 flex items-center justify-center text-4xl">🌱</div>'
+                        }
+                        <div class="absolute bottom-0 left-0 right-0 p-3 z-20">
+                            <p class="text-white text-sm font-medium line-clamp-2">${art.titulo}</p>
+                            <p class="text-white/70 text-xs mt-1">${art.tips.length} tips</p>
+                        </div>
+                        <div class="absolute top-2 right-2 w-8 h-8 bg-white/20 backdrop-blur rounded-full flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </div>
+                    </a>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('storiesGrid').classList.add('hidden');
+                document.getElementById('noStories').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

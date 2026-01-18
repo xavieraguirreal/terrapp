@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+    <!-- Página principal -->
+    <url>
+        <loc>https://terrapp.verumax.com/</loc>
+        <lastmod>2026-01-17</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <!-- Alternativas de idioma -->
+        <xhtml:link rel="alternate" hreflang="es-AR" href="https://terrapp.verumax.com/?lang=es_AR"/>
+        <xhtml:link rel="alternate" hreflang="es-BO" href="https://terrapp.verumax.com/?lang=es_BO"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://terrapp.verumax.com/?lang=pt_BR"/>
+        <xhtml:link rel="alternate" hreflang="es-CL" href="https://terrapp.verumax.com/?lang=es_CL"/>
+        <xhtml:link rel="alternate" hreflang="es-CO" href="https://terrapp.verumax.com/?lang=es_CO"/>
+        <xhtml:link rel="alternate" hreflang="es-EC" href="https://terrapp.verumax.com/?lang=es_EC"/>
+        <xhtml:link rel="alternate" hreflang="en-GY" href="https://terrapp.verumax.com/?lang=en_GY"/>
+        <xhtml:link rel="alternate" hreflang="fr-GF" href="https://terrapp.verumax.com/?lang=fr_GF"/>
+        <xhtml:link rel="alternate" hreflang="es-PY" href="https://terrapp.verumax.com/?lang=es_PY"/>
+        <xhtml:link rel="alternate" hreflang="es-PE" href="https://terrapp.verumax.com/?lang=es_PE"/>
+        <xhtml:link rel="alternate" hreflang="nl-SR" href="https://terrapp.verumax.com/?lang=nl_SR"/>
+        <xhtml:link rel="alternate" hreflang="es-UY" href="https://terrapp.verumax.com/?lang=es_UY"/>
+        <xhtml:link rel="alternate" hreflang="es-VE" href="https://terrapp.verumax.com/?lang=es_VE"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://terrapp.verumax.com/"/>
+    </url>
+
+    <!-- Landing page directa -->
+    <url>
+        <loc>https://terrapp.verumax.com/landing/</loc>
+        <lastmod>2026-01-17</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <xhtml:link rel="alternate" hreflang="es-AR" href="https://terrapp.verumax.com/landing/?lang=es_AR"/>
+        <xhtml:link rel="alternate" hreflang="es-BO" href="https://terrapp.verumax.com/landing/?lang=es_BO"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://terrapp.verumax.com/landing/?lang=pt_BR"/>
+        <xhtml:link rel="alternate" hreflang="es-CL" href="https://terrapp.verumax.com/landing/?lang=es_CL"/>
+        <xhtml:link rel="alternate" hreflang="es-CO" href="https://terrapp.verumax.com/landing/?lang=es_CO"/>
+        <xhtml:link rel="alternate" hreflang="es-EC" href="https://terrapp.verumax.com/landing/?lang=es_EC"/>
+        <xhtml:link rel="alternate" hreflang="en-GY" href="https://terrapp.verumax.com/landing/?lang=en_GY"/>
+        <xhtml:link rel="alternate" hreflang="fr-GF" href="https://terrapp.verumax.com/landing/?lang=fr_GF"/>
+        <xhtml:link rel="alternate" hreflang="es-PY" href="https://terrapp.verumax.com/landing/?lang=es_PY"/>
+        <xhtml:link rel="alternate" hreflang="es-PE" href="https://terrapp.verumax.com/landing/?lang=es_PE"/>
+        <xhtml:link rel="alternate" hreflang="nl-SR" href="https://terrapp.verumax.com/landing/?lang=nl_SR"/>
+        <xhtml:link rel="alternate" hreflang="es-UY" href="https://terrapp.verumax.com/landing/?lang=es_UY"/>
+        <xhtml:link rel="alternate" hreflang="es-VE" href="https://terrapp.verumax.com/landing/?lang=es_VE"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://terrapp.verumax.com/landing/"/>
+    </url>
+
+    <!-- Política de Privacidad -->
+    <url>
+        <loc>https://terrapp.verumax.com/landing/privacy.html</loc>
+        <lastmod>2026-01-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+        <xhtml:link rel="alternate" hreflang="es-AR" href="https://terrapp.verumax.com/landing/privacy.html?lang=es_AR"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://terrapp.verumax.com/landing/privacy.html?lang=pt_BR"/>
+        <xhtml:link rel="alternate" hreflang="en-GY" href="https://terrapp.verumax.com/landing/privacy.html?lang=en_GY"/>
+        <xhtml:link rel="alternate" hreflang="fr-GF" href="https://terrapp.verumax.com/landing/privacy.html?lang=fr_GF"/>
+        <xhtml:link rel="alternate" hreflang="nl-SR" href="https://terrapp.verumax.com/landing/privacy.html?lang=nl_SR"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://terrapp.verumax.com/landing/privacy.html"/>
+    </url>
+
+    <!-- Términos y Condiciones -->
+    <url>
+        <loc>https://terrapp.verumax.com/landing/terms.html</loc>
+        <lastmod>2026-01-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+        <xhtml:link rel="alternate" hreflang="es-AR" href="https://terrapp.verumax.com/landing/terms.html?lang=es_AR"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://terrapp.verumax.com/landing/terms.html?lang=pt_BR"/>
+        <xhtml:link rel="alternate" hreflang="en-GY" href="https://terrapp.verumax.com/landing/terms.html?lang=en_GY"/>
+        <xhtml:link rel="alternate" hreflang="fr-GF" href="https://terrapp.verumax.com/landing/terms.html?lang=fr_GF"/>
+        <xhtml:link rel="alternate" hreflang="nl-SR" href="https://terrapp.verumax.com/landing/terms.html?lang=nl_SR"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://terrapp.verumax.com/landing/terms.html"/>
+    </url>
+
+</urlset>

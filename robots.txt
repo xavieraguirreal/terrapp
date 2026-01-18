@@ -1,0 +1,16 @@
+# TERRApp - robots.txt
+# https://terrapp.verumax.com
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://terrapp.verumax.com/sitemap.xml
+
+# Disallow API endpoints
+Disallow: /api/
+Disallow: /landing/api/
+
+# Disallow internal assets that don't need indexing
+Disallow: /landing/assets/js/
+Disallow: /landing/assets/css/

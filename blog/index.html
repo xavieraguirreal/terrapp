@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <title>Blog TERRApp - Noticias de Agricultura Urbana para Sudamérica</title>
+    <meta name="description" content="Últimas noticias y tips sobre huertos urbanos, agricultura en ciudades y cultivo en espacios reducidos. Blog oficial de TERRApp.">
+    <meta name="keywords" content="huertos urbanos, agricultura urbana, cultivo balcón, compostaje, TERRApp, sudamérica">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Blog TERRApp - Agricultura Urbana">
+    <meta property="og:description" content="Noticias y tips sobre huertos urbanos para Sudamérica">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://terrapp.verumax.com/blog/">
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/rss+xml" title="TERRApp Blog RSS" href="feed.xml">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../landing/assets/images/logo_terrapp_icono.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: ['class', '[data-theme="dark"]'],
+            theme: {
+                extend: {
+                    colors: {
+                        'earth': {
+                            50: '#faf6f1',
+                            100: '#f0e6d8',
+                            200: '#e0ccb0',
+                            800: '#5a3f2b',
+                            900: '#4a3425',
+                        },
+                        'forest': {
+                            100: '#dcf0e4',
+                            500: '#3d9268',
+                            600: '#2d7553',
+                            700: '#265e44',
+                        },
+                        'leaf': '#558b2f'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="assets/css/blog.css">
+</head>
+<body class="bg-earth-50 dark:bg-gray-900 text-earth-900 dark:text-gray-100 font-sans min-h-screen transition-colors duration-300">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <a href="../landing/" class="flex items-center gap-3">
+                    <img src="../landing/assets/images/logo_terrapp_icono.png" alt="TERRApp" class="w-10 h-10">
+                    <div>
+                        <span class="text-xl font-bold text-forest-600 dark:text-forest-500">TERRApp</span>
+                        <span class="text-sm text-gray-500 dark:text-gray-400 block -mt-1">Blog</span>
+                    </div>
+                </a>
+
+                <!-- Search & Actions -->
+                <div class="flex items-center gap-4">
+                    <!-- Search -->
+                    <div class="hidden md:block relative">
+                        <input type="text" id="searchInput" placeholder="Buscar artículos..."
+                               class="w-64 px-4 py-2 pl-10 rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-forest-500">
+                        <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+
+                    <!-- Reading List -->
+                    <a href="mi-lista/" class="relative p-2 text-gray-600 dark:text-gray-300 hover:text-forest-600 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                        </svg>
+                        <span id="readingListCount" class="hidden absolute -top-1 -right-1 bg-forest-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                    </a>
+
+                    <!-- Dark Mode Toggle -->
+                    <button onclick="toggleDarkMode()" class="p-2 text-gray-600 dark:text-gray-300 hover:text-forest-600 transition">
+                        <svg class="w-6 h-6 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                        <svg class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </button>
+
+                    <!-- RSS -->
+                    <a href="feed.xml" class="hidden md:block p-2 text-gray-600 dark:text-gray-300 hover:text-orange-500 transition" title="RSS Feed">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M6.18 15.64a2.18 2.18 0 1 1 0 4.36 2.18 2.18 0 0 1 0-4.36m0-2a4.18 4.18 0 1 0 0 8.36 4.18 4.18 0 0 0 0-8.36zM4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44zm0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93v-2.83z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero / Featured -->
+        <section class="mb-12">
+            <div id="featuredArticle" class="hidden">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </section>
+
+        <!-- Categories -->
+        <section class="mb-8">
+            <div class="flex flex-wrap gap-2" id="categoriesFilter">
+                <button onclick="filterByCategory('all')" class="category-btn active px-4 py-2 rounded-full bg-forest-600 text-white font-medium transition">
+                    Todos
+                </button>
+                <!-- Se llenan dinámicamente -->
+            </div>
+        </section>
+
+        <!-- Articles Grid -->
+        <section>
+            <div id="articlesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Skeleton loaders -->
+                <div class="skeleton-card bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md">
+                    <div class="h-48 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+                    <div class="p-5">
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-3 animate-pulse"></div>
+                        <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2 animate-pulse"></div>
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2 animate-pulse"></div>
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 animate-pulse"></div>
+                    </div>
+                </div>
+                <div class="skeleton-card bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md">
+                    <div class="h-48 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+                    <div class="p-5">
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-3 animate-pulse"></div>
+                        <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2 animate-pulse"></div>
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2 animate-pulse"></div>
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 animate-pulse"></div>
+                    </div>
+                </div>
+                <div class="skeleton-card bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md">
+                    <div class="h-48 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+                    <div class="p-5">
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-3 animate-pulse"></div>
+                        <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2 animate-pulse"></div>
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2 animate-pulse"></div>
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 animate-pulse"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No results message -->
+            <div id="noResults" class="hidden text-center py-12">
+                <div class="text-6xl mb-4">🌱</div>
+                <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-400">No se encontraron artículos</h3>
+                <p class="text-gray-500 dark:text-gray-500">Intenta con otra búsqueda o categoría</p>
+            </div>
+
+            <!-- Load More -->
+            <div id="loadMore" class="hidden text-center mt-8">
+                <button onclick="loadMoreArticles()" class="px-6 py-3 bg-forest-600 hover:bg-forest-700 text-white font-semibold rounded-lg transition">
+                    Cargar más artículos
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <img src="../landing/assets/images/logo_terrapp_icono.png" alt="TERRApp" class="w-8 h-8">
+                    <span class="text-gray-600 dark:text-gray-400">TERRApp Blog - Agricultura Urbana para Sudamérica</span>
+                </div>
+                <div class="flex gap-6 text-sm">
+                    <a href="../landing/" class="text-gray-600 dark:text-gray-400 hover:text-forest-600 transition">Inicio</a>
+                    <a href="mi-lista/" class="text-gray-600 dark:text-gray-400 hover:text-forest-600 transition">Mi Lista</a>
+                    <a href="feed.xml" class="text-gray-600 dark:text-gray-400 hover:text-forest-600 transition">RSS</a>
+                    <a href="admin/" class="text-gray-600 dark:text-gray-400 hover:text-forest-600 transition">Admin</a>
+                </div>
+            </div>
+            <div class="text-center mt-6 text-sm text-gray-500">
+                <p>&copy; 2026 TERRApp by <a href="https://verumax.com" class="text-forest-600 hover:underline">VERUMax</a>. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/blog.js"></script>
+</body>
+</html>

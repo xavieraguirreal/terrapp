@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es" data-lang="es_AR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+
+    <!-- SEO Meta Tags -->
+    <title>Términos y Condiciones - TERRApp</title>
+    <meta name="description" content="Términos y condiciones de uso de TERRApp. Conocé las reglas y condiciones para utilizar nuestros servicios.">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://terrapp.verumax.com/landing/terms.html">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/logo_terrapp_icono.png?v=2">
+    <link rel="apple-touch-icon" href="assets/images/logo_terrapp_icono.png?v=2">
+
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Flag Icons CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'earth': {
+                            50: '#faf6f1',
+                            100: '#f0e6d8',
+                            200: '#e0ccb0',
+                            300: '#cfb088',
+                            400: '#c19a6b',
+                            500: '#a67c52',
+                            600: '#8b6442',
+                            700: '#6f4f35',
+                            800: '#5a3f2b',
+                            900: '#4a3425',
+                        },
+                        'forest': {
+                            50: '#f0f9f4',
+                            100: '#dcf0e4',
+                            200: '#bbe0cb',
+                            300: '#8dc9a9',
+                            400: '#5dab82',
+                            500: '#3d9268',
+                            600: '#2d7553',
+                            700: '#265e44',
+                            800: '#224b39',
+                            900: '#1d3e30',
+                        },
+                        'leaf': {
+                            light: '#7cb342',
+                            DEFAULT: '#558b2f',
+                            dark: '#33691e',
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-earth-50 text-earth-900 font-sans antialiased">
+
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-earth-200 sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                    <img src="assets/images/logo_terrapp_icono.png" alt="TERRApp" class="w-10 h-10 rounded-xl shadow-lg">
+                    <div>
+                        <h1 class="text-xl font-bold text-forest-700">TERRApp</h1>
+                        <p class="text-xs text-earth-500" data-i18n="nav_by_verumax">por VERUMax</p>
+                    </div>
+                </a>
+
+                <div class="flex items-center gap-4">
+                    <!-- Language Selector -->
+                    <div class="relative">
+                        <button id="langToggle" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-earth-100 transition-colors border border-earth-200" aria-label="Seleccionar idioma">
+                            <span id="currentFlag" class="fi fi-ar"></span>
+                            <span id="currentLangName" class="text-sm font-medium hidden sm:inline">Argentina</span>
+                            <svg class="w-4 h-4 text-earth-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div id="langMenu" class="hidden absolute right-0 mt-2 w-56 bg-white border border-earth-200 rounded-xl shadow-xl overflow-hidden z-50">
+                            <div class="p-2 text-xs text-earth-500 font-semibold uppercase tracking-wider border-b border-earth-100" data-i18n="lang_select_title">Seleccionar idioma</div>
+                            <div id="langOptions" class="max-h-80 overflow-y-auto"></div>
+                        </div>
+                    </div>
+
+                    <!-- Back button -->
+                    <a href="index.html" class="flex items-center gap-2 px-4 py-2 text-forest-700 hover:bg-forest-50 rounded-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        <span class="font-medium" data-i18n="terms_back">Volver</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 sm:px-6 py-12">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold text-earth-800 mb-4" data-i18n="terms_title">Términos y Condiciones</h1>
+                <p class="text-earth-600" data-i18n="terms_updated">Última actualización: Enero 2026</p>
+            </div>
+
+            <!-- Content -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12 space-y-8">
+
+                <!-- Introducción -->
+                <section>
+                    <h2 class="text-2xl font-bold text-forest-700 mb-4" data-i18n="terms_s1_title">1. Introducción</h2>
+                    <p class="text-earth-700 leading-relaxed" data-i18n="terms_s1_text">
+                        Estos términos y condiciones regulan el uso del sitio web de TERRApp y los servicios
+                        ofrecidos por VERUMax, impulsada por la Cooperativa de Trabajo Liberté Ltda. Al acceder
+                        o utilizar nuestro sitio, aceptás cumplir con estos términos.
+                    </p>
+                </section>
+
+                <!-- Aceptación -->
+                <section>
+                    <h2 class="text-2xl font-bold text-forest-700 mb-4" data-i18n="terms_s2_title">2. Aceptación de los términos</h2>
+                    <p class="text-earth-700 leading-relaxed" data-i18n="terms_s2_text">
+                        Al registrarte en nuestra lista de espera, completar el quiz o utilizar cualquier
+                        funcionalidad del sitio, confirmás que has leído, entendido y aceptado estos términos
+                        y condiciones, así como nuestra Política de Privacidad.
+                    </p>
+                </section>
+
+                <!-- Descripción del servicio -->
+                <section>
+                    <h2 class="text-2xl font-bold text-forest-700 mb-4" data-i18n="terms_s3_title">3. Descripción del servicio</h2>
+                    <p class="text-earth-700 leading-relaxed mb-4" data-i18n="terms_s3_text">
+                        TERRApp es una aplicación en desarrollo destinada a asistir a personas interesadas
+                        en agricultura urbana en Sudamérica. Actualmente ofrecemos:
+                    </p>
+                    <ul class="list-disc list-inside text-earth-700 space-y-2 ml-4">
+                        <li data-i18n="terms_s3_item1">Lista de espera para acceso anticipado</li>
+                        <li data-i18n="terms_s3_item2">Quiz interactivo de perfil de huertero/a</li>
+                        <li data-i18n="terms_s3_item3">Información sobre el proyecto y sus funcionalidades</li>
+                        <li data-i18n="terms_s3_item4">Comunicaciones por email sobre novedades</li>
+                    </ul>
+                </section>
+
+                <!-- Registro -->
+                <section>
+                    <h2 class="text-2xl font-bold text-forest-700 mb-4" data-i18n="terms_s4_title">4. Registro y suscripción</h2>
+                    <p class="text-earth-700 leading-relaxed mb-4" data-i18n="terms_s4_text">Al suscribirte a nuestra lista de espera:</p>
+                    <div class="bg-earth-50 rounded-lg p-4 space-y-2">
+                        <p class="text-earth-700" data-i18n="terms_s4_item1">• Debés proporcionar una dirección de email válida</p>
+                        <p class="text-earth-700" data-i18n="terms_s4_item2">• Aceptás recibir comunicaciones relacionadas con TERRApp</p>
+                        <p class="text-earth-700" data-i18n="terms_s4_item3">• Podés cancelar tu suscripción en cualquier momento</p>
+                        <p class="text-earth-700" data-i18n="terms_s4_item4">• La suscripción es gratuita y no genera obligación de compra</p>
+                    </div>
+                </section>
+
+                <!-- Obligaciones del usuario -->
+                <section>
+                    <h2 class="text-2xl font-bold text-forest-700 mb-4" data-i18n="terms_s5_title">5. Obligaciones del usuario</h2>
+                    <p class="text-earth-700 leading-relaxed mb-4" data-i18n="terms_s5_text">Al utilizar nuestro sitio, te comprometés a:</p>
+                    <ul class="list-disc list-inside text-earth-700 space-y-2 ml-4">
+                        <li data-i18n="terms_s5_item1">No proporcionar información falsa o engañosa</li>
+                        <li data-i18n="terms_s5_item2">No utilizar el sitio para fines ilegales o no autorizados</li>
+                        <li data-i18n="terms_s5_item3">No intentar acceder a áreas restringidas del sistema</li>
+                        <li data-i18n="terms_s5_item4">Respetar los derechos de propiedad intelectual</li>
+                    </ul>
+                </section>
+
+                <!-- Propiedad intelectual -->
+                <section>
+                    <h2 class="text-2xl font-bold text-forest-700 mb-4" data-i18n="terms_s6_title">6. Propiedad intelectual</h2>
+                    <p class="text-earth-700 leading-relaxed" data-i18n="terms_s6_text">
+                        Todo el contenido del sitio web, incluyendo pero no limitado a textos, gráficos,
+                        logotipos, imágenes, videos y software, es propiedad de VERUMax o sus licenciantes
+                        y está protegido por las leyes de propiedad intelectual. No está permitida la
+                        reproducción, distribución o modificación sin autorización expresa.
+                    </p>
+                </section>
+
+                <!-- Limitación de responsabilidad -->
+                <section>
+                    <h2 class="text-2xl font-bold text-forest-700 mb-4" data-i18n="terms_s7_title">7. Limitación de responsabilidad</h2>
+                    <div class="bg-forest-50 rounded-lg p-4 border border-forest-200">
+                        <p class="text-earth-700 leading-relaxed" data-i18n="terms_s7_text">
+                            TERRApp se proporciona "tal cual" y "según disponibilidad". No garantizamos que el
+                            servicio sea ininterrumpido o libre de errores. No seremos responsables por daños
+                            directos, indirectos, incidentales o consecuentes que resulten del uso o la
+                            imposibilidad de uso del servicio.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Modificaciones -->
+                <section>
+                    <h2 class="text-2xl font-bold text-forest-700 mb-4" data-i18n="terms_s8_title">8. Modificaciones</h2>
+                    <p class="text-earth-700 leading-relaxed" data-i18n="terms_s8_text">
+                        Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios
+                        entrarán en vigor inmediatamente después de su publicación en el sitio. El uso continuado
+                        del servicio después de cualquier modificación constituye la aceptación de los nuevos términos.
+                    </p>
+                </section>
+
+                <!-- Ley aplicable -->
+                <section>
+                    <h2 class="text-2xl font-bold text-forest-700 mb-4" data-i18n="terms_s9_title">9. Ley aplicable</h2>
+                    <p class="text-earth-700 leading-relaxed" data-i18n="terms_s9_text">
+                        Estos términos se rigen por las leyes de la República Argentina. Cualquier disputa
+                        relacionada con estos términos será sometida a la jurisdicción de los tribunales
+                        ordinarios de la Ciudad Autónoma de Buenos Aires, Argentina.
+                    </p>
+                </section>
+
+                <!-- Contacto -->
+                <section>
+                    <h2 class="text-2xl font-bold text-forest-700 mb-4" data-i18n="terms_s10_title">10. Contacto</h2>
+                    <p class="text-earth-700 leading-relaxed mb-4" data-i18n="terms_s10_text">
+                        Si tenés preguntas sobre estos términos y condiciones, podés contactarnos:
+                    </p>
+                    <div class="bg-forest-50 rounded-lg p-6 border border-forest-200">
+                        <p class="text-earth-800 font-semibold mb-2">TERRApp - VERUMax</p>
+                        <p class="text-earth-700" data-i18n="terms_contact_coop">Impulsada por la Cooperativa de Trabajo Liberté Ltda.</p>
+                        <p class="text-earth-700 mt-2">
+                            Email: <a href="mailto:terrapp@verumax.com" class="text-forest-600 hover:underline">terrapp@verumax.com</a>
+                        </p>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-earth-800 text-earth-200 py-8 mt-12">
+        <div class="container mx-auto px-4 sm:px-6 text-center">
+            <p class="text-sm" data-i18n="footer_copyright">
+                © 2026 TERRApp - Una solución de VERUMax, impulsada por la Cooperativa de Trabajo Liberté Ltda.
+            </p>
+            <div class="mt-4 flex justify-center gap-6 text-sm">
+                <a href="privacy.html" class="text-earth-400 hover:text-white" data-i18n="footer_privacy">Política de Privacidad</a>
+                <a href="terms.html" class="text-forest-300 hover:text-white" data-i18n="footer_terms">Términos y Condiciones</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- i18n Script -->
+    <script src="assets/js/i18n.js"></script>
+    <script>
+        // Language Menu Toggle
+        const langToggle = document.getElementById('langToggle');
+        const langMenu = document.getElementById('langMenu');
+        const langOptions = document.getElementById('langOptions');
+
+        // Build language options
+        function buildLangOptions() {
+            langOptions.innerHTML = '';
+            Object.entries(TERRAPP_I18N.languages).forEach(([code, lang]) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full px-4 py-2 text-left hover:bg-earth-50 flex items-center gap-3 transition-colors';
+                btn.innerHTML = `
+                    <span class="fi fi-${lang.flag}"></span>
+                    <span class="text-sm">${lang.name}</span>
+                `;
+                btn.addEventListener('click', () => {
+                    setLanguage(code);
+                    langMenu.classList.add('hidden');
+                });
+                langOptions.appendChild(btn);
+            });
+        }
+
+        // Set language
+        function setLanguage(langCode) {
+            const lang = TERRAPP_I18N.languages[langCode];
+            if (!lang) return;
+
+            // Update flag and name
+            document.getElementById('currentFlag').className = `fi fi-${lang.flag}`;
+            document.getElementById('currentLangName').textContent = lang.name;
+
+            // Update HTML lang attribute
+            document.documentElement.lang = langCode.split('_')[0];
+            document.documentElement.dataset.lang = langCode;
+
+            // Translate all elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.dataset.i18n;
+                const translation = TERRAPP_I18N.translations[langCode]?.[key] ||
+                                   TERRAPP_I18N.translations['es_AR']?.[key] ||
+                                   el.textContent;
+                el.textContent = translation;
+            });
+
+            // Save preference
+            localStorage.setItem('terrapp_lang', langCode);
+        }
+
+        // Toggle menu
+        langToggle.addEventListener('click', () => {
+            langMenu.classList.toggle('hidden');
+        });
+
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+            if (!langToggle.contains(e.target) && !langMenu.contains(e.target)) {
+                langMenu.classList.add('hidden');
+            }
+        });
+
+        // Initialize
+        buildLangOptions();
+        const savedLang = localStorage.getItem('terrapp_lang') || 'es_AR';
+        setLanguage(savedLang);
+    </script>
+
+</body>
+</html>
