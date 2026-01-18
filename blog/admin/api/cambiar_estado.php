@@ -72,6 +72,13 @@ try {
             $mensaje .= ". Se generaron {$traduccionesGeneradas} traducciones.";
         }
 
+        // Exportar JSON y RSS automáticamente al publicar
+        if ($estado === 'publicado') {
+            exportarArticulosJSON();
+            generarRSSFeed();
+            $mensaje .= " JSON y RSS actualizados.";
+        }
+
         $response = [
             'success' => true,
             'message' => $mensaje,
