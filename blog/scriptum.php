@@ -19,10 +19,10 @@ $canonicalUrl = 'https://terrapp.verumax.com/blog/scriptum.php';
 // Cargar artículo desde JSON
 $jsonPath = __DIR__ . '/data/articulos.json';
 if (file_exists($jsonPath)) {
-    $articulos = json_decode(file_get_contents($jsonPath), true);
+    $data = json_decode(file_get_contents($jsonPath), true);
 
-    if ($articulos) {
-        foreach ($articulos as $art) {
+    if ($data && isset($data['articulos'])) {
+        foreach ($data['articulos'] as $art) {
             if (($titulus && $art['slug'] === $titulus) || ($id && $art['id'] == $id)) {
                 $article = $art;
                 break;
