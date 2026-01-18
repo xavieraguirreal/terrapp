@@ -3,6 +3,13 @@
  * TERRApp Blog - Panel de Administración
  */
 
+require_once __DIR__ . '/includes/auth.php';
+
+// Verificar acceso
+if (!verificarAcceso()) {
+    mostrarAccesoDenegado();
+}
+
 require_once __DIR__ . '/includes/functions.php';
 
 // Obtener datos

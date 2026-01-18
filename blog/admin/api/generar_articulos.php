@@ -6,6 +6,9 @@
 
 header('Content-Type: application/json; charset=utf-8');
 
+require_once __DIR__ . '/../includes/auth.php';
+verificarAccesoAPI();
+
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/TavilyClient.php';
 require_once __DIR__ . '/../includes/OpenAIClient.php';
