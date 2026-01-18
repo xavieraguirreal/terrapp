@@ -485,8 +485,14 @@ function obtenerArticuloPorSlug(string $slug): ?array {
 
 /**
  * Cambia el estado de un artículo
+ * Cuando se aprueba, se PROGRAMA automáticamente (no publica inmediato)
+ *
+ * @param int $id ID del artículo
+ * @param string $estado Estado destino: 'publicado' (se programa), 'rechazado', 'borrador'
+ * @param bool $saltearCriterio Si es true, no actualiza contador regional
+ * @param bool $publicarAhora Si es true, publica inmediatamente sin programar
  */
-function cambiarEstadoArticulo(int $id, string $estado, bool $saltearCriterio = false): bool {
+function cambiarEstadoArticulo(int $id, string $estado, bool $saltearCriterio = false, bool $publicarAhora = false): bool {
     $pdo = getConnection();
     $articulo = obtenerArticulo($id);
 
@@ -498,13 +504,35 @@ function cambiarEstadoArticulo(int $id, string $estado, bool $saltearCriterio = 
             actualizarContadorRegional($articulo['region']);
         }
 
-        $stmt = $pdo->prepare("UPDATE blog_articulos SET estado = ?, fecha_publicacion = NOW() WHERE id = ?");
-        $stmt->execute([$estado, $id]);
+        if ($publicarAhora) {
+            // Publicar inmediatamente (sin cola de programación)
+            $stmt = $pdo->prepare("
+                UPDATE blog_articulos
+                SET estado = 'publicado', fecha_publicacion = NOW(), fecha_programada = NULL
+                WHERE id = ?
+            ");
+            $stmt->execute([$id]);
+        } else {
+            // Programar para la próxima fecha disponible
+            $fechaProgramada = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS ?? 2);
 
-        // Exportar JSON automáticamente
+            $stmt = $pdo->prepare("
+                UPDATE blog_articulos
+                SET estado = 'programado', fecha_programada = ?
+                WHERE id = ?
+            ");
+            $stmt->execute([$fechaProgramada, $id]);
+        }
+
+        // Exportar JSON (incluye solo los que ya cumplieron su fecha)
         exportarArticulosJSON();
     } else {
-        $stmt = $pdo->prepare("UPDATE blog_articulos SET estado = ?, fecha_publicacion = NULL WHERE id = ?");
+        // Rechazado o borrador
+        $stmt = $pdo->prepare("
+            UPDATE blog_articulos
+            SET estado = ?, fecha_publicacion = NULL, fecha_programada = NULL
+            WHERE id = ?
+        ");
         $stmt->execute([$estado, $id]);
     }
 
@@ -928,4 +956,87 @@ function toggleSitioPreferido(int $id): bool {
     $pdo = getConnection();
     $stmt = $pdo->prepare("UPDATE blog_sitios_preferidos SET activo = NOT activo WHERE id = ?");
     return $stmt->execute([$id]);
+}
+
+// ============================================
+// FUNCIONES DE PUBLICACIÓN PROGRAMADA
+// ============================================
+
+/**
+ * Calcula la próxima fecha de publicación disponible
+ * Busca la última fecha (publicada o programada) y suma el intervalo
+ *
+ * @param int $intervaloHoras Horas entre publicaciones (default 2)
+ * @return string Fecha ISO 8601 de próxima publicación
+ */
+function calcularProximaFechaPublicacion(int $intervaloHoras = 2): string {
+    $pdo = getConnection();
+
+    // Buscar la última fecha de publicación o programada
+    $stmt = $pdo->query("
+        SELECT
+            GREATEST(
+                COALESCE(MAX(fecha_publicacion), '1970-01-01'),
+                COALESCE(MAX(fecha_programada), '1970-01-01')
+            ) as ultima_fecha
+        FROM blog_articulos
+        WHERE estado IN ('publicado', 'programado')
+    ");
+
+    $resultado = $stmt->fetch();
+    $ultimaFecha = $resultado['ultima_fecha'] ?? null;
+
+    // Si no hay artículos previos o la fecha es muy antigua, usar ahora
+    if (!$ultimaFecha || strtotime($ultimaFecha) < strtotime('-1 year')) {
+        return date('Y-m-d H:i:s');
+    }
+
+    // Calcular próxima fecha sumando el intervalo
+    $proximaFecha = date('Y-m-d H:i:s', strtotime($ultimaFecha . " + {$intervaloHoras} hours"));
+
+    // Si la próxima fecha ya pasó, usar ahora
+    if (strtotime($proximaFecha) < time()) {
+        return date('Y-m-d H:i:s');
+    }
+
+    return $proximaFecha;
+}
+
+/**
+ * Obtiene artículos programados pendientes de publicar
+ */
+function obtenerArticulosProgramados(): array {
+    $pdo = getConnection();
+    $stmt = $pdo->query("
+        SELECT * FROM blog_articulos
+        WHERE estado = 'programado'
+        ORDER BY fecha_programada ASC
+    ");
+    return $stmt->fetchAll();
+}
+
+/**
+ * Publica artículos programados cuya fecha ya pasó
+ * (para llamar desde cron o al cargar el admin)
+ */
+function publicarProgramadosVencidos(): int {
+    $pdo = getConnection();
+
+    // Actualizar artículos cuya fecha programada ya pasó
+    $stmt = $pdo->prepare("
+        UPDATE blog_articulos
+        SET estado = 'publicado', fecha_publicacion = fecha_programada
+        WHERE estado = 'programado'
+          AND fecha_programada <= NOW()
+    ");
+    $stmt->execute();
+
+    $actualizados = $stmt->rowCount();
+
+    // Si hubo cambios, regenerar el JSON
+    if ($actualizados > 0) {
+        exportarArticulosJSON();
+    }
+
+    return $actualizados;
 }

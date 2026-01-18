@@ -354,12 +354,28 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
                     <p id="totalShares" class="text-sm text-gray-500 mt-3"></p>
                 </div>
 
-                <!-- Source -->
-                <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 mb-8">
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                        <span class="font-semibold">📰 <span data-i18n="source">Fuente</span>:</span>
-                        <span id="sourceName"></span> -
-                        <a id="sourceLink" href="#" target="_blank" class="text-forest-600 hover:underline" data-i18n="view_original">Ver original</a>
+                <!-- Source Attribution - Legal Notice -->
+                <div class="bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-800/80 border-l-4 border-gray-400 dark:border-gray-600 rounded-r-xl p-5 mb-8">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 font-semibold" data-i18n="source_attribution">
+                        Atribución de fuente
+                    </p>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-3" data-i18n="source_notice">
+                        Este artículo fue elaborado a partir de información publicada originalmente por:
+                    </p>
+                    <div class="flex items-center gap-3 bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                        <span class="text-2xl">📰</span>
+                        <div class="flex-1">
+                            <p id="sourceName" class="font-bold text-gray-800 dark:text-gray-200"></p>
+                            <a id="sourceLink" href="#" target="_blank" rel="noopener" class="text-forest-600 hover:text-forest-700 dark:text-forest-400 hover:underline text-sm flex items-center gap-1">
+                                <span data-i18n="view_original_article">Ver artículo original</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-3 italic" data-i18n="source_disclaimer">
+                        TERRApp respeta los derechos de autor. El contenido original pertenece a sus respectivos propietarios.
                     </p>
                 </div>
 

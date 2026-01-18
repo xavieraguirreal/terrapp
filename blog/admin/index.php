@@ -12,13 +12,18 @@ if (!verificarAcceso()) {
 
 require_once __DIR__ . '/includes/functions.php';
 
+// Publicar artículos programados cuya fecha ya pasó
+$publicadosVencidos = publicarProgramadosVencidos();
+
 // Obtener datos
 $estadisticas = obtenerEstadisticas();
 $borradores = obtenerArticulos('borrador', 20);
+$programados = obtenerArticulosProgramados();
 $publicados = obtenerArticulos('publicado', 10);
 $contadorRegional = obtenerContadorRegional();
 $pendientes = contarPendientes();
 $regionSugerida = sugerirRegion();
+$proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
 
 ?>
 <!DOCTYPE html>
@@ -77,14 +82,29 @@ $regionSugerida = sugerirRegion();
     </header>
 
     <main class="container mx-auto px-4 py-8">
+        <?php if ($publicadosVencidos > 0): ?>
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            ✅ Se publicaron automáticamente <?= $publicadosVencidos ?> artículo(s) programado(s)
+        </div>
+        <?php endif; ?>
+
         <!-- Estadísticas -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
             <div class="card">
                 <div class="flex items-center gap-3">
                     <span class="text-3xl">📝</span>
                     <div>
                         <p class="text-2xl font-bold text-forest-600"><?= $estadisticas['total_borradores'] ?? 0 ?></p>
                         <p class="text-sm text-gray-500">Borradores</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">⏰</span>
+                    <div>
+                        <p class="text-2xl font-bold text-orange-600"><?= count($programados) ?></p>
+                        <p class="text-sm text-gray-500">Programados</p>
                     </div>
                 </div>
             </div>
@@ -114,6 +134,20 @@ $regionSugerida = sugerirRegion();
                         <p class="text-2xl font-bold text-forest-600"><?= $pendientes ?></p>
                         <p class="text-sm text-gray-500">Pendientes (cache)</p>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Próxima publicación -->
+        <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-6">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">⏰</span>
+                <div>
+                    <p class="text-sm text-orange-700">
+                        <strong>Próxima publicación programada:</strong>
+                        <?= date('d/m/Y H:i', strtotime($proximaFecha)) ?>
+                        (intervalo: <?= INTERVALO_PUBLICACION_HORAS ?> horas)
+                    </p>
                 </div>
             </div>
         </div>
@@ -166,6 +200,47 @@ $regionSugerida = sugerirRegion();
             </div>
             <div id="resultado" class="mt-4 hidden p-4 rounded-lg"></div>
         </div>
+
+        <!-- Artículos programados -->
+        <?php if (!empty($programados)): ?>
+        <div class="card mb-8">
+            <h2 class="text-lg font-bold mb-4">⏰ Artículos programados (<?= count($programados) ?>)</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="text-left py-2 px-3">Título</th>
+                            <th class="text-left py-2 px-3">Región</th>
+                            <th class="text-left py-2 px-3">Fecha programada</th>
+                            <th class="text-right py-2 px-3">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($programados as $art): ?>
+                        <tr class="border-b hover:bg-orange-50">
+                            <td class="py-3 px-3">
+                                <span class="font-medium"><?= htmlspecialchars(mb_substr($art['titulo'], 0, 50)) ?>...</span>
+                            </td>
+                            <td class="py-3 px-3">
+                                <?= $art['region'] === 'sudamerica' ? '🌎' : '🌐' ?>
+                            </td>
+                            <td class="py-3 px-3">
+                                <span class="text-sm text-orange-600 font-medium">
+                                    <?= date('d/m/Y H:i', strtotime($art['fecha_programada'])) ?>
+                                </span>
+                            </td>
+                            <td class="py-3 px-3 text-right">
+                                <button onclick="publicarAhora(<?= $art['id'] ?>)" class="text-green-600 hover:text-green-700 text-sm" title="Publicar ahora">
+                                    🚀 Publicar ya
+                                </button>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <?php endif; ?>
 
         <!-- Borradores pendientes -->
         <div class="card mb-8">
@@ -350,7 +425,7 @@ $regionSugerida = sugerirRegion();
         }
 
         function aprobar(id) {
-            if (confirm('¿Aprobar y publicar este artículo?\n\nSe generarán traducciones a PT, EN, FR, NL automáticamente.')) {
+            if (confirm('¿Aprobar y PROGRAMAR este artículo?\n\nSe programará para: <?= date('d/m/Y H:i', strtotime($proximaFecha)) ?>\nSe generarán traducciones a PT, EN, FR, NL automáticamente.')) {
                 cambiarEstado(id, 'publicado');
             }
         }
@@ -358,6 +433,28 @@ $regionSugerida = sugerirRegion();
         function rechazar(id) {
             if (confirm('¿Rechazar este artículo?')) {
                 cambiarEstado(id, 'rechazado', false);
+            }
+        }
+
+        async function publicarAhora(id) {
+            if (!confirm('¿Publicar AHORA este artículo?\n\nSe saltará la cola de programación.')) return;
+
+            try {
+                const response = await fetch('api/cambiar_estado.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, estado: 'publicado', publicar_ahora: true })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ Artículo publicado');
+                    location.reload();
+                } else {
+                    alert(data.error || 'Error al publicar');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
             }
         }
 

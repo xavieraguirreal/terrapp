@@ -443,8 +443,13 @@ function renderArticle(art) {
             </div>`;
     }
 
-    // Contenido
-    document.getElementById('articleBody').innerHTML = formatContent(traducido.contenido);
+    // Contenido - con fuente al inicio
+    const fuenteHeader = art.fuente_nombre
+        ? `<p class="text-sm text-gray-500 dark:text-gray-400 italic mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+               <span class="font-semibold not-italic text-gray-700 dark:text-gray-300">${escapeHtml(art.fuente_nombre)}:</span>
+           </p>`
+        : '';
+    document.getElementById('articleBody').innerHTML = fuenteHeader + formatContent(traducido.contenido);
 
     // Opinión editorial
     document.getElementById('editorialContent').innerHTML = formatContent(traducido.opinion_editorial || '');

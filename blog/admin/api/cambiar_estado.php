@@ -20,6 +20,7 @@ try {
     $estado = $input['estado'] ?? '';
     $saltearCriterio = isset($input['saltear_criterio']) ? (bool)$input['saltear_criterio'] : false;
     $generarTraducciones = isset($input['generar_traducciones']) ? (bool)$input['generar_traducciones'] : true;
+    $publicarAhora = isset($input['publicar_ahora']) ? (bool)$input['publicar_ahora'] : false;
 
     // Validar
     if ($id <= 0) {
@@ -63,17 +64,29 @@ try {
         }
     }
 
-    // Cambiar estado
-    $resultado = cambiarEstadoArticulo($id, $estado, $saltearCriterio);
+    // Cambiar estado (pasar publicarAhora para saltear la programación)
+    $resultado = cambiarEstadoArticulo($id, $estado, $saltearCriterio, $publicarAhora);
 
     if ($resultado) {
-        $mensaje = "Estado cambiado a '{$estado}'";
+        // Obtener el artículo actualizado para ver su estado final
+        $articuloActualizado = obtenerArticulo($id);
+        $estadoFinal = $articuloActualizado['estado'] ?? $estado;
+
+        if ($estadoFinal === 'programado') {
+            $fechaProg = $articuloActualizado['fecha_programada'] ?? '';
+            $mensaje = "Artículo PROGRAMADO para " . date('d/m/Y H:i', strtotime($fechaProg));
+        } elseif ($estadoFinal === 'publicado') {
+            $mensaje = "Artículo PUBLICADO";
+        } else {
+            $mensaje = "Estado cambiado a '{$estadoFinal}'";
+        }
+
         if ($traduccionesGeneradas > 0) {
             $mensaje .= ". Se generaron {$traduccionesGeneradas} traducciones.";
         }
 
-        // Exportar JSON y RSS automáticamente al publicar
-        if ($estado === 'publicado') {
+        // Exportar JSON y RSS automáticamente
+        if ($estadoFinal === 'publicado' || $estadoFinal === 'programado') {
             exportarArticulosJSON();
             generarRSSFeed();
             $mensaje .= " JSON y RSS actualizados.";
@@ -82,8 +95,13 @@ try {
         $response = [
             'success' => true,
             'message' => $mensaje,
-            'traducciones_generadas' => $traduccionesGeneradas
+            'traducciones_generadas' => $traduccionesGeneradas,
+            'estado_final' => $estadoFinal
         ];
+
+        if ($estadoFinal === 'programado' && isset($articuloActualizado['fecha_programada'])) {
+            $response['fecha_programada'] = $articuloActualizado['fecha_programada'];
+        }
 
         if (!empty($erroresTraducciones)) {
             $response['errores_traducciones'] = $erroresTraducciones;
