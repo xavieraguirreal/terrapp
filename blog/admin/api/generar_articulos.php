@@ -15,6 +15,9 @@ require_once __DIR__ . '/../includes/OpenAIClient.php';
 require_once __DIR__ . '/../includes/EmailNotifier.php';
 
 try {
+    $debug = [];
+    $debug['inicio'] = date('H:i:s');
+
     $tavily = new TavilyClient(TAVILY_API_KEY);
     $openai = new OpenAIClient(OPENAI_API_KEY, OPENAI_MODEL);
     $emailNotifier = new EmailNotifier();
@@ -24,48 +27,62 @@ try {
 
     // Verificar si hay pendientes en cache
     $pendientesDisponibles = contarPendientes();
+    $debug['pendientes_inicial'] = $pendientesDisponibles;
 
     if ($pendientesDisponibles < 5) {
         // Buscar nuevas noticias con Tavily
         $topics = SEARCH_TOPICS;
         shuffle($topics);
         $topicsSeleccionados = array_slice($topics, 0, 3);
+        $debug['topics_buscados'] = $topicsSeleccionados;
 
         $todasLasCandidatas = [];
 
         foreach ($topicsSeleccionados as $topic) {
             try {
                 $resultados = $tavily->search($topic, 5);
+                $debug['tavily_' . substr($topic, 0, 20)] = count($resultados) . ' resultados';
                 foreach ($resultados as $r) {
                     $todasLasCandidatas[] = $r;
                 }
             } catch (Exception $e) {
                 $errores[] = "Error buscando '{$topic}': " . $e->getMessage();
+                $debug['tavily_error_' . substr($topic, 0, 20)] = $e->getMessage();
             }
         }
+
+        $debug['total_candidatas'] = count($todasLasCandidatas);
 
         // Guardar candidatas en cache
         if (!empty($todasLasCandidatas)) {
             $guardadas = guardarCandidatasPendientes($todasLasCandidatas);
+            $debug['candidatas_guardadas'] = $guardadas;
             $pendientesDisponibles = contarPendientes();
+            $debug['pendientes_despues_guardar'] = $pendientesDisponibles;
         }
     }
 
     // Procesar hasta 3 pendientes
     $procesadas = 0;
     $maxProcesar = 3;
+    $debug['procesamiento'] = [];
 
     while ($procesadas < $maxProcesar) {
         $pendiente = obtenerPendiente();
 
         if (!$pendiente) {
+            $debug['procesamiento'][] = 'No hay más pendientes';
             break;
         }
+
+        $debugItem = ['url' => substr($pendiente['url'], 0, 50)];
 
         try {
             // Verificar URL no procesada
             if (urlYaProcesada($pendiente['url'])) {
                 marcarPendienteUsada($pendiente['id']);
+                $debugItem['resultado'] = 'URL ya procesada';
+                $debug['procesamiento'][] = $debugItem;
                 continue;
             }
 
@@ -73,34 +90,45 @@ try {
             if (!empty($pendiente['titulo']) && tituloEsSimilar($pendiente['titulo'])) {
                 marcarPendienteUsada($pendiente['id']);
                 registrarUrl($pendiente['url']);
+                $debugItem['resultado'] = 'Título similar existente';
+                $debug['procesamiento'][] = $debugItem;
                 continue;
             }
 
             // Obtener contenido completo si es necesario
             $contenido = $pendiente['contenido'];
+            $debugItem['contenido_inicial'] = strlen($contenido ?? '') . ' chars';
+
             if (empty($contenido) || strlen($contenido) < 500) {
                 try {
                     $extracted = $tavily->extract($pendiente['url']);
                     if ($extracted && !empty($extracted['raw_content'])) {
                         $contenido = $extracted['raw_content'];
+                        $debugItem['contenido_extraido'] = strlen($contenido) . ' chars';
                     }
                 } catch (Exception $e) {
-                    // Usar contenido parcial
+                    $debugItem['extract_error'] = $e->getMessage();
                 }
             }
 
             if (empty($contenido) || strlen($contenido) < 200) {
                 marcarPendienteUsada($pendiente['id']);
+                $debugItem['resultado'] = 'Contenido muy corto: ' . strlen($contenido ?? '');
+                $debug['procesamiento'][] = $debugItem;
                 continue;
             }
 
             // Validar relevancia con OpenAI
             $titulo = $pendiente['titulo'] ?? '';
+            $debugItem['validando_relevancia'] = true;
             if (!$openai->validarRelevancia($titulo, $contenido)) {
                 marcarPendienteUsada($pendiente['id']);
                 registrarUrl($pendiente['url']);
+                $debugItem['resultado'] = 'No relevante (OpenAI)';
+                $debug['procesamiento'][] = $debugItem;
                 continue;
             }
+            $debugItem['relevancia'] = 'OK';
 
             // Detectar región
             $regionInfo = $openai->detectarRegionYPais($pendiente['url'], $contenido);
@@ -147,12 +175,18 @@ try {
 
             $articulosGenerados++;
             $procesadas++;
+            $debugItem['resultado'] = 'GUARDADO OK - ID: ' . $articuloId;
+            $debug['procesamiento'][] = $debugItem;
 
         } catch (Exception $e) {
             marcarPendienteUsada($pendiente['id']);
             $errores[] = "Error procesando noticia: " . $e->getMessage();
+            $debugItem['resultado'] = 'ERROR: ' . $e->getMessage();
+            $debug['procesamiento'][] = $debugItem;
         }
     }
+
+    $debug['fin'] = date('H:i:s');
 
     $mensaje = "Se generaron {$articulosGenerados} artículo(s).";
     if ($pendientesDisponibles > 0) {
@@ -167,7 +201,8 @@ try {
         'message' => $mensaje,
         'articulos_generados' => $articulosGenerados,
         'pendientes_restantes' => contarPendientes(),
-        'errores' => $errores
+        'errores' => $errores,
+        'debug' => $debug
     ], JSON_UNESCAPED_UNICODE);
 
 } catch (Exception $e) {

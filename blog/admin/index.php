@@ -253,19 +253,48 @@ $regionSugerida = sugerirRegion();
             resultado.classList.remove('hidden', 'bg-green-100', 'bg-red-100');
 
             try {
+                console.log('🚀 Iniciando generación de artículos...');
                 const response = await fetch('api/generar_articulos.php', {
                     method: 'POST'
                 });
                 const data = await response.json();
 
+                // Debug en consola
+                console.log('📊 Respuesta completa:', data);
+                if (data.debug) {
+                    console.log('🔍 DEBUG INFO:');
+                    console.log('  - Inicio:', data.debug.inicio);
+                    console.log('  - Pendientes inicial:', data.debug.pendientes_inicial);
+                    console.log('  - Topics buscados:', data.debug.topics_buscados);
+                    console.log('  - Total candidatas:', data.debug.total_candidatas);
+                    console.log('  - Candidatas guardadas:', data.debug.candidatas_guardadas);
+                    console.log('  - Pendientes después:', data.debug.pendientes_despues_guardar);
+                    console.log('  - Procesamiento:', data.debug.procesamiento);
+                    console.log('  - Fin:', data.debug.fin);
+                }
+                if (data.errores && data.errores.length > 0) {
+                    console.log('❌ Errores:', data.errores);
+                }
+
                 resultado.classList.add(data.success ? 'bg-green-100' : 'bg-red-100');
-                resultado.innerHTML = data.message || data.error || 'Operación completada';
+
+                // Mostrar mensaje más detallado
+                let html = data.message || data.error || 'Operación completada';
+                if (data.debug && data.debug.procesamiento && data.debug.procesamiento.length > 0) {
+                    html += '<br><br><strong>Detalle:</strong><ul class="text-sm mt-2 text-left">';
+                    data.debug.procesamiento.forEach(p => {
+                        html += `<li>• ${p.url}... → ${p.resultado}</li>`;
+                    });
+                    html += '</ul>';
+                }
+                resultado.innerHTML = html;
                 resultado.classList.remove('hidden');
 
-                if (data.success) {
-                    setTimeout(() => location.reload(), 2000);
+                if (data.success && data.articulos_generados > 0) {
+                    setTimeout(() => location.reload(), 3000);
                 }
             } catch (error) {
+                console.error('💥 Error:', error);
                 resultado.classList.add('bg-red-100');
                 resultado.innerHTML = 'Error de conexión: ' + error.message;
                 resultado.classList.remove('hidden');
