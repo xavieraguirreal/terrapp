@@ -47,36 +47,47 @@ class OpenAIClient {
     public ?string $ultimaRespuestaValidacion = null;
 
     /**
-     * Valida si una noticia es relevante para agricultura urbana
-     * TEMPORALMENTE DESACTIVADO - acepta todo porque gpt-4o-mini está fallando
-     * TODO: Revisar por qué el modelo rechaza todo
+     * Valida si una noticia es relevante para agricultura urbana/huertos
      */
     public function validarRelevancia(string $titulo, string $contenido): bool {
-        // Validación desactivada temporalmente - los topics de Tavily ya filtran
-        // El admin puede rechazar manualmente lo que no sea relevante
-        $this->ultimaRespuestaValidacion = "VALIDATION_DISABLED";
-        return true;
+        $textoAnalizar = $titulo . "\n\n" . mb_substr($contenido, 0, 600);
 
-        /* CÓDIGO ORIGINAL - DESCOMENTAR CUANDO SE ARREGLE
-        $prompt = "Is this article about PLANTS, GARDENING, FARMING, VEGETABLES, or URBAN AGRICULTURE?
+        $prompt = <<<PROMPT
+Analiza si este artículo es RELEVANTE para un blog sobre AGRICULTURA URBANA y HUERTOS.
 
-TITLE: {$titulo}
+TEXTO:
+{$textoAnalizar}
 
-CONTENT (first 400 chars):
-" . mb_substr($contenido, 0, 400) . "
+CRITERIOS DE RELEVANCIA (debe cumplir AL MENOS UNO):
+- Habla de cultivo de plantas, hortalizas, verduras, frutas, hierbas
+- Habla de huertos, jardines, agricultura, siembra, cosecha
+- Habla de compostaje, abono, fertilizantes naturales, tierra, suelo
+- Habla de riego, plagas, enfermedades de plantas
+- Habla de agricultura urbana, huertos comunitarios, huertos en balcones
+- Habla de agroecología, permacultura, producción orgánica
+- Habla de semillas, plantines, invernaderos
+- Habla de seguridad/soberanía alimentaria relacionada con producción de alimentos
 
-Answer ONLY 'YES' or 'NO'.
-YES = about plants, gardens, crops, seeds, farming, vegetables, herbs, composting, soil
-NO = not related to plants/agriculture (politics, sports, movies, celebrities, crime)
+NO ES RELEVANTE si:
+- Es solo sobre política, economía o burocracia gubernamental sin relación con agricultura
+- Es sobre deportes, entretenimiento, crimen
+- Es sobre ganadería o industria alimentaria (sin cultivo)
+- Menciona "agrario" o "rural" pero no habla de cultivos ni plantas
 
-Be INCLUSIVE: if in doubt, answer YES.";
+Responde SOLO con una palabra: SI o NO
+PROMPT;
 
-        $response = $this->chatSimple($prompt, 10);
-        $this->ultimaRespuestaValidacion = $response;
-        $respuesta = strtoupper(trim($response));
+        try {
+            $response = $this->chatSimple($prompt, 10);
+            $this->ultimaRespuestaValidacion = trim($response);
+            $respuesta = strtoupper(trim($response));
 
-        return strpos($respuesta, 'YES') !== false || strpos($respuesta, 'SI') !== false;
-        */
+            return $respuesta === 'SI' || $respuesta === 'SÍ' || $respuesta === 'YES';
+        } catch (Exception $e) {
+            // Si falla la API, aceptar para revisión manual
+            $this->ultimaRespuestaValidacion = "API_ERROR: " . $e->getMessage();
+            return true;
+        }
     }
 
     /**

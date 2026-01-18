@@ -60,10 +60,17 @@ class TavilyClient {
         $resultados = [];
         $urlsVistas = [];
 
+        // Keywords de agricultura para reforzar búsqueda en sitios preferidos
+        $keywordsAgro = ['agricultura', 'huerta', 'cultivo', 'siembra', 'horticultura'];
+
         // 1. Primero buscar en sitios preferidos (si hay)
         if (!empty($sitiosPreferidos)) {
             try {
-                $resultadosPreferidos = $this->search($query, 3, $sitiosPreferidos);
+                // Reforzar el query con keywords de agricultura para sitios preferidos
+                // Esto evita traer noticias de gobierno que no son de agricultura
+                $queryReforzado = $query . ' ' . $keywordsAgro[array_rand($keywordsAgro)];
+
+                $resultadosPreferidos = $this->search($queryReforzado, 3, $sitiosPreferidos);
                 foreach ($resultadosPreferidos as $r) {
                     $r['_preferido'] = true; // Marcar como de sitio preferido
                     $resultados[] = $r;
