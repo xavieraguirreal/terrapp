@@ -20,7 +20,7 @@ function getIdiomaBase() {
     // Obtener idioma del sistema i18n del blog
     const langFull = (typeof BLOG_I18N !== 'undefined' && BLOG_I18N.currentLang)
         ? BLOG_I18N.currentLang
-        : (document.cookie.match(/terrapp_country=([^;]+)/) || [])[1] || 'es_AR';
+        : (document.cookie.match(/terrapp_lang=([^;]+)/) || [])[1] || 'es_AR';
 
     // Extraer código base (es, pt, en, fr, nl)
     const base = langFull.split('_')[0];
@@ -166,8 +166,11 @@ async function loadArticle(id, slug) {
         articuloActual = articulo;
         renderArticle(articulo);
 
-        // Registrar vista
+        // Registrar vista y actualizar métricas
         registerView(articulo.id);
+
+        // Cargar métricas actualizadas desde BD
+        loadMetrics(articulo.id);
 
         // Cargar relacionados
         loadRelatedArticles(articulo);
@@ -186,20 +189,36 @@ function renderCategories() {
     const container = document.getElementById('categoriesFilter');
     if (!container) return;
 
+    const t = (key) => (typeof BLOG_I18N !== 'undefined') ? BLOG_I18N.t(key) : key;
+
     // Obtener categorías con artículos
     const categoriasConArticulos = new Set(articulos.map(a => a.categoria));
 
     let html = `
         <button onclick="filterByCategory('all')" class="category-btn ${categoriaActual === 'all' ? 'active' : ''} px-4 py-2 rounded-full font-medium transition">
-            Todos
+            ${t('all_categories')}
         </button>
     `;
 
+    // Mapeo de slugs a keys de traducción
+    const catKeyMap = {
+        'huertos-urbanos': 'cat_huertos',
+        'compostaje': 'cat_compostaje',
+        'riego': 'cat_riego',
+        'plantas': 'cat_plantas',
+        'tecnologia': 'cat_tecnologia',
+        'recetas': 'cat_recetas',
+        'comunidad': 'cat_comunidad',
+        'noticias': 'cat_noticias'
+    };
+
     for (const [slug, cat] of Object.entries(CATEGORIAS)) {
         if (categoriasConArticulos.has(slug)) {
+            const catKey = catKeyMap[slug] || 'cat_noticias';
+            const catNombre = t(catKey) || cat.nombre;
             html += `
                 <button onclick="filterByCategory('${slug}')" class="category-btn ${categoriaActual === slug ? 'active' : ''} px-4 py-2 rounded-full font-medium transition">
-                    ${cat.icono} ${cat.nombre}
+                    ${cat.icono} ${catNombre}
                 </button>
             `;
         }
@@ -243,8 +262,25 @@ function renderFeatured() {
     const container = document.getElementById('featuredArticle');
     if (!container || articulos.length === 0) return;
 
+    const t = (key) => (typeof BLOG_I18N !== 'undefined') ? BLOG_I18N.t(key) : key;
+
     const featured = articulos[0];
     const traducido = getArticuloEnIdioma(featured);
+
+    // Traducir categoría
+    const catKeyMap = {
+        'huertos-urbanos': 'cat_huertos',
+        'compostaje': 'cat_compostaje',
+        'riego': 'cat_riego',
+        'plantas': 'cat_plantas',
+        'tecnologia': 'cat_tecnologia',
+        'recetas': 'cat_recetas',
+        'comunidad': 'cat_comunidad',
+        'noticias': 'cat_noticias'
+    };
+    const catKey = catKeyMap[featured.categoria] || 'cat_noticias';
+    const catNombre = t(catKey) || CATEGORIAS[featured.categoria]?.nombre || 'Noticias';
+    const catIcono = CATEGORIAS[featured.categoria]?.icono || '📰';
 
     const imagenHtml = featured.imagen_url
         ? `<img src="${featured.imagen_url}" alt="${escapeHtml(traducido.titulo)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">`
@@ -260,7 +296,7 @@ function renderFeatured() {
             ${featured.imagen_url ? '<div class="absolute inset-0 featured-gradient"></div>' : ''}
             <div class="absolute bottom-0 left-0 right-0 p-6 md:p-10 text-white ${featured.imagen_url ? '' : 'hidden'}">
                 <span class="inline-block px-3 py-1 bg-forest-600 rounded-full text-sm mb-3">
-                    ${CATEGORIAS[featured.categoria]?.icono || '📰'} ${CATEGORIAS[featured.categoria]?.nombre || 'Noticias'}
+                    ${catIcono} ${catNombre}
                 </span>
                 <h2 class="text-2xl md:text-4xl font-bold mb-2 group-hover:text-forest-200 transition">
                     ${escapeHtml(traducido.titulo)}
@@ -275,10 +311,25 @@ function renderFeatured() {
 }
 
 function createArticleCard(art) {
-    const fecha = formatDate(art.fecha_publicacion);
-    const categoria = CATEGORIAS[art.categoria] || { nombre: 'Noticias', icono: '📰' };
+    const fecha = formatDateLocalized(art.fecha_publicacion);
     const isSaved = isInReadingList(art.id);
     const traducido = getArticuloEnIdioma(art);
+    const t = (key) => (typeof BLOG_I18N !== 'undefined') ? BLOG_I18N.t(key) : key;
+
+    // Traducir categoría
+    const catKeyMap = {
+        'huertos-urbanos': 'cat_huertos',
+        'compostaje': 'cat_compostaje',
+        'riego': 'cat_riego',
+        'plantas': 'cat_plantas',
+        'tecnologia': 'cat_tecnologia',
+        'recetas': 'cat_recetas',
+        'comunidad': 'cat_comunidad',
+        'noticias': 'cat_noticias'
+    };
+    const catKey = catKeyMap[art.categoria] || 'cat_noticias';
+    const catNombre = t(catKey) || CATEGORIAS[art.categoria]?.nombre || 'Noticias';
+    const catIcono = CATEGORIAS[art.categoria]?.icono || '📰';
 
     const imagenHtml = art.imagen_url
         ? `<img src="${art.imagen_url}" alt="${escapeHtml(traducido.titulo)}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy">`
@@ -292,13 +343,13 @@ function createArticleCard(art) {
                 <div class="h-48 bg-gray-200 dark:bg-gray-700 relative overflow-hidden">
                     ${imagenHtml}
                     <span class="absolute top-3 left-3 px-2 py-1 bg-white/90 dark:bg-gray-800/90 rounded-full text-xs font-medium">
-                        ${categoria.icono} ${categoria.nombre}
+                        ${catIcono} ${catNombre}
                     </span>
                 </div>
             </a>
             <div class="p-5">
                 <div class="flex items-center justify-between mb-2 text-xs text-gray-500 dark:text-gray-400">
-                    <span>${fecha} • ${art.tiempo_lectura} min</span>
+                    <span>${fecha} • ${art.tiempo_lectura} ${t('min_read')}</span>
                     <span>${art.region === 'sudamerica' ? '🌎' : '🌐'}</span>
                 </div>
                 <a href="scriptum.php?titulus=${art.slug}" class="block">
@@ -359,9 +410,19 @@ function renderArticle(art) {
     document.getElementById('articleDate').innerHTML += ' ' + formatDateLocalized(art.fecha_publicacion);
     document.getElementById('articleReadTime').innerHTML += ` ${art.tiempo_lectura} ${t('min_read')}`;
     document.getElementById('articleViews').innerHTML += ` ${art.vistas} ${t('views')}`;
+    // Región - usar traducción para "Internacional"
+    const regionTexts = {
+        'es': { sudamerica: 'Sudamérica', internacional: 'Internacional' },
+        'pt': { sudamerica: 'América do Sul', internacional: 'Internacional' },
+        'en': { sudamerica: 'South America', internacional: 'International' },
+        'fr': { sudamerica: 'Amérique du Sud', internacional: 'International' },
+        'nl': { sudamerica: 'Zuid-Amerika', internacional: 'Internationaal' }
+    };
+    const idiomaBase = getIdiomaBase() || 'es';
+    const regionText = regionTexts[idiomaBase] || regionTexts['es'];
     document.getElementById('articleRegion').innerHTML = art.region === 'sudamerica'
-        ? `🌎 ${art.pais_origen || 'Sudamérica'}`
-        : '🌐 Internacional';
+        ? `🌎 ${art.pais_origen || regionText.sudamerica}`
+        : `🌐 ${regionText.internacional}`;
 
     // Imagen
     const imgContainer = document.getElementById('articleImageContainer');
@@ -403,7 +464,7 @@ function renderArticle(art) {
 
     // Total shares
     if (art.total_shares > 0) {
-        document.getElementById('totalShares').textContent = `Compartido ${art.total_shares} veces`;
+        document.getElementById('totalShares').textContent = t('shared_times').replace('{n}', art.total_shares);
     }
 
     // Fuente
@@ -529,13 +590,14 @@ function isInReadingList(id) {
 function toggleSave(id) {
     const list = getReadingList();
     const index = list.indexOf(id);
+    const t = (key) => (typeof BLOG_I18N !== 'undefined') ? BLOG_I18N.t(key) : key;
 
     if (index > -1) {
         list.splice(index, 1);
-        showToast('Eliminado de tu lista');
+        showToast(t('removed_from_list'));
     } else {
         list.push(id);
-        showToast('Guardado en tu lista');
+        showToast(t('saved_to_list'));
     }
 
     saveReadingList(list);
@@ -552,12 +614,14 @@ function updateSaveButton() {
     const btn = document.getElementById('saveBtn');
     if (!btn || !articuloActual) return;
 
+    const t = (key) => (typeof BLOG_I18N !== 'undefined') ? BLOG_I18N.t(key) : key;
+
     if (isInReadingList(articuloActual.id)) {
         btn.classList.add('saved');
-        btn.title = 'Quitar de mi lista';
+        btn.title = t('remove_from_list');
     } else {
         btn.classList.remove('saved');
-        btn.title = 'Guardar para después';
+        btn.title = t('save_article');
     }
 }
 
@@ -577,10 +641,12 @@ function updateReadingListCount() {
 function addReaction(tipo) {
     if (!articuloActual) return;
 
+    const t = (key) => (typeof BLOG_I18N !== 'undefined') ? BLOG_I18N.t(key) : key;
+
     // Verificar si ya reaccionó
     const reacted = localStorage.getItem(`terrapp_reaction_${articuloActual.id}_${tipo}`);
     if (reacted) {
-        showToast('Ya reaccionaste a este artículo');
+        showToast(t('already_reacted'));
         return;
     }
 
@@ -601,44 +667,80 @@ function addReaction(tipo) {
     // Enviar al servidor
     fetch(`admin/api/registrar_reaccion.php?id=${articuloActual.id}&tipo=${tipo}`);
 
-    showToast('¡Gracias por tu reacción!');
+    showToast(t('thanks_reaction'));
 }
 
 function shareOn(platform) {
     if (!articuloActual) return;
 
-    const url = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent(articuloActual.titulo + ' - TERRApp Blog');
+    // Construir URL con parámetro de idioma si no es español
+    const shareUrlBase = getShareUrl();
+    const url = encodeURIComponent(shareUrlBase);
 
-    let shareUrl = '';
+    // Usar título traducido
+    const traducido = getArticuloEnIdioma(articuloActual);
+    const text = encodeURIComponent(traducido.titulo + ' - TERRApp Blog');
+
+    let shareLink = '';
     switch (platform) {
         case 'whatsapp':
-            shareUrl = `https://wa.me/?text=${text}%20${url}`;
+            shareLink = `https://wa.me/?text=${text}%20${url}`;
             break;
         case 'facebook':
-            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+            shareLink = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
             break;
         case 'twitter':
-            shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
+            shareLink = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
             break;
         case 'linkedin':
-            shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+            shareLink = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
             break;
     }
 
-    if (shareUrl) {
-        window.open(shareUrl, '_blank', 'width=600,height=400');
+    if (shareLink) {
+        window.open(shareLink, '_blank', 'width=600,height=400');
         fetch(`admin/api/registrar_share.php?id=${articuloActual.id}&red=${platform}`);
     }
 }
 
 function copyLink() {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-        showToast('¡Link copiado!');
+    const shareUrl = getShareUrl();
+    navigator.clipboard.writeText(shareUrl).then(() => {
+        const t = (key) => (typeof BLOG_I18N !== 'undefined') ? BLOG_I18N.t(key) : key;
+        showToast(t('link_copied'));
         if (articuloActual) {
             fetch(`admin/api/registrar_share.php?id=${articuloActual.id}&red=copy`);
         }
     });
+}
+
+/**
+ * Obtiene la URL para compartir, incluyendo el parámetro de idioma si no es español
+ */
+function getShareUrl() {
+    if (!articuloActual) return window.location.href;
+
+    // Base URL
+    const baseUrl = `${window.location.origin}/blog/scriptum.php?titulus=${articuloActual.slug}`;
+
+    // Agregar idioma si no es español
+    let lang = 'es_AR';
+    if (typeof BLOG_I18N !== 'undefined' && BLOG_I18N.currentLang) {
+        lang = BLOG_I18N.currentLang;
+    } else {
+        // Fallback: leer cookie directamente
+        const cookieMatch = document.cookie.match(/terrapp_lang=([^;]+)/);
+        if (cookieMatch) {
+            lang = cookieMatch[1];
+        }
+    }
+
+    // Si no es español, agregar parámetro lang
+    if (lang && !lang.startsWith('es_')) {
+        return `${baseUrl}&lang=${lang}`;
+    }
+
+    return baseUrl;
 }
 
 // ============================================
@@ -652,6 +754,53 @@ function registerView(id) {
 
     sessionStorage.setItem(`terrapp_viewed_${id}`, 'true');
     fetch(`admin/api/registrar_vista.php?id=${id}`);
+}
+
+/**
+ * Carga las métricas actualizadas del artículo desde la BD
+ */
+async function loadMetrics(id) {
+    try {
+        const response = await fetch(`admin/api/obtener_metricas.php?id=${id}`);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        if (!data.success || !data.metricas) return;
+
+        const m = data.metricas;
+        const t = (key) => (typeof BLOG_I18N !== 'undefined') ? BLOG_I18N.t(key) : key;
+
+        // Actualizar vistas en el header del artículo
+        const viewsEl = document.getElementById('articleViews');
+        if (viewsEl) {
+            viewsEl.innerHTML = `
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+                ${m.vistas} ${t('views')}
+            `;
+        }
+
+        // Actualizar contadores de reacciones
+        const countInteresante = document.getElementById('countInteresante');
+        const countEncanta = document.getElementById('countEncanta');
+        const countImportante = document.getElementById('countImportante');
+
+        if (countInteresante) countInteresante.textContent = m.reaccion_interesante;
+        if (countEncanta) countEncanta.textContent = m.reaccion_encanta;
+        if (countImportante) countImportante.textContent = m.reaccion_importante;
+
+        // Actualizar total de shares
+        if (m.total_shares > 0) {
+            const sharesEl = document.getElementById('totalShares');
+            if (sharesEl) {
+                sharesEl.textContent = t('shared_times').replace('{n}', m.total_shares);
+            }
+        }
+    } catch (error) {
+        console.error('Error cargando métricas:', error);
+    }
 }
 
 // ============================================

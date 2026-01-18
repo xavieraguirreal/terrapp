@@ -186,13 +186,13 @@
             <!-- No results message -->
             <div id="noResults" class="hidden text-center py-12">
                 <div class="text-6xl mb-4">🌱</div>
-                <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-400">No se encontraron artículos</h3>
-                <p class="text-gray-500 dark:text-gray-500">Intenta con otra búsqueda o categoría</p>
+                <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-400" data-i18n="no_results">No se encontraron artículos</h3>
+                <p class="text-gray-500 dark:text-gray-500" data-i18n="try_another">Intenta con otra búsqueda o categoría</p>
             </div>
 
             <!-- Load More -->
             <div id="loadMore" class="hidden text-center mt-8">
-                <button onclick="loadMoreArticles()" class="px-6 py-3 bg-forest-600 hover:bg-forest-700 text-white font-semibold rounded-lg transition">
+                <button onclick="loadMoreArticles()" class="px-6 py-3 bg-forest-600 hover:bg-forest-700 text-white font-semibold rounded-lg transition" data-i18n="load_more">
                     Cargar más artículos
                 </button>
             </div>
@@ -205,17 +205,17 @@
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-3">
                     <img src="../landing/assets/images/logo_terrapp_icono.png" alt="TERRApp" class="w-8 h-8">
-                    <span class="text-gray-600 dark:text-gray-400">TERRApp Blog - Agricultura Urbana para Sudamérica</span>
+                    <span class="text-gray-600 dark:text-gray-400">TERRApp Blog - <span data-i18n="footer_tagline">Agricultura Urbana para Sudamérica</span></span>
                 </div>
                 <div class="flex gap-6 text-sm">
-                    <a href="../landing/" class="text-gray-600 dark:text-gray-400 hover:text-forest-600 transition">Inicio</a>
-                    <a href="mi-lista/" class="text-gray-600 dark:text-gray-400 hover:text-forest-600 transition">Mi Lista</a>
+                    <a href="../landing/" class="text-gray-600 dark:text-gray-400 hover:text-forest-600 transition" data-i18n="nav_home">Inicio</a>
+                    <a href="mi-lista/" class="text-gray-600 dark:text-gray-400 hover:text-forest-600 transition" data-i18n="my_list">Mi Lista</a>
                     <a href="feed.xml" class="text-gray-600 dark:text-gray-400 hover:text-forest-600 transition">RSS</a>
                     <a href="admin/" class="text-gray-600 dark:text-gray-400 hover:text-forest-600 transition">Admin</a>
                 </div>
             </div>
             <div class="text-center mt-6 text-sm text-gray-500">
-                <p>&copy; 2026 TERRApp by <a href="https://verumax.com" class="text-forest-600 hover:underline">VERUMax</a>. Todos los derechos reservados.</p>
+                <p>&copy; 2026 TERRApp by <a href="https://verumax.com" class="text-forest-600 hover:underline">VERUMax</a>. <span data-i18n="all_rights">Todos los derechos reservados.</span></p>
             </div>
         </div>
     </footer>

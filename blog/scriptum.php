@@ -2,11 +2,39 @@
 /**
  * TERRApp Blog - Artículo con meta tags dinámicos
  * Este archivo genera los Open Graph tags correctos para compartir en redes sociales
+ * Soporta múltiples idiomas para meta tags
  */
 
 // Obtener el slug del artículo
 $titulus = isset($_GET['titulus']) ? trim($_GET['titulus']) : '';
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+// Detectar idioma desde URL param o cookie
+$lang = isset($_GET['lang']) ? trim($_GET['lang']) : '';
+if (empty($lang) && isset($_COOKIE['terrapp_lang'])) {
+    $lang = $_COOKIE['terrapp_lang'];
+}
+
+// Mapear idioma completo a código base para traducciones
+$langBase = '';
+if (!empty($lang)) {
+    $langParts = explode('_', $lang);
+    $langBase = $langParts[0]; // pt, en, fr, nl
+    // Solo usar si es un idioma con traducciones (no español)
+    if (!in_array($langBase, ['pt', 'en', 'fr', 'nl'])) {
+        $langBase = '';
+    }
+}
+
+// Mapeo de locale para og:locale
+$localeMap = [
+    'pt' => 'pt_BR',
+    'en' => 'en_US',
+    'fr' => 'fr_FR',
+    'nl' => 'nl_NL',
+    '' => 'es_LA'
+];
+$ogLocale = $localeMap[$langBase] ?? 'es_LA';
 
 // Valores por defecto
 $article = null;
@@ -33,10 +61,20 @@ if (file_exists($jsonPath)) {
 
 // Si encontramos el artículo, actualizar meta tags
 if ($article) {
-    $pageTitle = htmlspecialchars($article['titulo'], ENT_QUOTES, 'UTF-8') . ' - TERRApp Blog';
+    // Usar traducción si está disponible y el idioma no es español
+    $titulo = $article['titulo'];
+    $contenido = $article['contenido'] ?? '';
+
+    if (!empty($langBase) && isset($article['traducciones'][$langBase])) {
+        $trad = $article['traducciones'][$langBase];
+        $titulo = $trad['titulo'] ?? $titulo;
+        $contenido = $trad['contenido'] ?? $contenido;
+    }
+
+    $pageTitle = htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8') . ' - TERRApp Blog';
 
     // Descripción: usar contenido resumido
-    $desc = strip_tags($article['contenido'] ?? '');
+    $desc = strip_tags($contenido);
     $pageDescription = htmlspecialchars(mb_substr($desc, 0, 160), ENT_QUOTES, 'UTF-8') . '...';
 
     // Imagen
@@ -44,17 +82,19 @@ if ($article) {
         $pageImage = $article['imagen_url'];
     }
 
-    // URLs
+    // URLs - incluir lang si no es español
     $slug = htmlspecialchars($article['slug'], ENT_QUOTES, 'UTF-8');
-    $pageUrl = "https://terrapp.verumax.com/blog/scriptum.php?titulus={$slug}";
-    $canonicalUrl = $pageUrl;
+    $langParam = !empty($langBase) ? "&lang={$lang}" : '';
+    $pageUrl = "https://terrapp.verumax.com/blog/scriptum.php?titulus={$slug}{$langParam}";
+    // Canonical siempre apunta a la versión española (SEO)
+    $canonicalUrl = "https://terrapp.verumax.com/blog/scriptum.php?titulus={$slug}";
 }
 
 // Obtener parámetro para pasar al JS
 $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '');
 ?>
 <!DOCTYPE html>
-<html lang="es" data-theme="light">
+<html lang="<?= !empty($langBase) ? $langBase : 'es' ?>" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -71,7 +111,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
     <meta property="og:description" content="<?= $pageDescription ?>">
     <meta property="og:image" content="<?= $pageImage ?>">
     <meta property="og:site_name" content="TERRApp Blog">
-    <meta property="og:locale" content="es_LA">
+    <meta property="og:locale" content="<?= $ogLocale ?>">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
