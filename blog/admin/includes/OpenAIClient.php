@@ -50,31 +50,33 @@ class OpenAIClient {
      * Valida si una noticia es relevante para agricultura urbana/huertos
      */
     public function validarRelevancia(string $titulo, string $contenido): bool {
-        $textoAnalizar = $titulo . "\n\n" . mb_substr($contenido, 0, 600);
+        $textoAnalizar = $titulo . "\n\n" . mb_substr($contenido, 0, 800);
 
         $prompt = <<<PROMPT
-Analiza si este artículo es RELEVANTE para un blog sobre AGRICULTURA URBANA y HUERTOS.
+¿Este artículo enseña o informa sobre CULTIVAR PLANTAS, HUERTOS o AGRICULTURA URBANA?
 
 TEXTO:
 {$textoAnalizar}
 
-CRITERIOS DE RELEVANCIA (debe cumplir AL MENOS UNO):
-- Habla de cultivo de plantas, hortalizas, verduras, frutas, hierbas
-- Habla de huertos, jardines, agricultura, siembra, cosecha
-- Habla de compostaje, abono, fertilizantes naturales, tierra, suelo
-- Habla de riego, plagas, enfermedades de plantas
-- Habla de agricultura urbana, huertos comunitarios, huertos en balcones
-- Habla de agroecología, permacultura, producción orgánica
-- Habla de semillas, plantines, invernaderos
-- Habla de seguridad/soberanía alimentaria relacionada con producción de alimentos
+RESPONDE "SI" SOLO si el artículo:
+- Enseña a cultivar plantas, verduras, frutas, hierbas o flores
+- Habla de huertos urbanos, jardines comestibles, cultivo en balcones
+- Trata sobre compostaje, abono, tierra, riego para cultivos
+- Informa sobre técnicas de siembra, cosecha, plantación
+- Habla de semillas, plantines, invernaderos para cultivar
+- Trata agroecología o permacultura aplicada a huertos
 
-NO ES RELEVANTE si:
-- Es solo sobre política, economía o burocracia gubernamental sin relación con agricultura
-- Es sobre deportes, entretenimiento, crimen
-- Es sobre ganadería o industria alimentaria (sin cultivo)
-- Menciona "agrario" o "rural" pero no habla de cultivos ni plantas
+RESPONDE "NO" si el artículo:
+- Es sobre incendios, sequías, inundaciones o desastres naturales
+- Es sobre política, economía, gobierno (aunque mencione "agrario")
+- Es sobre bosques, parques o naturaleza SIN cultivo de alimentos
+- Es sobre ganadería, pesca, industria alimentaria
+- Es sobre deportes, crimen, entretenimiento, celebridades
+- Solo menciona agricultura de pasada sin ser el tema principal
 
-Responde SOLO con una palabra: SI o NO
+EN CASO DE DUDA, responde NO.
+
+Responde SOLO: SI o NO
 PROMPT;
 
         try {
@@ -82,11 +84,11 @@ PROMPT;
             $this->ultimaRespuestaValidacion = trim($response);
             $respuesta = strtoupper(trim($response));
 
-            return $respuesta === 'SI' || $respuesta === 'SÍ' || $respuesta === 'YES';
+            return $respuesta === 'SI' || $respuesta === 'SÍ';
         } catch (Exception $e) {
-            // Si falla la API, aceptar para revisión manual
-            $this->ultimaRespuestaValidacion = "API_ERROR: " . $e->getMessage();
-            return true;
+            // Si falla la API, RECHAZAR (mejor perder una buena que publicar basura)
+            $this->ultimaRespuestaValidacion = "API_ERROR_REJECTED: " . $e->getMessage();
+            return false;
         }
     }
 
