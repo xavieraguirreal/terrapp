@@ -49,9 +49,9 @@ class OpenAIClient {
     public function validarRelevancia(string $titulo, string $contenido): bool {
         $temasLista = implode(', ', $this->temasValidos);
 
-        $prompt = "Analiza si esta noticia es RELEVANTE para un blog sobre AGRICULTURA URBANA y HUERTOS.
+        $prompt = "Analiza si esta noticia sería INTERESANTE para lectores de un blog sobre HUERTOS y JARDINERÍA.
 
-Temas válidos: {$temasLista}
+Temas que SÍ son relevantes: {$temasLista}, jardinería casera, cultivo de flores, vegetales, frutas, plantas comestibles, técnicas de cultivo, consejos de jardinería, sostenibilidad, medio ambiente relacionado con plantas.
 
 TÍTULO: {$titulo}
 
@@ -59,10 +59,12 @@ CONTENIDO (primeros 500 caracteres):
 " . mb_substr($contenido, 0, 500) . "
 
 Responde SOLO con 'SI' o 'NO'.
-- SI = La noticia trata directamente sobre huertos, cultivo en ciudades, agricultura urbana o temas relacionados
-- NO = La noticia NO es relevante (es sobre agricultura industrial, política agraria, economía, deportes, etc.)";
+- SI = Trata sobre plantas, cultivos, jardinería, huertos, vegetales, flores, compost, riego, semillas, o cualquier tema útil para alguien que cultiva en casa
+- NO = No tiene relación con plantas/cultivo (política, deportes, celebridades, crimen, finanzas sin relación agrícola)
 
-        $response = $this->chatSimple($prompt);
+Sé INCLUSIVO: si hay duda, responde SI.";
+
+        $response = $this->chatSimple($prompt, 15);
         $respuesta = strtoupper(trim($response));
 
         return strpos($respuesta, 'SI') !== false;
