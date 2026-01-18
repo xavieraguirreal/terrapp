@@ -165,6 +165,13 @@ function guardarCandidatasPendientes(array $candidatas): int {
     $pdo = getConnection();
     $guardadas = 0;
 
+    // Títulos ya procesados en este batch para evitar duplicados dentro del mismo batch
+    $titulosEnEsteBatch = [];
+
+    // Obtener títulos de pendientes existentes para comparar
+    $stmtPendientes = $pdo->query("SELECT titulo FROM blog_noticias_pendientes WHERE usado = 0");
+    $titulosPendientes = $stmtPendientes->fetchAll(PDO::FETCH_COLUMN);
+
     foreach ($candidatas as $c) {
         $url = $c['url'] ?? '';
         if (empty($url)) continue;
@@ -172,7 +179,19 @@ function guardarCandidatasPendientes(array $candidatas): int {
         if (urlYaProcesada($url)) continue;
 
         $titulo = $c['title'] ?? $c['titulo'] ?? '';
-        if (!empty($titulo) && tituloEsSimilar($titulo)) continue;
+        if (empty($titulo)) continue;
+
+        // Verificar contra artículos en BD
+        if (tituloEsSimilar($titulo)) continue;
+
+        // Verificar contra pendientes existentes
+        if (tituloEsSimilarEnLista($titulo, $titulosPendientes)) continue;
+
+        // Verificar contra otros títulos de este mismo batch
+        if (tituloEsSimilarEnLista($titulo, $titulosEnEsteBatch)) continue;
+
+        // Agregar a la lista de este batch
+        $titulosEnEsteBatch[] = $titulo;
 
         // Detectar región por dominio
         $region = detectarRegionPorDominio($url);
@@ -199,6 +218,43 @@ function guardarCandidatasPendientes(array $candidatas): int {
     }
 
     return $guardadas;
+}
+
+/**
+ * Verifica si un título es similar a alguno en una lista dada
+ */
+function tituloEsSimilarEnLista(string $titulo, array $listaTitulos): bool {
+    if (empty($listaTitulos)) return false;
+
+    $tituloNormalizado = normalizarTexto($titulo);
+    $palabrasNuevo = extraerPalabrasClave($titulo);
+
+    foreach ($listaTitulos as $existente) {
+        if (empty($existente)) continue;
+
+        $existenteNormalizado = normalizarTexto($existente);
+
+        // Método 1: Similitud de texto directo
+        similar_text($tituloNormalizado, $existenteNormalizado, $porcentajeSimilar);
+        if ($porcentajeSimilar > 60) {
+            return true;
+        }
+
+        // Método 2: Similitud por palabras clave (Jaccard)
+        $palabrasExistente = extraerPalabrasClave($existente);
+        $similitudJaccard = calcularSimilitudJaccard($palabrasNuevo, $palabrasExistente);
+        if ($similitudJaccard > 0.5) {
+            return true;
+        }
+
+        // Método 3: Mismas palabras importantes
+        $palabrasComunes = count(array_intersect($palabrasNuevo, $palabrasExistente));
+        if ($palabrasComunes >= 3 && count($palabrasNuevo) <= 8) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**
