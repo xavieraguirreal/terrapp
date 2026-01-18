@@ -304,34 +304,58 @@ $regionSugerida = sugerirRegion();
             btn.innerHTML = '🔄 Buscar y Generar Artículos';
         }
 
-        async function cambiarEstado(id, estado) {
+        async function cambiarEstado(id, estado, genTraducciones = true) {
+            // Mostrar indicador de carga
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loadingOverlay';
+            loadingDiv.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+            loadingDiv.innerHTML = `
+                <div class="bg-white rounded-lg p-6 text-center shadow-xl">
+                    <div class="animate-spin text-4xl mb-3">🌱</div>
+                    <p class="font-medium">${estado === 'publicado' ? 'Aprobando y generando traducciones...' : 'Cambiando estado...'}</p>
+                    <p class="text-sm text-gray-500 mt-1">Esto puede demorar unos segundos</p>
+                </div>
+            `;
+            document.body.appendChild(loadingDiv);
+
             try {
                 const response = await fetch('api/cambiar_estado.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id, estado })
+                    body: JSON.stringify({ id, estado, generar_traducciones: genTraducciones })
                 });
                 const data = await response.json();
 
+                loadingDiv.remove();
+
                 if (data.success) {
+                    let msg = data.message;
+                    if (data.traducciones_generadas > 0) {
+                        msg += `\n\nTraducciones generadas: ${data.traducciones_generadas}`;
+                    }
+                    if (data.errores_traducciones && data.errores_traducciones.length > 0) {
+                        msg += '\n\nAlgunos errores:\n' + data.errores_traducciones.join('\n');
+                    }
+                    alert(msg);
                     location.reload();
                 } else {
                     alert(data.error || 'Error al cambiar estado');
                 }
             } catch (error) {
+                loadingDiv.remove();
                 alert('Error de conexión: ' + error.message);
             }
         }
 
         function aprobar(id) {
-            if (confirm('¿Aprobar y publicar este artículo?')) {
+            if (confirm('¿Aprobar y publicar este artículo?\n\nSe generarán traducciones a PT, EN, FR, NL automáticamente.')) {
                 cambiarEstado(id, 'publicado');
             }
         }
 
         function rechazar(id) {
             if (confirm('¿Rechazar este artículo?')) {
-                cambiarEstado(id, 'rechazado');
+                cambiarEstado(id, 'rechazado', false);
             }
         }
 

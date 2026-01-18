@@ -326,6 +326,102 @@ PROMPT;
     }
 
     /**
+     * Traduce un artículo a otro idioma
+     * @param array $articulo Artículo original en español
+     * @param string $idioma Código de idioma (pt, en, fr, nl)
+     * @return array Artículo traducido
+     */
+    public function traducirArticulo(array $articulo, string $idioma): array {
+        $nombresIdiomas = [
+            'pt' => 'Portuguese (Brazilian)',
+            'en' => 'English',
+            'fr' => 'French',
+            'nl' => 'Dutch'
+        ];
+
+        $nombreIdioma = $nombresIdiomas[$idioma] ?? 'English';
+
+        $systemPrompt = <<<PROMPT
+You are a professional translator for TERRApp, an urban agriculture app for South America.
+
+TRANSLATION RULES:
+1. Translate the content from Spanish to {$nombreIdioma}.
+2. Maintain the original meaning and tone.
+3. Keep technical terms related to urban agriculture accurate.
+4. For Portuguese: Use Brazilian Portuguese, not European.
+5. For French: Use neutral French suitable for French Guiana.
+6. For Dutch: Use neutral Dutch suitable for Suriname.
+7. For English: Use neutral English suitable for Guyana.
+8. Keep any brand names or proper nouns unchanged.
+9. Tips should be practical and culturally appropriate.
+
+OUTPUT FORMAT (JSON only):
+{
+    "titulo": "Translated title",
+    "contenido": "Translated content...",
+    "opinion_editorial": "Translated editorial opinion...",
+    "tips": ["Translated tip 1...", "Translated tip 2..."]
+}
+
+Respond ONLY with the JSON, no additional text.
+PROMPT;
+
+        $tipsOriginal = is_array($articulo['tips']) ? json_encode($articulo['tips'], JSON_UNESCAPED_UNICODE) : ($articulo['tips'] ?? '[]');
+
+        $userPrompt = <<<PROMPT
+Translate this article to {$nombreIdioma}:
+
+TITLE:
+{$articulo['titulo']}
+
+CONTENT:
+{$articulo['contenido']}
+
+EDITORIAL OPINION:
+{$articulo['opinion_editorial']}
+
+TIPS:
+{$tipsOriginal}
+PROMPT;
+
+        $response = $this->chat($systemPrompt, $userPrompt);
+        $json = $this->extractJson($response);
+
+        if (!$json) {
+            throw new Exception("Could not parse translation response for language: {$idioma}");
+        }
+
+        // Ensure tips is an array
+        if (!isset($json['tips']) || !is_array($json['tips'])) {
+            $json['tips'] = [];
+        }
+
+        return $json;
+    }
+
+    /**
+     * Traduce un artículo a todos los idiomas disponibles
+     * @param array $articulo Artículo original en español
+     * @return array Traducciones indexadas por código de idioma
+     */
+    public function traducirArticuloATodosLosIdiomas(array $articulo): array {
+        $idiomas = ['pt', 'en', 'fr', 'nl'];
+        $traducciones = [];
+
+        foreach ($idiomas as $idioma) {
+            try {
+                $traducciones[$idioma] = $this->traducirArticulo($articulo, $idioma);
+            } catch (Exception $e) {
+                // Log error but continue with other languages
+                error_log("Error translating to {$idioma}: " . $e->getMessage());
+                $traducciones[$idioma] = null;
+            }
+        }
+
+        return $traducciones;
+    }
+
+    /**
      * Extrae JSON de una respuesta que puede tener texto adicional
      */
     private function extractJson(string $text): ?array {

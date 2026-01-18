@@ -9,6 +9,62 @@ let categoriaActual = 'all';
 let articulosVisibles = 9;
 let articuloActual = null;
 
+// ============================================
+// MULTI-IDIOMA
+// ============================================
+
+/**
+ * Obtiene el código de idioma base (pt, en, fr, nl)
+ */
+function getIdiomaBase() {
+    // Obtener idioma del sistema i18n del blog
+    const langFull = (typeof BLOG_I18N !== 'undefined' && BLOG_I18N.currentLang)
+        ? BLOG_I18N.currentLang
+        : (document.cookie.match(/terrapp_country=([^;]+)/) || [])[1] || 'es_AR';
+
+    // Extraer código base (es, pt, en, fr, nl)
+    const base = langFull.split('_')[0];
+
+    // Solo devolver si tenemos traducción para ese idioma
+    return ['pt', 'en', 'fr', 'nl'].includes(base) ? base : null;
+}
+
+/**
+ * Obtiene el contenido de un artículo en el idioma actual
+ */
+function getArticuloEnIdioma(articulo) {
+    const idioma = getIdiomaBase();
+
+    // Si es español o no hay idioma, devolver original
+    if (!idioma) {
+        return {
+            titulo: articulo.titulo,
+            contenido: articulo.contenido,
+            opinion_editorial: articulo.opinion_editorial,
+            tips: articulo.tips || []
+        };
+    }
+
+    // Buscar traducción
+    if (articulo.traducciones && articulo.traducciones[idioma]) {
+        const trad = articulo.traducciones[idioma];
+        return {
+            titulo: trad.titulo || articulo.titulo,
+            contenido: trad.contenido || articulo.contenido,
+            opinion_editorial: trad.opinion_editorial || articulo.opinion_editorial,
+            tips: trad.tips || articulo.tips || []
+        };
+    }
+
+    // Si no hay traducción, devolver original
+    return {
+        titulo: articulo.titulo,
+        contenido: articulo.contenido,
+        opinion_editorial: articulo.opinion_editorial,
+        tips: articulo.tips || []
+    };
+}
+
 // Categorías con iconos
 const CATEGORIAS = {
     'huertos-urbanos': { nombre: 'Huertos Urbanos', icono: '🌱' },
@@ -42,6 +98,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (document.getElementById('progressBar')) {
         setupProgressBar();
     }
+
+    // Escuchar cambios de idioma para re-renderizar
+    document.addEventListener('terrapp:langchange', () => {
+        // Re-renderizar artículos en el nuevo idioma
+        if (articulos.length > 0) {
+            if (document.getElementById('articlesGrid')) {
+                renderArticles();
+                renderFeatured();
+            }
+            if (articuloActual) {
+                renderArticle(articuloActual);
+            }
+        }
+    });
 });
 
 // ============================================
@@ -174,12 +244,13 @@ function renderFeatured() {
     if (!container || articulos.length === 0) return;
 
     const featured = articulos[0];
+    const traducido = getArticuloEnIdioma(featured);
 
     container.innerHTML = `
         <a href="scriptum.php?titulus=${featured.slug}" class="block relative rounded-2xl overflow-hidden shadow-xl group">
             <div class="aspect-[21/9] bg-gray-200 dark:bg-gray-700">
                 ${featured.imagen_url
-                    ? `<img src="${featured.imagen_url}" alt="${escapeHtml(featured.titulo)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">`
+                    ? `<img src="${featured.imagen_url}" alt="${escapeHtml(traducido.titulo)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">`
                     : '<div class="w-full h-full image-placeholder"></div>'
                 }
             </div>
@@ -189,10 +260,10 @@ function renderFeatured() {
                     ${CATEGORIAS[featured.categoria]?.icono || '📰'} ${CATEGORIAS[featured.categoria]?.nombre || 'Noticias'}
                 </span>
                 <h2 class="text-2xl md:text-4xl font-bold mb-2 group-hover:text-forest-200 transition">
-                    ${escapeHtml(featured.titulo)}
+                    ${escapeHtml(traducido.titulo)}
                 </h2>
                 <p class="text-gray-200 text-sm md:text-base line-clamp-2">
-                    ${escapeHtml(featured.contenido.substring(0, 150))}...
+                    ${escapeHtml(traducido.contenido.substring(0, 150))}...
                 </p>
             </div>
         </a>
@@ -204,13 +275,14 @@ function createArticleCard(art) {
     const fecha = formatDate(art.fecha_publicacion);
     const categoria = CATEGORIAS[art.categoria] || { nombre: 'Noticias', icono: '📰' };
     const isSaved = isInReadingList(art.id);
+    const traducido = getArticuloEnIdioma(art);
 
     return `
         <article class="article-card bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md">
             <a href="scriptum.php?titulus=${art.slug}" class="block">
                 <div class="h-48 bg-gray-200 dark:bg-gray-700 relative overflow-hidden">
                     ${art.imagen_url
-                        ? `<img src="${art.imagen_url}" alt="${escapeHtml(art.titulo)}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy">`
+                        ? `<img src="${art.imagen_url}" alt="${escapeHtml(traducido.titulo)}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy">`
                         : '<div class="w-full h-full image-placeholder"></div>'
                     }
                     <span class="absolute top-3 left-3 px-2 py-1 bg-white/90 dark:bg-gray-800/90 rounded-full text-xs font-medium">
@@ -225,11 +297,11 @@ function createArticleCard(art) {
                 </div>
                 <a href="scriptum.php?titulus=${art.slug}" class="block">
                     <h3 class="font-bold text-lg mb-2 line-clamp-2 hover:text-forest-600 transition">
-                        ${escapeHtml(art.titulo)}
+                        ${escapeHtml(traducido.titulo)}
                     </h3>
                 </a>
                 <p class="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-3">
-                    ${escapeHtml(art.contenido.substring(0, 120))}...
+                    ${escapeHtml(traducido.contenido.substring(0, 120))}...
                 </p>
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3 text-sm text-gray-500">
@@ -251,17 +323,20 @@ function renderArticle(art) {
     document.getElementById('articleSkeleton').classList.add('hidden');
     document.getElementById('articleContent').classList.remove('hidden');
 
+    // Obtener contenido en el idioma actual
+    const traducido = getArticuloEnIdioma(art);
+
     // Actualizar título de página y meta tags
-    document.title = `${art.titulo} - TERRApp Blog`;
-    document.querySelector('meta[name="description"]')?.setAttribute('content', art.contenido.substring(0, 160));
-    document.querySelector('meta[property="og:title"]')?.setAttribute('content', art.titulo);
+    document.title = `${traducido.titulo} - TERRApp Blog`;
+    document.querySelector('meta[name="description"]')?.setAttribute('content', traducido.contenido.substring(0, 160));
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', traducido.titulo);
 
     // Breadcrumb
     const categoria = CATEGORIAS[art.categoria] || { nombre: 'Noticias', icono: '📰' };
     document.getElementById('breadcrumbCategory').textContent = categoria.nombre;
 
     // Header
-    document.getElementById('articleTitle').textContent = art.titulo;
+    document.getElementById('articleTitle').textContent = traducido.titulo;
     document.getElementById('articleDate').innerHTML += ' ' + formatDate(art.fecha_publicacion);
     document.getElementById('articleReadTime').innerHTML += ` ${art.tiempo_lectura} min de lectura`;
     document.getElementById('articleViews').innerHTML += ` ${art.vistas} vistas`;
@@ -274,7 +349,7 @@ function renderArticle(art) {
     const imgElement = document.getElementById('articleImage');
     if (art.imagen_url) {
         imgElement.src = art.imagen_url;
-        imgElement.alt = art.titulo;
+        imgElement.alt = traducido.titulo;
         imgContainer.classList.remove('hidden');
     } else {
         // Mostrar placeholder si no hay imagen
@@ -283,15 +358,15 @@ function renderArticle(art) {
     }
 
     // Contenido
-    document.getElementById('articleBody').innerHTML = formatContent(art.contenido);
+    document.getElementById('articleBody').innerHTML = formatContent(traducido.contenido);
 
     // Opinión editorial
-    document.getElementById('editorialContent').innerHTML = formatContent(art.opinion_editorial || '');
+    document.getElementById('editorialContent').innerHTML = formatContent(traducido.opinion_editorial || '');
 
     // Tips
-    if (art.tips && art.tips.length > 0) {
+    if (traducido.tips && traducido.tips.length > 0) {
         document.getElementById('tipsSection').classList.remove('hidden');
-        document.getElementById('tipsList').innerHTML = art.tips.map(tip =>
+        document.getElementById('tipsList').innerHTML = traducido.tips.map(tip =>
             `<li class="flex items-start gap-2">
                 <span class="text-yellow-600">✓</span>
                 <span>${escapeHtml(tip)}</span>
@@ -335,19 +410,22 @@ function loadRelatedArticles(currentArt) {
     if (related.length === 0) return;
 
     document.getElementById('relatedSection').classList.remove('hidden');
-    document.getElementById('relatedArticles').innerHTML = related.map(art => `
-        <a href="scriptum.php?titulus=${art.slug}" class="block bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition">
-            <div class="h-32 bg-gray-200 dark:bg-gray-700">
-                ${art.imagen_url
-                    ? `<img src="${art.imagen_url}" alt="" class="w-full h-full object-cover">`
-                    : '<div class="w-full h-full image-placeholder"></div>'
-                }
-            </div>
-            <div class="p-4">
-                <h4 class="font-semibold text-sm line-clamp-2">${escapeHtml(art.titulo)}</h4>
-            </div>
-        </a>
-    `).join('');
+    document.getElementById('relatedArticles').innerHTML = related.map(art => {
+        const traducido = getArticuloEnIdioma(art);
+        return `
+            <a href="scriptum.php?titulus=${art.slug}" class="block bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition">
+                <div class="h-32 bg-gray-200 dark:bg-gray-700">
+                    ${art.imagen_url
+                        ? `<img src="${art.imagen_url}" alt="" class="w-full h-full object-cover">`
+                        : '<div class="w-full h-full image-placeholder"></div>'
+                    }
+                </div>
+                <div class="p-4">
+                    <h4 class="font-semibold text-sm line-clamp-2">${escapeHtml(traducido.titulo)}</h4>
+                </div>
+            </a>
+        `;
+    }).join('');
 }
 
 function showNotFound() {

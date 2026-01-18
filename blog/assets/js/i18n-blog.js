@@ -428,6 +428,11 @@ const BLOG_I18N = {
         // Cerrar menú
         const menu = document.getElementById('langMenu');
         if (menu) menu.classList.add('hidden');
+
+        // Notificar a otros scripts que el idioma cambió
+        document.dispatchEvent(new CustomEvent('terrapp:langchange', {
+            detail: { lang: langCode }
+        }));
     },
 
     // Actualizar indicador

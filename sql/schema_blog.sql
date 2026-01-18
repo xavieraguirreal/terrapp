@@ -142,6 +142,22 @@ INSERT INTO blog_categorias (slug, nombre_es, nombre_pt, nombre_en, nombre_fr, n
 ('noticias', 'Noticias', 'Notícias', 'News', 'Actualités', 'Nieuws', '📰', 8)
 ON DUPLICATE KEY UPDATE slug = slug;
 
+-- Tabla de traducciones de artículos
+CREATE TABLE IF NOT EXISTS blog_articulos_traducciones (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    articulo_id INT NOT NULL,
+    idioma CHAR(2) NOT NULL COMMENT 'pt, en, fr, nl',
+    titulo VARCHAR(255) NOT NULL,
+    contenido TEXT NOT NULL,
+    opinion_editorial TEXT DEFAULT NULL,
+    tips JSON DEFAULT NULL,
+    fecha_traduccion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (articulo_id) REFERENCES blog_articulos(id) ON DELETE CASCADE,
+    UNIQUE KEY uk_articulo_idioma (articulo_id, idioma),
+    INDEX idx_articulo (articulo_id),
+    INDEX idx_idioma (idioma)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Tabla de lista de lectura (guardados)
 CREATE TABLE IF NOT EXISTS blog_lista_lectura (
     id INT PRIMARY KEY AUTO_INCREMENT,

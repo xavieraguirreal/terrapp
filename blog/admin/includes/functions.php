@@ -30,24 +30,85 @@ function registrarUrl(string $url): void {
 
 /**
  * Verifica si un título es muy similar a uno existente
+ * Usa múltiples métodos: similitud de texto + palabras clave
  */
-function tituloEsSimilar(string $titulo): bool {
+function tituloEsSimilar(string $titulo, ?string &$tituloSimilar = null): bool {
     $pdo = getConnection();
     $stmt = $pdo->query("SELECT titulo FROM blog_articulos WHERE estado IN ('publicado', 'rechazado', 'borrador')");
     $titulosExistentes = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
     $tituloNormalizado = normalizarTexto($titulo);
+    $palabrasNuevo = extraerPalabrasClave($titulo);
 
     foreach ($titulosExistentes as $existente) {
         $existenteNormalizado = normalizarTexto($existente);
-        similar_text($tituloNormalizado, $existenteNormalizado, $porcentaje);
 
-        if ($porcentaje > 65) {
+        // Método 1: Similitud de texto directo
+        similar_text($tituloNormalizado, $existenteNormalizado, $porcentajeSimilar);
+        if ($porcentajeSimilar > 60) {
+            $tituloSimilar = $existente;
+            return true;
+        }
+
+        // Método 2: Similitud por palabras clave (Jaccard)
+        $palabrasExistente = extraerPalabrasClave($existente);
+        $similitudJaccard = calcularSimilitudJaccard($palabrasNuevo, $palabrasExistente);
+        if ($similitudJaccard > 0.5) {
+            $tituloSimilar = $existente;
+            return true;
+        }
+
+        // Método 3: Mismas palabras importantes (para noticias de mismo evento)
+        $palabrasImportantes = array_intersect($palabrasNuevo, $palabrasExistente);
+        $palabrasComunes = count($palabrasImportantes);
+        // Si comparten 3+ palabras clave importantes, probablemente es la misma noticia
+        if ($palabrasComunes >= 3 && count($palabrasNuevo) <= 8) {
+            $tituloSimilar = $existente;
             return true;
         }
     }
 
     return false;
+}
+
+/**
+ * Extrae palabras clave significativas de un texto
+ * Elimina stopwords y palabras muy cortas
+ */
+function extraerPalabrasClave(string $texto): array {
+    $stopwords = [
+        'el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas',
+        'de', 'del', 'al', 'a', 'en', 'con', 'por', 'para', 'sin', 'sobre',
+        'que', 'es', 'son', 'fue', 'ser', 'han', 'ha', 'hay',
+        'se', 'su', 'sus', 'este', 'esta', 'esto', 'estos', 'estas',
+        'mas', 'pero', 'como', 'cuando', 'donde', 'si', 'no', 'ya',
+        'entre', 'desde', 'hasta', 'hacia', 'bajo', 'ante',
+        'y', 'o', 'ni', 'e', 'u', 'the', 'and', 'or', 'of', 'in', 'to', 'for'
+    ];
+
+    $texto = normalizarTexto($texto);
+    $palabras = explode(' ', $texto);
+
+    // Filtrar stopwords y palabras muy cortas
+    $palabrasClave = array_filter($palabras, function($p) use ($stopwords) {
+        return strlen($p) >= 4 && !in_array($p, $stopwords);
+    });
+
+    return array_values($palabrasClave);
+}
+
+/**
+ * Calcula similitud de Jaccard entre dos conjuntos de palabras
+ */
+function calcularSimilitudJaccard(array $set1, array $set2): float {
+    if (empty($set1) || empty($set2)) {
+        return 0.0;
+    }
+
+    $interseccion = count(array_intersect($set1, $set2));
+    $union = count(array_unique(array_merge($set1, $set2)));
+
+    return $union > 0 ? $interseccion / $union : 0.0;
 }
 
 /**
@@ -229,6 +290,91 @@ function guardarArticulo(array $datos): int {
     return (int) $pdo->lastInsertId();
 }
 
+// ============================================
+// FUNCIONES DE TRADUCCIONES
+// ============================================
+
+/**
+ * Guarda una traducción de artículo
+ */
+function guardarTraduccion(int $articuloId, string $idioma, array $traduccion): bool {
+    $pdo = getConnection();
+
+    $tips = !empty($traduccion['tips']) ? json_encode($traduccion['tips'], JSON_UNESCAPED_UNICODE) : null;
+
+    $stmt = $pdo->prepare("
+        INSERT INTO blog_articulos_traducciones
+        (articulo_id, idioma, titulo, contenido, opinion_editorial, tips)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            titulo = VALUES(titulo),
+            contenido = VALUES(contenido),
+            opinion_editorial = VALUES(opinion_editorial),
+            tips = VALUES(tips),
+            fecha_traduccion = CURRENT_TIMESTAMP
+    ");
+
+    return $stmt->execute([
+        $articuloId,
+        $idioma,
+        $traduccion['titulo'] ?? '',
+        $traduccion['contenido'] ?? '',
+        $traduccion['opinion_editorial'] ?? null,
+        $tips
+    ]);
+}
+
+/**
+ * Guarda todas las traducciones de un artículo
+ */
+function guardarTraducciones(int $articuloId, array $traducciones): int {
+    $guardadas = 0;
+
+    foreach ($traducciones as $idioma => $traduccion) {
+        if ($traduccion !== null) {
+            if (guardarTraduccion($articuloId, $idioma, $traduccion)) {
+                $guardadas++;
+            }
+        }
+    }
+
+    return $guardadas;
+}
+
+/**
+ * Obtiene las traducciones de un artículo
+ */
+function obtenerTraducciones(int $articuloId): array {
+    $pdo = getConnection();
+    $stmt = $pdo->prepare("
+        SELECT idioma, titulo, contenido, opinion_editorial, tips
+        FROM blog_articulos_traducciones
+        WHERE articulo_id = ?
+    ");
+    $stmt->execute([$articuloId]);
+
+    $traducciones = [];
+    while ($row = $stmt->fetch()) {
+        $row['tips'] = json_decode($row['tips'] ?? '[]', true) ?: [];
+        $traducciones[$row['idioma']] = $row;
+    }
+
+    return $traducciones;
+}
+
+/**
+ * Verifica si un artículo tiene traducciones
+ */
+function tieneTraduccion(int $articuloId, string $idioma): bool {
+    $pdo = getConnection();
+    $stmt = $pdo->prepare("
+        SELECT 1 FROM blog_articulos_traducciones
+        WHERE articulo_id = ? AND idioma = ?
+    ");
+    $stmt->execute([$articuloId, $idioma]);
+    return $stmt->fetch() !== false;
+}
+
 /**
  * Obtiene todos los artículos con filtro opcional
  */
@@ -398,6 +544,7 @@ function sugerirRegion(): string {
 
 /**
  * Exporta artículos publicados a JSON para el frontend
+ * Incluye traducciones en múltiples idiomas
  */
 function exportarArticulosJSON(): bool {
     $pdo = getConnection();
@@ -424,11 +571,18 @@ function exportarArticulosJSON(): bool {
         $art['tips'] = json_decode($art['tips'] ?? '[]', true) ?: [];
         $art['tags'] = json_decode($art['tags'] ?? '[]', true) ?: [];
         $art['fecha_publicacion'] = date('c', strtotime($art['fecha_publicacion']));
+
+        // Agregar traducciones
+        $traducciones = obtenerTraducciones((int)$art['id']);
+        if (!empty($traducciones)) {
+            $art['traducciones'] = $traducciones;
+        }
     }
 
     $json = json_encode([
         'generado' => date('c'),
         'total' => count($articulos),
+        'idiomas_disponibles' => ['es', 'pt', 'en', 'fr', 'nl'],
         'articulos' => $articulos
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
