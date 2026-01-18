@@ -667,10 +667,15 @@ function addReaction(tipo) {
         countEl.textContent = parseInt(countEl.textContent) + 1;
     }
 
-    // Animación
+    // Animación pop + confeti
     const btn = event.target.closest('.reaction-btn');
     btn?.classList.add('animate', 'active');
     setTimeout(() => btn?.classList.remove('animate'), 300);
+
+    // Lanzar confeti desde el botón
+    if (btn) {
+        launchConfetti(btn, tipo)
+    }
 
     // Enviar al servidor
     fetch(`admin/api/registrar_reaccion.php?id=${articuloActual.id}&tipo=${tipo}`);
@@ -883,6 +888,70 @@ function setupProgressBar() {
         const scrolled = (winScroll / height) * 100;
         progressBar.style.width = scrolled + '%';
     });
+}
+
+// ============================================
+// CONFETTI ANIMATION
+// ============================================
+
+/**
+ * Lanza confeti desde un elemento
+ * @param {HTMLElement} element - Elemento desde donde lanzar
+ * @param {string} tipo - Tipo de reacción (interesante, encanta, importante)
+ */
+function launchConfetti(element, tipo) {
+    // Colores según el tipo de reacción
+    const colors = {
+        interesante: ['#2d7553', '#3d9268', '#558b2f', '#7cb342', '#aed581'], // verdes
+        encanta: ['#2d7553', '#4caf50', '#81c784', '#a5d6a7', '#c8e6c9'],     // verdes claros
+        importante: ['#ff5722', '#ff7043', '#ff8a65', '#ffab91', '#f4511e']    // naranjas/rojos
+    };
+
+    const shapes = ['', 'square', 'star'];
+    const particleColors = colors[tipo] || colors.interesante;
+
+    // Obtener posición del botón
+    const rect = element.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    // Crear contenedor de confeti
+    const container = document.createElement('div');
+    container.className = 'confetti-container';
+    document.body.appendChild(container);
+
+    // Crear partículas
+    const particleCount = 15;
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        particle.className = `confetti ${shape}`;
+
+        // Color aleatorio del array
+        particle.style.backgroundColor = particleColors[Math.floor(Math.random() * particleColors.length)];
+
+        // Posición inicial (centro del botón)
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+
+        // Variación en la animación
+        const angle = (Math.random() * 360) * (Math.PI / 180);
+        const velocity = 50 + Math.random() * 80;
+        const dx = Math.cos(angle) * velocity;
+        const dy = Math.sin(angle) * velocity - 50; // Bias hacia arriba
+
+        particle.style.setProperty('--dx', dx + 'px');
+        particle.style.setProperty('--dy', dy + 'px');
+        particle.style.animation = `confettiExplode 0.8s ease-out forwards`;
+        particle.style.animationDelay = (Math.random() * 0.1) + 's';
+
+        container.appendChild(particle);
+    }
+
+    // Remover contenedor después de la animación
+    setTimeout(() => {
+        container.remove();
+    }, 1000);
 }
 
 // ============================================

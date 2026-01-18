@@ -126,6 +126,98 @@
     animation: reactionPop 0.3s ease;
 }
 
+/* Confetti container */
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+/* Confetti particle */
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    opacity: 1;
+    animation: confettiFall 1s ease-out forwards;
+}
+
+/* Different shapes */
+.confetti.square {
+    border-radius: 2px;
+}
+
+.confetti.star {
+    border-radius: 0;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    width: 12px;
+    height: 12px;
+}
+
+/* Confetti animation */
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(150px) rotate(720deg) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Confetti burst - different directions */
+.confetti:nth-child(odd) {
+    animation: confettiBurstLeft 0.8s ease-out forwards;
+}
+
+.confetti:nth-child(even) {
+    animation: confettiBurstRight 0.8s ease-out forwards;
+}
+
+@keyframes confettiBurstLeft {
+    0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-60px, -80px) rotate(360deg) scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes confettiBurstRight {
+    0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(60px, -80px) rotate(-360deg) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Confetti explosion con direcciones personalizadas */
+@keyframes confettiExplode {
+    0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        opacity: 1;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--dx, 50px), var(--dy, -50px)) rotate(720deg) scale(0);
+        opacity: 0;
+    }
+}
+
 /* Reading progress bar */
 #progressBar {
     transform-origin: left;
