@@ -166,6 +166,21 @@ try {
             $fuenteNombre = $pendiente['fuente'] ?? parse_url($pendiente['url'], PHP_URL_HOST);
             $articuloGenerado = $openai->generarArticulo($contenido, $fuenteNombre, $pendiente['url']);
 
+            // Obtener imagen: priorizar og:image del artículo original
+            $imagenUrl = null;
+
+            // 1. Primero intentar obtener og:image del artículo original (más confiable)
+            $imagenOG = $tavily->obtenerImagenOG($pendiente['url']);
+            if (!empty($imagenOG)) {
+                $imagenUrl = $imagenOG;
+                $debugItem['imagen'] = 'og:image del original';
+            }
+            // 2. Fallback: usar imagen de Tavily (puede no corresponder al artículo)
+            elseif (!empty($pendiente['imagen_url'])) {
+                $imagenUrl = $pendiente['imagen_url'];
+                $debugItem['imagen'] = 'fallback Tavily';
+            }
+
             // Preparar datos para guardar
             $datosArticulo = [
                 'titulo' => $articuloGenerado['titulo'],
@@ -175,17 +190,12 @@ try {
                 'contenido_original' => mb_substr($contenido, 0, 5000),
                 'fuente_nombre' => $fuenteNombre,
                 'fuente_url' => $pendiente['url'],
-                'imagen_url' => $pendiente['imagen_url'] ?? null,
+                'imagen_url' => $imagenUrl,
                 'region' => $regionInfo['region'],
                 'pais_origen' => $regionInfo['pais'],
                 'categoria' => $articuloGenerado['categoria'] ?? 'noticias',
                 'tags' => $articuloGenerado['tags'] ?? []
             ];
-
-            // Si no hay imagen, intentar obtener og:image
-            if (empty($datosArticulo['imagen_url'])) {
-                $datosArticulo['imagen_url'] = $tavily->obtenerImagenOG($pendiente['url']);
-            }
 
             // Guardar artículo
             $articuloId = guardarArticulo($datosArticulo);
