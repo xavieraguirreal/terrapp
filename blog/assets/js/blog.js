@@ -751,19 +751,12 @@ function getShareUrl() {
 // ============================================
 
 async function registerView(id) {
-    // Solo registrar una vez por sesión
-    const viewed = sessionStorage.getItem(`terrapp_viewed_${id}`);
-    if (viewed) {
-        console.log('[TERRApp] Vista ya registrada en esta sesión para artículo', id);
-        return;
-    }
-
+    // Por ahora cuenta todas las visitas (sin restricción de sesión)
     try {
         const response = await fetch(`admin/api/registrar_vista.php?id=${id}`);
         const data = await response.json();
 
         if (data.success) {
-            sessionStorage.setItem(`terrapp_viewed_${id}`, 'true');
             console.log('[TERRApp] Vista registrada para artículo', id);
         } else {
             console.error('[TERRApp] Error al registrar vista:', data.error);
