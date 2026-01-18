@@ -55,6 +55,19 @@ try {
 
         // Guardar candidatas en cache
         if (!empty($todasLasCandidatas)) {
+            // Debug: mostrar por qué no se guardan
+            $debugCandidatas = [];
+            foreach (array_slice($todasLasCandidatas, 0, 5) as $c) {
+                $url = $c['url'] ?? '';
+                $titulo = $c['title'] ?? '';
+                $razon = 'OK';
+                if (empty($url)) $razon = 'URL vacía';
+                elseif (urlYaProcesada($url)) $razon = 'URL ya procesada';
+                elseif (!empty($titulo) && tituloEsSimilar($titulo)) $razon = 'Título similar';
+                $debugCandidatas[] = ['url' => substr($url, 0, 40), 'razon' => $razon];
+            }
+            $debug['candidatas_detalle'] = $debugCandidatas;
+
             $guardadas = guardarCandidatasPendientes($todasLasCandidatas);
             $debug['candidatas_guardadas'] = $guardadas;
             $pendientesDisponibles = contarPendientes();
