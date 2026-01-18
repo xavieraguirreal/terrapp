@@ -337,15 +337,28 @@ function renderArticle(art) {
     document.querySelector('meta[name="description"]')?.setAttribute('content', traducido.contenido.substring(0, 160));
     document.querySelector('meta[property="og:title"]')?.setAttribute('content', traducido.titulo);
 
-    // Breadcrumb
+    // Breadcrumb - usar traducción de categoría
     const categoria = CATEGORIAS[art.categoria] || { nombre: 'Noticias', icono: '📰' };
-    document.getElementById('breadcrumbCategory').textContent = categoria.nombre;
+    const catKeyMap = {
+        'huertos-urbanos': 'cat_huertos',
+        'compostaje': 'cat_compostaje',
+        'riego': 'cat_riego',
+        'plantas': 'cat_plantas',
+        'tecnologia': 'cat_tecnologia',
+        'recetas': 'cat_recetas',
+        'comunidad': 'cat_comunidad',
+        'noticias': 'cat_noticias'
+    };
+    const catKey = catKeyMap[art.categoria] || 'cat_noticias';
+    const categoriaNombre = (typeof BLOG_I18N !== 'undefined') ? BLOG_I18N.t(catKey) || categoria.nombre : categoria.nombre;
+    document.getElementById('breadcrumbCategory').textContent = categoriaNombre;
 
     // Header
+    const t = (key) => (typeof BLOG_I18N !== 'undefined') ? BLOG_I18N.t(key) : key;
     document.getElementById('articleTitle').textContent = traducido.titulo;
-    document.getElementById('articleDate').innerHTML += ' ' + formatDate(art.fecha_publicacion);
-    document.getElementById('articleReadTime').innerHTML += ` ${art.tiempo_lectura} min de lectura`;
-    document.getElementById('articleViews').innerHTML += ` ${art.vistas} vistas`;
+    document.getElementById('articleDate').innerHTML += ' ' + formatDateLocalized(art.fecha_publicacion);
+    document.getElementById('articleReadTime').innerHTML += ` ${art.tiempo_lectura} ${t('min_read')}`;
+    document.getElementById('articleViews').innerHTML += ` ${art.vistas} ${t('views')}`;
     document.getElementById('articleRegion').innerHTML = art.region === 'sudamerica'
         ? `🌎 ${art.pais_origen || 'Sudamérica'}`
         : '🌐 Internacional';
@@ -691,6 +704,35 @@ function formatDate(dateStr) {
     if (!dateStr) return '';
     const date = new Date(dateStr);
     return date.toLocaleDateString('es-AR', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+    });
+}
+
+function formatDateLocalized(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+
+    // Obtener locale según idioma actual
+    let locale = 'es-AR';
+    if (typeof BLOG_I18N !== 'undefined') {
+        const lang = BLOG_I18N.currentLang || 'es_AR';
+        const localeMap = {
+            'pt_BR': 'pt-BR',
+            'en_GY': 'en-US',
+            'fr_GF': 'fr-FR',
+            'nl_SR': 'nl-NL'
+        };
+        // Para español, usar el país específico
+        if (lang.startsWith('es_')) {
+            locale = lang.replace('_', '-');
+        } else {
+            locale = localeMap[lang] || 'es-AR';
+        }
+    }
+
+    return date.toLocaleDateString(locale, {
         day: 'numeric',
         month: 'short',
         year: 'numeric'
