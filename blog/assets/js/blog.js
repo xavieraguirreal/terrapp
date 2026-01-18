@@ -246,16 +246,19 @@ function renderFeatured() {
     const featured = articulos[0];
     const traducido = getArticuloEnIdioma(featured);
 
+    const imagenHtml = featured.imagen_url
+        ? `<img src="${featured.imagen_url}" alt="${escapeHtml(traducido.titulo)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">`
+        : `<div class="w-full h-full image-placeholder placeholder-lg">
+               <span class="placeholder-title">${escapeHtml(traducido.titulo)}</span>
+           </div>`;
+
     container.innerHTML = `
         <a href="scriptum.php?titulus=${featured.slug}" class="block relative rounded-2xl overflow-hidden shadow-xl group">
             <div class="aspect-[21/9] bg-gray-200 dark:bg-gray-700">
-                ${featured.imagen_url
-                    ? `<img src="${featured.imagen_url}" alt="${escapeHtml(traducido.titulo)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">`
-                    : '<div class="w-full h-full image-placeholder"></div>'
-                }
+                ${imagenHtml}
             </div>
-            <div class="absolute inset-0 featured-gradient"></div>
-            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-10 text-white">
+            ${featured.imagen_url ? '<div class="absolute inset-0 featured-gradient"></div>' : ''}
+            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-10 text-white ${featured.imagen_url ? '' : 'hidden'}">
                 <span class="inline-block px-3 py-1 bg-forest-600 rounded-full text-sm mb-3">
                     ${CATEGORIAS[featured.categoria]?.icono || '📰'} ${CATEGORIAS[featured.categoria]?.nombre || 'Noticias'}
                 </span>
@@ -277,14 +280,17 @@ function createArticleCard(art) {
     const isSaved = isInReadingList(art.id);
     const traducido = getArticuloEnIdioma(art);
 
+    const imagenHtml = art.imagen_url
+        ? `<img src="${art.imagen_url}" alt="${escapeHtml(traducido.titulo)}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy">`
+        : `<div class="w-full h-full image-placeholder placeholder-card">
+               <span class="placeholder-title">${escapeHtml(traducido.titulo)}</span>
+           </div>`;
+
     return `
         <article class="article-card bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md">
             <a href="scriptum.php?titulus=${art.slug}" class="block">
                 <div class="h-48 bg-gray-200 dark:bg-gray-700 relative overflow-hidden">
-                    ${art.imagen_url
-                        ? `<img src="${art.imagen_url}" alt="${escapeHtml(traducido.titulo)}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy">`
-                        : '<div class="w-full h-full image-placeholder"></div>'
-                    }
+                    ${imagenHtml}
                     <span class="absolute top-3 left-3 px-2 py-1 bg-white/90 dark:bg-gray-800/90 rounded-full text-xs font-medium">
                         ${categoria.icono} ${categoria.nombre}
                     </span>
@@ -352,9 +358,12 @@ function renderArticle(art) {
         imgElement.alt = traducido.titulo;
         imgContainer.classList.remove('hidden');
     } else {
-        // Mostrar placeholder si no hay imagen
+        // Mostrar placeholder con título si no hay imagen
         imgContainer.classList.remove('hidden');
-        imgContainer.innerHTML = '<div class="w-full h-64 md:h-96 image-placeholder rounded-xl"></div>';
+        imgContainer.innerHTML = `
+            <div class="w-full h-64 md:h-96 image-placeholder placeholder-lg rounded-xl">
+                <span class="placeholder-title">${escapeHtml(traducido.titulo)}</span>
+            </div>`;
     }
 
     // Contenido
@@ -412,13 +421,15 @@ function loadRelatedArticles(currentArt) {
     document.getElementById('relatedSection').classList.remove('hidden');
     document.getElementById('relatedArticles').innerHTML = related.map(art => {
         const traducido = getArticuloEnIdioma(art);
+        const imagenHtml = art.imagen_url
+            ? `<img src="${art.imagen_url}" alt="" class="w-full h-full object-cover">`
+            : `<div class="w-full h-full image-placeholder placeholder-card">
+                   <span class="placeholder-title">${escapeHtml(traducido.titulo)}</span>
+               </div>`;
         return `
             <a href="scriptum.php?titulus=${art.slug}" class="block bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition">
                 <div class="h-32 bg-gray-200 dark:bg-gray-700">
-                    ${art.imagen_url
-                        ? `<img src="${art.imagen_url}" alt="" class="w-full h-full object-cover">`
-                        : '<div class="w-full h-full image-placeholder"></div>'
-                    }
+                    ${imagenHtml}
                 </div>
                 <div class="p-4">
                     <h4 class="font-semibold text-sm line-clamp-2">${escapeHtml(traducido.titulo)}</h4>

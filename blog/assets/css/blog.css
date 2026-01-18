@@ -209,17 +209,77 @@
     stroke: #2d7553;
 }
 
-/* Image placeholder */
+/* Image placeholder con título */
 .image-placeholder {
-    background: linear-gradient(135deg, #2d7553 0%, #558b2f 100%);
+    background: linear-gradient(135deg, #2d7553 0%, #3d9268 50%, #558b2f 100%);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
+/* Patrón decorativo de fondo */
+.image-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 40%);
+    pointer-events: none;
+}
+
+/* Emoji decorativo */
 .image-placeholder::after {
     content: '🌱';
-    font-size: 3rem;
+    font-size: 2.5rem;
+    margin-top: 0.5rem;
+    opacity: 0.9;
+}
+
+/* Título en el placeholder */
+.image-placeholder .placeholder-title {
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.4;
+    max-width: 90%;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+/* Variante grande para artículo destacado */
+.image-placeholder.placeholder-lg .placeholder-title {
+    font-size: 1.5rem;
+    -webkit-line-clamp: 4;
+}
+
+.image-placeholder.placeholder-lg::after {
+    font-size: 3.5rem;
+}
+
+/* Variante para card de artículo */
+.image-placeholder.placeholder-card .placeholder-title {
+    font-size: 0.875rem;
+    -webkit-line-clamp: 2;
+}
+
+.image-placeholder.placeholder-card::after {
+    font-size: 2rem;
+}
+
+/* Hover effect */
+.article-card:hover .image-placeholder {
+    background: linear-gradient(135deg, #265e44 0%, #2d7553 50%, #3d9268 100%);
 }
 
 /* Bento grid for featured layout */
