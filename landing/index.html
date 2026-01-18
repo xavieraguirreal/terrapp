@@ -264,7 +264,7 @@
                     <span class="text-sm opacity-70">Cargando noticias...</span>
                 </div>
             </div>
-            <a href="blog/" class="flex-shrink-0 bg-forest-800 hover:bg-forest-900 px-4 py-1 text-sm font-medium transition-colors z-10" data-i18n="ticker_view_all">
+            <a href="../blog/" class="flex-shrink-0 bg-forest-800 hover:bg-forest-900 px-4 py-1 text-sm font-medium transition-colors z-10" data-i18n="ticker_view_all">
                 Ver todo →
             </a>
         </div>
@@ -1707,7 +1707,28 @@
 
             // Load Blog Articles
             loadBlogArticles();
+
+            // Escuchar cambios de idioma para recargar contenido traducido
+            document.addEventListener('terrapp:langchange', () => {
+                loadNewsTicker();
+                loadBlogArticles();
+            });
         });
+
+        // Helper para obtener título traducido
+        function getArticuloTraducido(art) {
+            const lang = (typeof TERRAPP_I18N !== 'undefined') ? TERRAPP_I18N.currentLang : 'es_AR';
+            const langBase = lang ? lang.split('_')[0] : 'es';
+
+            // Si no es español y hay traducción disponible
+            if (langBase !== 'es' && art.traducciones && art.traducciones[langBase]) {
+                return {
+                    titulo: art.traducciones[langBase].titulo || art.titulo,
+                    contenido: art.traducciones[langBase].contenido || art.contenido
+                };
+            }
+            return { titulo: art.titulo, contenido: art.contenido };
+        }
 
         // News Ticker
         async function loadNewsTicker() {
@@ -1726,13 +1747,14 @@
                     return;
                 }
 
-                // Crear contenido duplicado para efecto de scroll infinito
-                const items = articulos.map(art =>
-                    `<span class="ticker-item">
+                // Crear contenido con títulos traducidos
+                const items = articulos.map(art => {
+                    const traducido = getArticuloTraducido(art);
+                    return `<span class="ticker-item">
                         <span class="ticker-dot"></span>
-                        <a href="../blog/scriptum.php?titulus=${art.slug}">${art.titulo}</a>
-                    </span>`
-                ).join('');
+                        <a href="../blog/scriptum.php?titulus=${art.slug}">${traducido.titulo}</a>
+                    </span>`;
+                }).join('');
 
                 // Duplicar para scroll continuo
                 container.innerHTML = items + items;
@@ -1765,14 +1787,22 @@
                     return;
                 }
 
+                // Obtener locale para fecha
+                const lang = (typeof TERRAPP_I18N !== 'undefined') ? TERRAPP_I18N.currentLang : 'es_AR';
+                const localeMap = {
+                    'pt_BR': 'pt-BR', 'en_GY': 'en-US', 'fr_GF': 'fr-FR', 'nl_SR': 'nl-NL'
+                };
+                const dateLocale = localeMap[lang] || lang.replace('_', '-');
+
                 container.innerHTML = articulos.map(art => {
-                    const fecha = new Date(art.fecha_publicacion).toLocaleDateString('es-AR', {
+                    const traducido = getArticuloTraducido(art);
+                    const fecha = new Date(art.fecha_publicacion).toLocaleDateString(dateLocale, {
                         day: 'numeric', month: 'short', year: 'numeric'
                     });
                     const imagenHtml = art.imagen_url
-                        ? `<img src="${art.imagen_url}" alt="${art.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
+                        ? `<img src="${art.imagen_url}" alt="${traducido.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
                         : `<div class="w-full h-full flex flex-col items-center justify-center text-white p-4" style="background: linear-gradient(135deg, #2d7553 0%, #3d9268 50%, #558b2f 100%);">
-                               <span class="text-sm font-semibold text-center line-clamp-3 mb-2">${art.titulo}</span>
+                               <span class="text-sm font-semibold text-center line-clamp-3 mb-2">${traducido.titulo}</span>
                                <span class="text-3xl">🌱</span>
                            </div>`;
                     return `
@@ -1782,8 +1812,8 @@
                             </div>
                             <div class="p-5">
                                 <div class="text-sm text-earth-500 mb-2">${fecha} · ${art.tiempo_lectura} min</div>
-                                <h3 class="font-bold text-earth-900 mb-2 group-hover:text-forest-600 transition-colors line-clamp-2">${art.titulo}</h3>
-                                <p class="text-earth-600 text-sm line-clamp-2">${art.contenido.substring(0, 100)}...</p>
+                                <h3 class="font-bold text-earth-900 mb-2 group-hover:text-forest-600 transition-colors line-clamp-2">${traducido.titulo}</h3>
+                                <p class="text-earth-600 text-sm line-clamp-2">${traducido.contenido.substring(0, 100)}...</p>
                             </div>
                         </a>
                     `;

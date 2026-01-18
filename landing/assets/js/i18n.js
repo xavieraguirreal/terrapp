@@ -3395,6 +3395,11 @@ const TERRAPP_I18N = {
 
         // Cerrar menú
         document.getElementById('langMenu').classList.add('hidden');
+
+        // Disparar evento para que otros componentes se actualicen
+        document.dispatchEvent(new CustomEvent('terrapp:langchange', {
+            detail: { lang: langCode }
+        }));
     },
 
     // Actualizar mockups según idioma
