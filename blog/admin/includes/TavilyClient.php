@@ -14,8 +14,9 @@ class TavilyClient {
 
     /**
      * Busca noticias recientes sobre un tema
+     * @param array $includeDomains Dominios específicos donde buscar (opcional)
      */
-    public function search(string $query, int $maxResults = 5): array {
+    public function search(string $query, int $maxResults = 5, array $includeDomains = []): array {
         $url = $this->baseUrl . '/search';
 
         $data = [
@@ -28,6 +29,11 @@ class TavilyClient {
             'max_results' => $maxResults,
             'topic' => 'news'
         ];
+
+        // Si hay dominios específicos, agregarlos
+        if (!empty($includeDomains)) {
+            $data['include_domains'] = $includeDomains;
+        }
 
         $response = $this->makeRequest($url, $data);
 
@@ -43,6 +49,48 @@ class TavilyClient {
         }
 
         return $results;
+    }
+
+    /**
+     * Busca noticias combinando búsqueda general + sitios preferidos
+     * @param array $sitiosPreferidos Array de dominios preferidos
+     * @return array Resultados combinados, sitios preferidos primero
+     */
+    public function searchWithPreferredSites(string $query, int $maxResults = 5, array $sitiosPreferidos = []): array {
+        $resultados = [];
+        $urlsVistas = [];
+
+        // 1. Primero buscar en sitios preferidos (si hay)
+        if (!empty($sitiosPreferidos)) {
+            try {
+                $resultadosPreferidos = $this->search($query, 3, $sitiosPreferidos);
+                foreach ($resultadosPreferidos as $r) {
+                    $r['_preferido'] = true; // Marcar como de sitio preferido
+                    $resultados[] = $r;
+                    $urlsVistas[$r['url']] = true;
+                }
+            } catch (Exception $e) {
+                // Si falla, continuar con búsqueda general
+                error_log("Error buscando en sitios preferidos: " . $e->getMessage());
+            }
+        }
+
+        // 2. Búsqueda general (sin restricción de dominio)
+        try {
+            $resultadosGenerales = $this->search($query, $maxResults);
+            foreach ($resultadosGenerales as $r) {
+                // Evitar duplicados
+                if (!isset($urlsVistas[$r['url']])) {
+                    $r['_preferido'] = false;
+                    $resultados[] = $r;
+                    $urlsVistas[$r['url']] = true;
+                }
+            }
+        } catch (Exception $e) {
+            error_log("Error en búsqueda general: " . $e->getMessage());
+        }
+
+        return $resultados;
     }
 
     /**

@@ -36,12 +36,25 @@ try {
         $topicsSeleccionados = array_slice($topics, 0, 3);
         $debug['topics_buscados'] = $topicsSeleccionados;
 
+        // Obtener sitios preferidos
+        $sitiosPreferidos = obtenerSitiosPreferidos(true); // Solo activos
+        $dominiosPreferidos = array_column($sitiosPreferidos, 'dominio');
+        $debug['sitios_preferidos'] = $dominiosPreferidos;
+
         $todasLasCandidatas = [];
 
         foreach ($topicsSeleccionados as $topic) {
             try {
-                $resultados = $tavily->search($topic, 5);
+                // Usar búsqueda combinada: sitios preferidos + general
+                $resultados = $tavily->searchWithPreferredSites($topic, 5, $dominiosPreferidos);
                 $debug['tavily_' . substr($topic, 0, 20)] = count($resultados) . ' resultados';
+
+                // Contar cuántos son de sitios preferidos
+                $dePreferidos = count(array_filter($resultados, fn($r) => $r['_preferido'] ?? false));
+                if ($dePreferidos > 0) {
+                    $debug['tavily_' . substr($topic, 0, 20) . '_preferidos'] = $dePreferidos;
+                }
+
                 foreach ($resultados as $r) {
                     $todasLasCandidatas[] = $r;
                 }

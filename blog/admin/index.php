@@ -68,8 +68,8 @@ $regionSugerida = sugerirRegion();
                     </div>
                 </div>
                 <nav class="flex gap-4">
+                    <a href="sitios.php" class="hover:text-green-200 transition">Sitios Preferidos</a>
                     <a href="../" class="hover:text-green-200 transition">Ver Blog</a>
-                    <a href="../index.html" class="hover:text-green-200 transition">Ver Blog</a>
                 </nav>
             </div>
         </div>

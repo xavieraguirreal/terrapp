@@ -877,3 +877,55 @@ function obtenerCategorias(): array {
 
     return $stmt->fetchAll();
 }
+
+// ============================================
+// SITIOS PREFERIDOS
+// ============================================
+
+/**
+ * Obtiene todos los sitios preferidos
+ */
+function obtenerSitiosPreferidos(bool $soloActivos = false): array {
+    $pdo = getConnection();
+
+    $sql = "SELECT * FROM blog_sitios_preferidos";
+    if ($soloActivos) {
+        $sql .= " WHERE activo = 1";
+    }
+    $sql .= " ORDER BY prioridad DESC, nombre ASC";
+
+    $stmt = $pdo->query($sql);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Agrega un sitio preferido
+ */
+function agregarSitioPreferido(string $dominio, string $nombre, int $prioridad = 1): bool {
+    $pdo = getConnection();
+
+    try {
+        $stmt = $pdo->prepare("INSERT INTO blog_sitios_preferidos (dominio, nombre, prioridad) VALUES (?, ?, ?)");
+        return $stmt->execute([$dominio, $nombre, $prioridad]);
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
+/**
+ * Elimina un sitio preferido
+ */
+function eliminarSitioPreferido(int $id): bool {
+    $pdo = getConnection();
+    $stmt = $pdo->prepare("DELETE FROM blog_sitios_preferidos WHERE id = ?");
+    return $stmt->execute([$id]);
+}
+
+/**
+ * Activa/desactiva un sitio preferido
+ */
+function toggleSitioPreferido(int $id): bool {
+    $pdo = getConnection();
+    $stmt = $pdo->prepare("UPDATE blog_sitios_preferidos SET activo = NOT activo WHERE id = ?");
+    return $stmt->execute([$id]);
+}
