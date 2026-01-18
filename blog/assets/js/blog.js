@@ -88,6 +88,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Actualizar contador de lista de lectura
     updateReadingListCount();
 
+    // Configurar botón scroll-to-top
+    setupScrollToTop();
+
     // Cargar artículos si estamos en index
     if (document.getElementById('articlesGrid')) {
         await loadArticles();
@@ -827,6 +830,31 @@ function loadThemePreference() {
     if (saved === 'dark' || (!saved && prefersDark)) {
         document.documentElement.setAttribute('data-theme', 'dark');
     }
+}
+
+// ============================================
+// SCROLL TO TOP
+// ============================================
+
+function setupScrollToTop() {
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    if (!scrollTopBtn) return;
+
+    // Mostrar/ocultar botón según scroll
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 500) {
+            scrollTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+            scrollTopBtn.classList.add('opacity-100');
+        } else {
+            scrollTopBtn.classList.add('opacity-0', 'pointer-events-none');
+            scrollTopBtn.classList.remove('opacity-100');
+        }
+    });
+
+    // Click para subir
+    scrollTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 }
 
 // ============================================
