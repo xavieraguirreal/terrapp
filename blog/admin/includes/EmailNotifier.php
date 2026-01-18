@@ -40,10 +40,10 @@ class EmailNotifier {
             $regionTexto .= " ({$articulo['pais_origen']})";
         }
 
-        // Resúmenes
-        $contenidoResumen = mb_substr(strip_tags($articulo['contenido']), 0, 250) . '...';
-        $originalResumen = mb_substr(strip_tags($articulo['contenido_original'] ?? ''), 0, 250) . '...';
-        $opinionResumen = mb_substr(strip_tags($articulo['opinion_editorial'] ?? ''), 0, 200);
+        // Contenido completo (formateado para email)
+        $contenidoCompleto = nl2br(htmlspecialchars($articulo['contenido'] ?? ''));
+        $originalCompleto = nl2br(htmlspecialchars($articulo['contenido_original'] ?? ''));
+        $opinionCompleta = nl2br(htmlspecialchars($articulo['opinion_editorial'] ?? ''));
 
         // Tips
         $tipsHtml = '';
@@ -92,7 +92,7 @@ class EmailNotifier {
             <td style="padding: 15px 20px;">
                 <div style="background: #f8f8f8; border-left: 4px solid #2d7553; padding: 15px; border-radius: 0 8px 8px 0;">
                     <strong style="color: #2d7553;">📝 CONTENIDO GENERADO:</strong>
-                    <p style="margin: 10px 0 0; color: #444;">{$contenidoResumen}</p>
+                    <div style="margin: 10px 0 0; color: #444; line-height: 1.7;">{$contenidoCompleto}</div>
                 </div>
             </td>
         </tr>
@@ -100,9 +100,12 @@ class EmailNotifier {
         <!-- Contenido original -->
         <tr>
             <td style="padding: 0 20px 15px;">
-                <div style="background: #fff8e6; border-left: 4px solid #f5a623; padding: 15px; border-radius: 0 8px 8px 0;">
+                <div style="background: #fff8e6; border-left: 4px solid #f5a623; padding: 15px; border-radius: 0 8px 8px 0; max-height: 400px; overflow-y: auto;">
                     <strong style="color: #b8860b;">📄 CONTENIDO ORIGINAL:</strong>
-                    <p style="margin: 10px 0 0; color: #666; font-size: 13px;">{$originalResumen}</p>
+                    <p style="margin: 8px 0; font-size: 12px;">
+                        <a href="{$articulo['fuente_url']}" target="_blank" style="color: #b8860b;">🔗 Ver en sitio original →</a>
+                    </p>
+                    <div style="margin: 10px 0 0; color: #666; font-size: 13px; line-height: 1.6;">{$originalCompleto}</div>
                 </div>
             </td>
         </tr>
@@ -112,7 +115,7 @@ class EmailNotifier {
             <td style="padding: 0 20px 15px;">
                 <div style="background: #e8f4e8; border-left: 4px solid #558b2f; padding: 15px; border-radius: 0 8px 8px 0;">
                     <strong style="color: #33691e;">🌱 OPINIÓN EDITORIAL:</strong>
-                    <p style="margin: 10px 0 0; color: #444;">{$opinionResumen}</p>
+                    <div style="margin: 10px 0 0; color: #444; line-height: 1.7;">{$opinionCompleta}</div>
                 </div>
             </td>
         </tr>
