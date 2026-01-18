@@ -120,11 +120,14 @@ try {
 
             // Validar relevancia con OpenAI
             $titulo = $pendiente['titulo'] ?? '';
-            $debugItem['validando_relevancia'] = true;
-            if (!$openai->validarRelevancia($titulo, $contenido)) {
+            $debugItem['titulo'] = mb_substr($titulo, 0, 50);
+            $esRelevante = $openai->validarRelevancia($titulo, $contenido);
+            $debugItem['openai_respuesta'] = $openai->ultimaRespuestaValidacion;
+
+            if (!$esRelevante) {
                 marcarPendienteUsada($pendiente['id']);
                 registrarUrl($pendiente['url']);
-                $debugItem['resultado'] = 'No relevante (OpenAI)';
+                $debugItem['resultado'] = 'No relevante (OpenAI dijo: ' . $openai->ultimaRespuestaValidacion . ')';
                 $debug['procesamiento'][] = $debugItem;
                 continue;
             }

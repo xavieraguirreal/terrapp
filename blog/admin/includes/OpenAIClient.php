@@ -43,28 +43,28 @@ class OpenAIClient {
         $this->model = $model;
     }
 
+    // Variable para guardar última respuesta de validación (debug)
+    public ?string $ultimaRespuestaValidacion = null;
+
     /**
      * Valida si una noticia es relevante para agricultura urbana
      */
     public function validarRelevancia(string $titulo, string $contenido): bool {
         $temasLista = implode(', ', $this->temasValidos);
 
-        $prompt = "Analiza si esta noticia sería INTERESANTE para lectores de un blog sobre HUERTOS y JARDINERÍA.
-
-Temas que SÍ son relevantes: {$temasLista}, jardinería casera, cultivo de flores, vegetales, frutas, plantas comestibles, técnicas de cultivo, consejos de jardinería, sostenibilidad, medio ambiente relacionado con plantas.
+        $prompt = "¿Esta noticia es sobre PLANTAS, JARDINERÍA, CULTIVOS o HUERTOS?
 
 TÍTULO: {$titulo}
 
-CONTENIDO (primeros 500 caracteres):
-" . mb_substr($contenido, 0, 500) . "
+CONTENIDO:
+" . mb_substr($contenido, 0, 300) . "
 
-Responde SOLO con 'SI' o 'NO'.
-- SI = Trata sobre plantas, cultivos, jardinería, huertos, vegetales, flores, compost, riego, semillas, o cualquier tema útil para alguien que cultiva en casa
-- NO = No tiene relación con plantas/cultivo (política, deportes, celebridades, crimen, finanzas sin relación agrícola)
+Responde SOLO 'SI' o 'NO'.
+SI = habla de plantas, flores, vegetales, sembrar, cultivar, jardín, huerto, compost, riego
+NO = no tiene nada que ver con plantas";
 
-Sé INCLUSIVO: si hay duda, responde SI.";
-
-        $response = $this->chatSimple($prompt, 15);
+        $response = $this->chatSimple($prompt, 10);
+        $this->ultimaRespuestaValidacion = $response; // Guardar para debug
         $respuesta = strtoupper(trim($response));
 
         return strpos($respuesta, 'SI') !== false;
