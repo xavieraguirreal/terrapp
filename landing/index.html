@@ -248,6 +248,28 @@
         </div>
     </nav>
 
+    <!-- News Ticker -->
+    <div id="newsTicker" class="bg-gradient-to-r from-forest-700 to-forest-600 text-white py-2 overflow-hidden">
+        <div class="flex items-center">
+            <div class="flex-shrink-0 bg-forest-800 px-4 py-1 flex items-center gap-2 z-10">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
+                </span>
+                <span class="text-sm font-semibold whitespace-nowrap" data-i18n="ticker_label">Blog</span>
+            </div>
+            <div class="ticker-wrapper flex-1 overflow-hidden">
+                <div id="tickerContent" class="ticker-content flex gap-8 animate-ticker">
+                    <!-- Se llena dinámicamente con noticias del blog -->
+                    <span class="text-sm opacity-70">Cargando noticias...</span>
+                </div>
+            </div>
+            <a href="blog/" class="flex-shrink-0 bg-forest-800 hover:bg-forest-900 px-4 py-1 text-sm font-medium transition-colors z-10" data-i18n="ticker_view_all">
+                Ver todo →
+            </a>
+        </div>
+    </div>
+
     <!-- Hero Section -->
     <section class="relative min-h-[90vh] flex items-center overflow-hidden">
         <!-- Background Pattern -->
@@ -1680,9 +1702,46 @@
                 setTimeout(() => loader.style.display = 'none', 500);
             }, 800);
 
+            // Load News Ticker
+            loadNewsTicker();
+
             // Load Blog Articles
             loadBlogArticles();
         });
+
+        // News Ticker
+        async function loadNewsTicker() {
+            const container = document.getElementById('tickerContent');
+            if (!container) return;
+
+            try {
+                const response = await fetch('../blog/data/articulos.json');
+                if (!response.ok) throw new Error('No articles');
+
+                const data = await response.json();
+                const articulos = (data.articulos || []).slice(0, 10);
+
+                if (articulos.length === 0) {
+                    container.innerHTML = '<span class="text-sm opacity-70">Próximamente noticias del blog</span>';
+                    return;
+                }
+
+                // Crear contenido duplicado para efecto de scroll infinito
+                const items = articulos.map(art =>
+                    `<span class="ticker-item">
+                        <span class="ticker-dot"></span>
+                        <a href="../blog/scriptum.php?titulus=${art.slug}">${art.titulo}</a>
+                    </span>`
+                ).join('');
+
+                // Duplicar para scroll continuo
+                container.innerHTML = items + items;
+
+            } catch (error) {
+                console.log('No hay artículos para el ticker');
+                container.innerHTML = '<span class="text-sm opacity-70">Próximamente noticias del blog</span>';
+            }
+        }
 
         // Blog Carousel
         async function loadBlogArticles() {
@@ -1711,7 +1770,7 @@
                         day: 'numeric', month: 'short', year: 'numeric'
                     });
                     return `
-                        <a href="../blog/scriptum.html?titulus=${art.slug}" class="block bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
+                        <a href="../blog/scriptum.php?titulus=${art.slug}" class="block bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
                             <div class="h-48 bg-forest-100 overflow-hidden">
                                 ${art.imagen_url
                                     ? `<img src="${art.imagen_url}" alt="${art.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`

@@ -250,6 +250,9 @@ const TERRAPP_I18N = {
             blog_title: 'Noticias de Agricultura Urbana',
             blog_subtitle: 'Tips, noticias y consejos sobre huertos urbanos para Sudamérica',
             blog_view_all: 'Ver todos los artículos',
+            // Ticker
+            ticker_label: 'Blog',
+            ticker_view_all: 'Ver todo →',
             // Terms page
             terms_back: 'Volver',
             terms_title: 'Términos y Condiciones',
