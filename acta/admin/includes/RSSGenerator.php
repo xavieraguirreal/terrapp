@@ -9,7 +9,7 @@ class RSSGenerator {
     private string $outputPath;
 
     public function __construct() {
-        $this->blogUrl = BLOG_URL ?? 'https://terrapp.verumax.com/blog/';
+        $this->blogUrl = BLOG_URL ?? 'https://terrapp.verumax.com/acta/';
         $this->outputPath = __DIR__ . '/../../feed.xml';
     }
 
@@ -60,7 +60,7 @@ class RSSGenerator {
      * Genera un item del RSS
      */
     private function generarItem(array $art): string {
-        $link = $this->blogUrl . 'articulo.html?slug=' . urlencode($art['slug']);
+        $link = $this->blogUrl . 'scriptum.html?titulus=' . urlencode($art['slug']);
         $fecha = isset($art['fecha_publicacion'])
             ? date('r', strtotime($art['fecha_publicacion']))
             : date('r');
