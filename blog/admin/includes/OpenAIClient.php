@@ -48,48 +48,27 @@ class OpenAIClient {
 
     /**
      * Valida si una noticia es relevante para agricultura urbana
-     * Usa búsqueda de palabras clave + OpenAI como fallback
+     * Funciona con cualquier idioma
      */
     public function validarRelevancia(string $titulo, string $contenido): bool {
-        $texto = strtolower($titulo . ' ' . mb_substr($contenido, 0, 1000));
+        $prompt = "Is this article about PLANTS, GARDENING, FARMING, VEGETABLES, or URBAN AGRICULTURE?
 
-        // Palabras clave que indican relevancia
-        $keywords = [
-            'plant', 'garden', 'farm', 'crop', 'seed', 'vegetable', 'fruit',
-            'grow', 'harvest', 'soil', 'compost', 'organic', 'cultivation',
-            'agricultura', 'huerto', 'huerta', 'jardín', 'jardin', 'cultivo',
-            'sembrar', 'cosecha', 'planta', 'semilla', 'vegetal', 'hortaliza',
-            'compostaje', 'riego', 'fertiliz', 'urban farm', 'balcony', 'terrace',
-            'hydroponic', 'hidropon', 'permaculture', 'permacultura', 'agroecol',
-            'horticultur', 'greenhouse', 'invernadero', 'urban agricult',
-            'vertical garden', 'rooftop', 'indoor plant', 'herb', 'aromatic'
-        ];
+TITLE: {$titulo}
 
-        // Si contiene palabras clave, es relevante
-        foreach ($keywords as $keyword) {
-            if (strpos($texto, $keyword) !== false) {
-                $this->ultimaRespuestaValidacion = "KEYWORD: $keyword";
-                return true;
-            }
-        }
+CONTENT (first 400 chars):
+" . mb_substr($contenido, 0, 400) . "
 
-        // Palabras clave que indican NO relevante
-        $excludeKeywords = [
-            'movie', 'film', 'actor', 'actress', 'hollywood', 'netflix',
-            'football', 'soccer', 'basketball', 'tennis', 'celebrity',
-            'murder', 'crime', 'prison', 'court case', 'lawsuit'
-        ];
+Answer ONLY 'YES' or 'NO'.
+YES = about plants, gardens, crops, seeds, farming, vegetables, herbs, composting, soil
+NO = not related to plants/agriculture (politics, sports, movies, celebrities, crime)
 
-        foreach ($excludeKeywords as $keyword) {
-            if (strpos($texto, $keyword) !== false) {
-                $this->ultimaRespuestaValidacion = "EXCLUDED: $keyword";
-                return false;
-            }
-        }
+Be INCLUSIVE: if in doubt, answer YES.";
 
-        // Si no hay keywords claros, aceptar (ser inclusivo)
-        $this->ultimaRespuestaValidacion = "NO_KEYWORD_FOUND_BUT_ACCEPTED";
-        return true;
+        $response = $this->chatSimple($prompt, 10);
+        $this->ultimaRespuestaValidacion = $response;
+        $respuesta = strtoupper(trim($response));
+
+        return strpos($respuesta, 'YES') !== false || strpos($respuesta, 'SI') !== false;
     }
 
     /**
