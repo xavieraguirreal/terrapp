@@ -23,7 +23,7 @@ nul
 # blog/admin/config/config.local.php
 
 # Config con API keys sensibles (subir manualmente por FTP)
-acta/admin/config/config.php
+blog/admin/config/config.php
 
 # Cache
 *.cache

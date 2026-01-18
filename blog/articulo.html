@@ -281,10 +281,10 @@
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             const id = params.get('id');
-            const titulus = params.get('titulus');
+            const slug = params.get('slug');
 
-            if (id || titulus) {
-                loadArticle(id, titulus);
+            if (id || slug) {
+                loadArticle(id, slug);
             } else {
                 showNotFound();
             }

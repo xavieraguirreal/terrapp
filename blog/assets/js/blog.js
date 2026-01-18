@@ -176,7 +176,7 @@ function renderFeatured() {
     const featured = articulos[0];
 
     container.innerHTML = `
-        <a href="scriptum.html?titulus=${featured.slug}" class="block relative rounded-2xl overflow-hidden shadow-xl group">
+        <a href="articulo.html?slug=${featured.slug}" class="block relative rounded-2xl overflow-hidden shadow-xl group">
             <div class="aspect-[21/9] bg-gray-200 dark:bg-gray-700">
                 ${featured.imagen_url
                     ? `<img src="${featured.imagen_url}" alt="${escapeHtml(featured.titulo)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">`
@@ -207,7 +207,7 @@ function createArticleCard(art) {
 
     return `
         <article class="article-card bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md">
-            <a href="scriptum.html?titulus=${art.slug}" class="block">
+            <a href="articulo.html?slug=${art.slug}" class="block">
                 <div class="h-48 bg-gray-200 dark:bg-gray-700 relative overflow-hidden">
                     ${art.imagen_url
                         ? `<img src="${art.imagen_url}" alt="${escapeHtml(art.titulo)}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy">`
@@ -223,7 +223,7 @@ function createArticleCard(art) {
                     <span>${fecha} • ${art.tiempo_lectura} min</span>
                     <span>${art.region === 'sudamerica' ? '🌎' : '🌐'}</span>
                 </div>
-                <a href="scriptum.html?titulus=${art.slug}" class="block">
+                <a href="articulo.html?slug=${art.slug}" class="block">
                     <h3 class="font-bold text-lg mb-2 line-clamp-2 hover:text-forest-600 transition">
                         ${escapeHtml(art.titulo)}
                     </h3>
@@ -336,7 +336,7 @@ function loadRelatedArticles(currentArt) {
 
     document.getElementById('relatedSection').classList.remove('hidden');
     document.getElementById('relatedArticles').innerHTML = related.map(art => `
-        <a href="scriptum.html?titulus=${art.slug}" class="block bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition">
+        <a href="articulo.html?slug=${art.slug}" class="block bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition">
             <div class="h-32 bg-gray-200 dark:bg-gray-700">
                 ${art.imagen_url
                     ? `<img src="${art.imagen_url}" alt="" class="w-full h-full object-cover">`

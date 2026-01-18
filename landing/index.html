@@ -1539,7 +1539,7 @@
 
                 <!-- CTA -->
                 <div class="text-center">
-                    <a href="../acta/" class="inline-flex items-center gap-2 px-6 py-3 bg-forest-600 hover:bg-forest-700 text-white font-semibold rounded-lg transition-colors" data-i18n="blog_view_all">
+                    <a href="../blog/" class="inline-flex items-center gap-2 px-6 py-3 bg-forest-600 hover:bg-forest-700 text-white font-semibold rounded-lg transition-colors" data-i18n="blog_view_all">
                         Ver todos los artículos
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
@@ -1690,7 +1690,7 @@
             if (!container) return;
 
             try {
-                const response = await fetch('../acta/data/articulos.json');
+                const response = await fetch('../blog/data/articulos.json');
                 if (!response.ok) throw new Error('No articles');
 
                 const data = await response.json();
@@ -1711,7 +1711,7 @@
                         day: 'numeric', month: 'short', year: 'numeric'
                     });
                     return `
-                        <a href="../acta/scriptum.html?titulus=${art.slug}" class="block bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
+                        <a href="../blog/articulo.html?slug=${art.slug}" class="block bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
                             <div class="h-48 bg-forest-100 overflow-hidden">
                                 ${art.imagen_url
                                     ? `<img src="${art.imagen_url}" alt="${art.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`

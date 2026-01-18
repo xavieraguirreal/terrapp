@@ -10,7 +10,7 @@ class WebStoryGenerator {
 
     public function __construct() {
         $this->storiesPath = __DIR__ . '/../../stories/';
-        $this->blogUrl = BLOG_URL ?? 'https://terrapp.verumax.com/acta/';
+        $this->blogUrl = BLOG_URL ?? 'https://terrapp.verumax.com/blog/';
 
         if (!is_dir($this->storiesPath)) {
             mkdir($this->storiesPath, 0755, true);
@@ -118,7 +118,7 @@ HTML;
     }
 
     private function slideCTA(string $slug): string {
-        $url = $this->blogUrl . "scriptum.html?titulus={$slug}";
+        $url = $this->blogUrl . "articulo.html?slug={$slug}";
         return <<<HTML
     <amp-story-page id="cta">
       <amp-story-grid-layer template="fill" style="background: #1a1a1a;"></amp-story-grid-layer>
@@ -147,7 +147,7 @@ HTML;
   <script async src="https://cdn.ampproject.org/v0.js"></script>
   <script async custom-element="amp-story" src="https://cdn.ampproject.org/v0/amp-story-1.0.js"></script>
   <title>{$titulo} - TERRApp</title>
-  <link rel="canonical" href="{$this->blogUrl}scriptum.html?titulus={$articulo['slug']}">
+  <link rel="canonical" href="{$this->blogUrl}articulo.html?slug={$articulo['slug']}">
   <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
   <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
   <style amp-custom>

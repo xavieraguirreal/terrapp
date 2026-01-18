@@ -459,7 +459,7 @@ function generarRSSFeed(): bool {
 
     $articulos = $stmt->fetchAll();
 
-    $blogUrl = BLOG_URL ?? 'https://terrapp.verumax.com/acta/';
+    $blogUrl = BLOG_URL ?? 'https://terrapp.verumax.com/blog/';
 
     $rss = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
     $rss .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">' . "\n";
@@ -472,7 +472,7 @@ function generarRSSFeed(): bool {
     $rss .= '  <atom:link href="' . htmlspecialchars($blogUrl) . 'feed.xml" rel="self" type="application/rss+xml"/>' . "\n";
 
     foreach ($articulos as $art) {
-        $link = $blogUrl . 'scriptum.html?titulus=' . urlencode($art['slug']);
+        $link = $blogUrl . 'articulo.html?slug=' . urlencode($art['slug']);
         $descripcion = mb_substr(strip_tags($art['contenido']), 0, 300) . '...';
 
         $rss .= '  <item>' . "\n";
