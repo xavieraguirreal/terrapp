@@ -215,9 +215,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
                     <?php if ($articulo['imagen_url']): ?>
                     <div class="mt-4">
                         <img src="<?= htmlspecialchars($articulo['imagen_url']) ?>" alt="Imagen del artículo"
-                             class="w-full rounded-lg">
+                             class="w-full rounded-lg"
+                             onerror="this.src='../assets/images/placeholder.svg'; this.classList.add('opacity-50');">
+                        <p class="text-xs text-gray-400 mt-1 break-all"><?= htmlspecialchars($articulo['imagen_url']) ?></p>
                     </div>
                     <?php endif; ?>
+                    <div class="mt-3">
+                        <a href="subir_imagen.php?id=<?= $articulo['id'] ?>"
+                           class="inline-block text-sm text-forest-600 hover:text-forest-700 hover:underline">
+                            📤 <?= $articulo['imagen_url'] ? 'Cambiar imagen' : 'Subir imagen' ?>
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Contenido Original -->

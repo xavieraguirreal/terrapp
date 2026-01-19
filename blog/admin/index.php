@@ -75,6 +75,8 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
                 <nav class="flex gap-4">
                     <a href="stories.php" class="hover:text-green-200 transition">Web Stories</a>
                     <a href="sitios.php" class="hover:text-green-200 transition">Sitios</a>
+                    <a href="subir_imagen.php" class="hover:text-green-200 transition">📤 Subir Imagen</a>
+                    <a href="migrar_imagenes.php" class="hover:text-green-200 transition">🖼️ Migrar</a>
                     <a href="../" class="hover:text-green-200 transition">Ver Blog</a>
                 </nav>
             </div>

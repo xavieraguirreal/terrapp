@@ -156,6 +156,9 @@ $pendientes = $stmt->fetch()['total'];
             <p class="text-sm text-gray-500 mt-2 text-center">
                 Las imágenes se descargarán a <code>/blog/uploads/articulos/</code>
             </p>
+            <p class="text-sm text-gray-500 mt-2 text-center">
+                ¿Falló alguna descarga? <a href="subir_imagen.php" class="text-forest-600 hover:underline">📤 Subir imagen manualmente</a>
+            </p>
             <?php else: ?>
             <div class="bg-green-100 border border-green-300 rounded-lg p-4 text-center">
                 <p class="text-green-700 font-medium">✅ Todas las imágenes ya están en el servidor local</p>
@@ -187,6 +190,7 @@ $pendientes = $stmt->fetch()['total'];
                                     <span class="text-green-600">✅ Migrada</span>
                                 <?php else: ?>
                                     <span class="text-red-600">❌ Fallida</span>
+                                    <a href="subir_imagen.php?id=<?= $r['id'] ?>" class="ml-2 text-blue-600 hover:underline text-xs">📤 Subir manual</a>
                                 <?php endif; ?>
                             </td>
                         </tr>
