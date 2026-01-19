@@ -4,6 +4,10 @@
  * Para casos donde la descarga automática falla (ej: Cloudflare)
  */
 
+// Mostrar errores para debug
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 require_once __DIR__ . '/includes/auth.php';
 
 if (!verificarAcceso()) {
@@ -23,71 +27,80 @@ if (isset($_GET['id'])) {
 
 // Procesar subida
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subir'])) {
-    $articuloId = (int)($_POST['articulo_id'] ?? 0);
+    try {
+        $articuloId = (int)($_POST['articulo_id'] ?? 0);
 
-    if ($articuloId <= 0) {
-        $error = 'Selecciona un artículo válido';
-    } elseif (!isset($_FILES['imagen']) || $_FILES['imagen']['error'] !== UPLOAD_ERR_OK) {
-        $uploadErrors = [
-            UPLOAD_ERR_INI_SIZE => 'El archivo excede el tamaño máximo permitido',
-            UPLOAD_ERR_FORM_SIZE => 'El archivo excede el tamaño máximo del formulario',
-            UPLOAD_ERR_PARTIAL => 'El archivo se subió parcialmente',
-            UPLOAD_ERR_NO_FILE => 'No se seleccionó ningún archivo',
-            UPLOAD_ERR_NO_TMP_DIR => 'Falta la carpeta temporal',
-            UPLOAD_ERR_CANT_WRITE => 'Error al escribir el archivo',
-            UPLOAD_ERR_EXTENSION => 'Extensión PHP bloqueó la subida'
-        ];
-        $errorCode = $_FILES['imagen']['error'] ?? UPLOAD_ERR_NO_FILE;
-        $error = $uploadErrors[$errorCode] ?? 'Error desconocido al subir';
-    } else {
-        // Validar tipo de archivo
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimeType = finfo_file($finfo, $_FILES['imagen']['tmp_name']);
-        finfo_close($finfo);
+        if ($articuloId <= 0) {
+            throw new Exception('Selecciona un artículo válido');
+        }
 
-        if (!in_array($mimeType, $allowedTypes)) {
-            $error = 'Tipo de archivo no permitido. Solo JPG, PNG, GIF o WebP';
-        } else {
-            // Determinar extensión
-            $extensions = [
-                'image/jpeg' => 'jpg',
-                'image/png' => 'png',
-                'image/gif' => 'gif',
-                'image/webp' => 'webp'
+        if (!isset($_FILES['imagen']) || $_FILES['imagen']['error'] !== UPLOAD_ERR_OK) {
+            $uploadErrors = [
+                UPLOAD_ERR_INI_SIZE => 'El archivo excede el tamaño máximo permitido por PHP',
+                UPLOAD_ERR_FORM_SIZE => 'El archivo excede el tamaño máximo del formulario',
+                UPLOAD_ERR_PARTIAL => 'El archivo se subió parcialmente',
+                UPLOAD_ERR_NO_FILE => 'No se seleccionó ningún archivo',
+                UPLOAD_ERR_NO_TMP_DIR => 'Falta la carpeta temporal del servidor',
+                UPLOAD_ERR_CANT_WRITE => 'Error al escribir el archivo en disco',
+                UPLOAD_ERR_EXTENSION => 'Una extensión PHP bloqueó la subida'
             ];
-            $extension = $extensions[$mimeType];
+            $errorCode = $_FILES['imagen']['error'] ?? UPLOAD_ERR_NO_FILE;
+            throw new Exception($uploadErrors[$errorCode] ?? "Error desconocido al subir (código: {$errorCode})");
+        }
 
-            // Crear directorio si no existe
-            $uploadDir = __DIR__ . '/../uploads/articulos/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
+        // Validar tipo de archivo por extensión
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $originalName = $_FILES['imagen']['name'];
+        $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
 
-            // Nombre único
-            $filename = "art_{$articuloId}_" . time() . ".{$extension}";
-            $filepath = $uploadDir . $filename;
+        if (!in_array($extension, $allowedExtensions)) {
+            throw new Exception("Extensión no permitida: .{$extension}. Solo JPG, PNG, GIF o WebP");
+        }
 
-            // Mover archivo
-            if (move_uploaded_file($_FILES['imagen']['tmp_name'], $filepath)) {
-                // Actualizar en BD
-                $relativePath = "../uploads/articulos/{$filename}";
-                $pdo = getConnection();
-                $stmt = $pdo->prepare("UPDATE blog_articulos SET imagen_url = ? WHERE id = ?");
-                $stmt->execute([$relativePath, $articuloId]);
+        // Normalizar extensión
+        if ($extension === 'jpeg') {
+            $extension = 'jpg';
+        }
 
-                // Regenerar JSON si está publicado
-                $articulo = obtenerArticuloPorId($articuloId);
-                if ($articulo && $articulo['estado'] === 'publicado') {
-                    exportarArticulosJSON();
-                }
+        // Crear directorio si no existe
+        $uploadDir = __DIR__ . '/../uploads/articulos/';
 
-                $mensaje = "Imagen subida correctamente para el artículo #{$articuloId}";
-                $articuloSeleccionado = obtenerArticuloPorId($articuloId);
-            } else {
-                $error = 'Error al guardar el archivo en el servidor';
+        if (!is_dir($uploadDir)) {
+            if (!@mkdir($uploadDir, 0755, true)) {
+                throw new Exception("No se pudo crear el directorio de uploads. Verificar permisos.");
             }
         }
+
+        if (!is_writable($uploadDir)) {
+            throw new Exception("El directorio de uploads no tiene permisos de escritura.");
+        }
+
+        // Nombre único
+        $filename = "art_{$articuloId}_" . time() . ".{$extension}";
+        $filepath = $uploadDir . $filename;
+
+        // Mover archivo
+        if (!move_uploaded_file($_FILES['imagen']['tmp_name'], $filepath)) {
+            throw new Exception("Error al mover el archivo subido. Verificar permisos del servidor.");
+        }
+
+        // Actualizar en BD
+        $relativePath = "../uploads/articulos/{$filename}";
+        $pdo = getConnection();
+        $stmt = $pdo->prepare("UPDATE blog_articulos SET imagen_url = ? WHERE id = ?");
+        $stmt->execute([$relativePath, $articuloId]);
+
+        // Regenerar JSON si está publicado
+        $articulo = obtenerArticuloPorId($articuloId);
+        if ($articulo && $articulo['estado'] === 'publicado') {
+            exportarArticulosJSON();
+        }
+
+        $mensaje = "Imagen subida correctamente para el artículo #{$articuloId}";
+        $articuloSeleccionado = obtenerArticuloPorId($articuloId);
+
+    } catch (Exception $e) {
+        $error = $e->getMessage();
     }
 }
 
@@ -146,7 +159,7 @@ $articulos = $stmt->fetchAll();
 
         <?php if ($error): ?>
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            <?= htmlspecialchars($error) ?>
+            <strong>Error:</strong> <?= htmlspecialchars($error) ?>
         </div>
         <?php endif; ?>
 
@@ -200,10 +213,10 @@ $articulos = $stmt->fetchAll();
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Nueva Imagen
                     </label>
-                    <input type="file" name="imagen" accept="image/jpeg,image/png,image/gif,image/webp" required
+                    <input type="file" name="imagen" accept=".jpg,.jpeg,.png,.gif,.webp" required
                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-forest-500"
                            onchange="previewNueva(this)">
-                    <p class="text-xs text-gray-500 mt-1">Formatos: JPG, PNG, GIF, WebP. Máx: 5MB</p>
+                    <p class="text-xs text-gray-500 mt-1">Formatos: JPG, PNG, GIF, WebP. Máx: <?= ini_get('upload_max_filesize') ?></p>
                 </div>
 
                 <!-- Preview nueva imagen -->
@@ -235,6 +248,16 @@ $articulos = $stmt->fetchAll();
             <p class="text-sm text-blue-600 mt-2">
                 <strong>Tip:</strong> Descarga la imagen manualmente del sitio original y súbela aquí.
             </p>
+        </div>
+
+        <!-- Debug info -->
+        <div class="mt-6 bg-gray-100 border border-gray-300 rounded-lg p-4 text-xs">
+            <h3 class="font-bold text-gray-700 mb-2">ℹ️ Info del servidor</h3>
+            <ul class="text-gray-600 space-y-1">
+                <li>• upload_max_filesize: <?= ini_get('upload_max_filesize') ?></li>
+                <li>• post_max_size: <?= ini_get('post_max_size') ?></li>
+                <li>• Upload dir: <?= realpath(__DIR__ . '/../uploads/articulos/') ?: __DIR__ . '/../uploads/articulos/ (no existe)' ?></li>
+            </ul>
         </div>
     </main>
 
