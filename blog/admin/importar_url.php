@@ -181,6 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['escanear_portal'])) {
 // Procesar importación múltiple desde escaneo
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['importar_seleccionados'])) {
     $urlsSeleccionadas = $_POST['urls'] ?? [];
+    $titulosSeleccionados = $_POST['titulos'] ?? [];
 
     if (empty($urlsSeleccionadas)) {
         $error = 'Selecciona al menos una URL para importar';
@@ -188,14 +189,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['importar_seleccionado
         $importados = 0;
         $erroresImport = [];
 
-        foreach ($urlsSeleccionadas as $url) {
+        foreach ($urlsSeleccionadas as $index => $url) {
             if (urlYaProcesada($url)) continue;
+
+            $titulo = $titulosSeleccionados[$index] ?? parse_url($url, PHP_URL_HOST);
 
             try {
                 // Guardar como pendiente para procesar después
                 guardarCandidatasPendientes([[
                     'url' => $url,
-                    'title' => '',
+                    'title' => $titulo,
                     'content' => '',
                     'raw_content' => ''
                 ]]);
@@ -346,7 +349,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['importar_seleccionado
                             <tr class="border-b <?= $enlace['procesada'] ? 'bg-gray-50 opacity-50' : 'hover:bg-green-50' ?>">
                                 <td class="p-2 text-center">
                                     <?php if (!$enlace['procesada']): ?>
-                                    <input type="checkbox" name="urls[]" value="<?= htmlspecialchars($enlace['url']) ?>" class="url-checkbox">
+                                    <input type="checkbox" name="urls[<?= $i ?>]" value="<?= htmlspecialchars($enlace['url']) ?>" class="url-checkbox">
+                                    <input type="hidden" name="titulos[<?= $i ?>]" value="<?= htmlspecialchars($enlace['titulo']) ?>">
                                     <?php else: ?>
                                     <span class="text-gray-400">✓</span>
                                     <?php endif; ?>

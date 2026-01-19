@@ -74,6 +74,7 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
                 </div>
                 <nav class="flex flex-wrap gap-4">
                     <a href="importar_url.php" class="hover:text-green-200 transition">🔗 Importar URL</a>
+                    <a href="pendientes.php" class="hover:text-green-200 transition">📦 Pendientes</a>
                     <a href="stories.php" class="hover:text-green-200 transition">Web Stories</a>
                     <a href="sitios.php" class="hover:text-green-200 transition">Sitios</a>
                     <a href="subir_imagen.php" class="hover:text-green-200 transition">📤 Imagen</a>
@@ -130,15 +131,16 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
                     </div>
                 </div>
             </div>
-            <div class="card">
+            <a href="pendientes.php" class="card hover:shadow-lg hover:bg-green-50 transition block cursor-pointer" style="text-decoration: none;">
                 <div class="flex items-center gap-3">
                     <span class="text-3xl">📦</span>
                     <div>
                         <p class="text-2xl font-bold text-forest-600"><?= $pendientes ?></p>
                         <p class="text-sm text-gray-500">Pendientes (cache)</p>
+                        <p class="text-xs text-forest-600">Ver →</p>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <!-- Próxima publicación -->
