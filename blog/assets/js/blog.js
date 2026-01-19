@@ -9,6 +9,35 @@ let categoriaActual = 'all';
 let articulosVisibles = 9;
 let articuloActual = null;
 
+/**
+ * Genera HTML de imagen con fallback automático cuando falla la carga
+ * @param {string} url - URL de la imagen
+ * @param {string} titulo - Título para el placeholder
+ * @param {string} size - Tamaño: 'lg', 'card', o vacío para normal
+ * @param {string} extraClasses - Clases CSS adicionales para la imagen
+ */
+function generarImagenConFallback(url, titulo, size = '', extraClasses = '') {
+    const tituloEscapado = escapeHtml(titulo);
+    const sizeClass = size ? `placeholder-${size}` : '';
+
+    if (!url) {
+        return `<div class="w-full h-full image-placeholder ${sizeClass}">
+                    <span class="placeholder-title">${tituloEscapado}</span>
+                </div>`;
+    }
+
+    // Crear ID único para este contenedor
+    const containerId = 'img-' + Math.random().toString(36).substr(2, 9);
+
+    return `<div id="${containerId}" class="w-full h-full">
+                <img src="${url}"
+                     alt="${tituloEscapado}"
+                     class="w-full h-full object-cover ${extraClasses}"
+                     loading="lazy"
+                     onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full image-placeholder ${sizeClass}\\'><span class=\\'placeholder-title\\'>${tituloEscapado.replace(/'/g, "\\'")}</span></div>'">
+            </div>`;
+}
+
 // ============================================
 // MULTI-IDIOMA
 // ============================================
@@ -285,11 +314,12 @@ function renderFeatured() {
     const catNombre = t(catKey) || CATEGORIAS[featured.categoria]?.nombre || 'Noticias';
     const catIcono = CATEGORIAS[featured.categoria]?.icono || '📰';
 
-    const imagenHtml = featured.imagen_url
-        ? `<img src="${featured.imagen_url}" alt="${escapeHtml(traducido.titulo)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">`
-        : `<div class="w-full h-full image-placeholder placeholder-lg">
-               <span class="placeholder-title">${escapeHtml(traducido.titulo)}</span>
-           </div>`;
+    const imagenHtml = generarImagenConFallback(
+        featured.imagen_url,
+        traducido.titulo,
+        'lg',
+        'group-hover:scale-105 transition-transform duration-500'
+    );
 
     container.innerHTML = `
         <a href="scriptum.php?titulus=${featured.slug}" class="block relative rounded-2xl overflow-hidden shadow-xl group">
@@ -334,11 +364,12 @@ function createArticleCard(art) {
     const catNombre = t(catKey) || CATEGORIAS[art.categoria]?.nombre || 'Noticias';
     const catIcono = CATEGORIAS[art.categoria]?.icono || '📰';
 
-    const imagenHtml = art.imagen_url
-        ? `<img src="${art.imagen_url}" alt="${escapeHtml(traducido.titulo)}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy">`
-        : `<div class="w-full h-full image-placeholder placeholder-card">
-               <span class="placeholder-title">${escapeHtml(traducido.titulo)}</span>
-           </div>`;
+    const imagenHtml = generarImagenConFallback(
+        art.imagen_url,
+        traducido.titulo,
+        'card',
+        'hover:scale-105 transition-transform duration-300'
+    );
 
     return `
         <article class="article-card bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md">
@@ -427,16 +458,19 @@ function renderArticle(art) {
         ? `🌎 ${art.pais_origen || regionText.sudamerica}`
         : `🌐 ${regionText.internacional}`;
 
-    // Imagen
+    // Imagen con fallback
     const imgContainer = document.getElementById('articleImageContainer');
-    const imgElement = document.getElementById('articleImage');
+    imgContainer.classList.remove('hidden');
+
     if (art.imagen_url) {
-        imgElement.src = art.imagen_url;
-        imgElement.alt = traducido.titulo;
-        imgContainer.classList.remove('hidden');
+        const tituloEscapado = escapeHtml(traducido.titulo);
+        imgContainer.innerHTML = `
+            <img src="${art.imagen_url}"
+                 alt="${tituloEscapado}"
+                 class="w-full rounded-xl shadow-lg"
+                 onerror="this.parentElement.innerHTML='<div class=\\'w-full h-64 md:h-96 image-placeholder placeholder-lg rounded-xl\\'><span class=\\'placeholder-title\\'>${tituloEscapado.replace(/'/g, "\\'")}</span></div>'">`;
     } else {
         // Mostrar placeholder con título si no hay imagen
-        imgContainer.classList.remove('hidden');
         imgContainer.innerHTML = `
             <div class="w-full h-64 md:h-96 image-placeholder placeholder-lg rounded-xl">
                 <span class="placeholder-title">${escapeHtml(traducido.titulo)}</span>
@@ -503,11 +537,7 @@ function loadRelatedArticles(currentArt) {
     document.getElementById('relatedSection').classList.remove('hidden');
     document.getElementById('relatedArticles').innerHTML = related.map(art => {
         const traducido = getArticuloEnIdioma(art);
-        const imagenHtml = art.imagen_url
-            ? `<img src="${art.imagen_url}" alt="" class="w-full h-full object-cover">`
-            : `<div class="w-full h-full image-placeholder placeholder-card">
-                   <span class="placeholder-title">${escapeHtml(traducido.titulo)}</span>
-               </div>`;
+        const imagenHtml = generarImagenConFallback(art.imagen_url, traducido.titulo, 'card');
         return `
             <a href="scriptum.php?titulus=${art.slug}" class="block bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition">
                 <div class="h-32 bg-gray-200 dark:bg-gray-700">
