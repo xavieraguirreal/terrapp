@@ -22,7 +22,7 @@ $articuloSeleccionado = null;
 
 // Obtener artículo si se pasó ID
 if (isset($_GET['id'])) {
-    $articuloSeleccionado = obtenerArticuloPorId((int)$_GET['id']);
+    $articuloSeleccionado = obtenerArticulo((int)$_GET['id']);
 }
 
 // Procesar subida
@@ -91,13 +91,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subir'])) {
         $stmt->execute([$relativePath, $articuloId]);
 
         // Regenerar JSON si está publicado
-        $articulo = obtenerArticuloPorId($articuloId);
+        $articulo = obtenerArticulo($articuloId);
         if ($articulo && $articulo['estado'] === 'publicado') {
             exportarArticulosJSON();
         }
 
         $mensaje = "Imagen subida correctamente para el artículo #{$articuloId}";
-        $articuloSeleccionado = obtenerArticuloPorId($articuloId);
+        $articuloSeleccionado = obtenerArticulo($articuloId);
 
     } catch (Exception $e) {
         $error = $e->getMessage();
