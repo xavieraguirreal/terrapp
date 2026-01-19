@@ -23,6 +23,7 @@ $stmt = $pdo->prepare("
         reaccion_interesante,
         reaccion_encanta,
         reaccion_importante,
+        reaccion_noconvence,
         (shares_whatsapp + shares_facebook + shares_twitter + shares_linkedin + shares_copy) as total_shares
     FROM blog_articulos
     WHERE id = ?
@@ -38,6 +39,7 @@ if ($metricas) {
             'reaccion_interesante' => (int)$metricas['reaccion_interesante'],
             'reaccion_encanta' => (int)$metricas['reaccion_encanta'],
             'reaccion_importante' => (int)$metricas['reaccion_importante'],
+            'reaccion_noconvence' => (int)($metricas['reaccion_noconvence'] ?? 0),
             'total_shares' => (int)$metricas['total_shares']
         ]
     ]);

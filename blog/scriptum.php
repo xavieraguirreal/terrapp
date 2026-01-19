@@ -309,17 +309,21 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
                     <h3 class="text-lg font-semibold mb-4" data-i18n="reactions_title">¿Te gustó este artículo?</h3>
                     <div class="flex flex-wrap gap-3" id="reactionsContainer">
-                        <button onclick="addReaction('interesante')" class="reaction-btn flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600 hover:bg-forest-50 dark:hover:bg-forest-900/30 transition">
+                        <button onclick="addReaction('interesante')" title="Interesante" class="reaction-btn flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600 hover:bg-forest-50 dark:hover:bg-forest-900/30 transition">
                             <span class="text-xl">🌱</span>
                             <span id="countInteresante">0</span>
                         </button>
-                        <button onclick="addReaction('encanta')" class="reaction-btn flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600 hover:bg-green-50 dark:hover:bg-green-900/30 transition">
+                        <button onclick="addReaction('encanta')" title="Me encanta" class="reaction-btn flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600 hover:bg-green-50 dark:hover:bg-green-900/30 transition">
                             <span class="text-xl">💚</span>
                             <span id="countEncanta">0</span>
                         </button>
-                        <button onclick="addReaction('importante')" class="reaction-btn flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-orange-900/30 transition">
+                        <button onclick="addReaction('importante')" title="Importante" class="reaction-btn flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-orange-900/30 transition">
                             <span class="text-xl">🔥</span>
                             <span id="countImportante">0</span>
+                        </button>
+                        <button onclick="addReaction('noconvence')" title="No me convenció" class="reaction-btn flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                            <span class="text-xl">😕</span>
+                            <span id="countNoconvence">0</span>
                         </button>
                     </div>
                 </div>

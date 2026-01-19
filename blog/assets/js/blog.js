@@ -503,6 +503,7 @@ function renderArticle(art) {
     document.getElementById('countInteresante').textContent = art.reaccion_interesante || 0;
     document.getElementById('countEncanta').textContent = art.reaccion_encanta || 0;
     document.getElementById('countImportante').textContent = art.reaccion_importante || 0;
+    document.getElementById('countNoconvence').textContent = art.reaccion_noconvence || 0;
 
     // Total shares
     if (art.total_shares > 0) {
@@ -836,10 +837,12 @@ async function loadMetrics(id) {
         const countInteresante = document.getElementById('countInteresante');
         const countEncanta = document.getElementById('countEncanta');
         const countImportante = document.getElementById('countImportante');
+        const countNoconvence = document.getElementById('countNoconvence');
 
         if (countInteresante) countInteresante.textContent = m.reaccion_interesante;
         if (countEncanta) countEncanta.textContent = m.reaccion_encanta;
         if (countImportante) countImportante.textContent = m.reaccion_importante;
+        if (countNoconvence) countNoconvence.textContent = m.reaccion_noconvence;
 
         // Actualizar total de shares
         if (m.total_shares > 0) {

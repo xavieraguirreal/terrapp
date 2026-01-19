@@ -832,7 +832,7 @@ function exportarArticulosJSON(): bool {
             fuente_nombre, fuente_url, imagen_url,
             region, pais_origen, categoria, tags,
             fecha_publicacion, vistas, tiempo_lectura,
-            reaccion_interesante, reaccion_encanta, reaccion_importante,
+            reaccion_interesante, reaccion_encanta, reaccion_importante, reaccion_noconvence,
             (shares_whatsapp + shares_facebook + shares_twitter + shares_linkedin + shares_copy) as total_shares
         FROM blog_articulos
         WHERE estado = 'publicado'
@@ -972,7 +972,8 @@ function registrarReaccion(int $articuloId, string $tipo): bool {
     $columnas = [
         'interesante' => 'reaccion_interesante',
         'encanta' => 'reaccion_encanta',
-        'importante' => 'reaccion_importante'
+        'importante' => 'reaccion_importante',
+        'noconvence' => 'reaccion_noconvence'
     ];
 
     if (!isset($columnas[$tipo])) {
