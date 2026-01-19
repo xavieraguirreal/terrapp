@@ -323,18 +323,18 @@ function renderFeatured() {
 
     container.innerHTML = `
         <a href="scriptum.php?titulus=${featured.slug}" class="block relative rounded-2xl overflow-hidden shadow-xl group">
-            <div class="aspect-[21/9] bg-gray-200 dark:bg-gray-700">
+            <div class="aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] bg-gray-200 dark:bg-gray-700">
                 ${imagenHtml}
             </div>
             ${featured.imagen_url ? '<div class="absolute inset-0 featured-gradient"></div>' : ''}
-            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-10 text-white ${featured.imagen_url ? '' : 'hidden'}">
-                <span class="inline-block px-3 py-1 bg-forest-600 rounded-full text-sm mb-3">
+            <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-10 text-white ${featured.imagen_url ? '' : 'hidden'}">
+                <span class="inline-block px-3 py-1 bg-forest-600 rounded-full text-xs sm:text-sm mb-2 sm:mb-3">
                     ${catIcono} ${catNombre}
                 </span>
-                <h2 class="text-2xl md:text-4xl font-bold mb-2 group-hover:text-forest-200 transition">
+                <h2 class="text-lg sm:text-2xl md:text-4xl font-bold mb-1 sm:mb-2 group-hover:text-forest-200 transition line-clamp-2 sm:line-clamp-none">
                     ${escapeHtml(traducido.titulo)}
                 </h2>
-                <p class="text-gray-200 text-sm md:text-base line-clamp-2">
+                <p class="text-gray-200 text-xs sm:text-sm md:text-base line-clamp-2 hidden sm:block">
                     ${escapeHtml(traducido.contenido.substring(0, 150))}...
                 </p>
             </div>

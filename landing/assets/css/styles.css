@@ -923,6 +923,8 @@ input[type="email"]:focus {
     gap: 0.5rem;
     padding: 0.25rem 0;
     transition: opacity 0.2s ease;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .ticker-item:hover {
@@ -946,13 +948,32 @@ input[type="email"]:focus {
     text-decoration: underline;
 }
 
+/* Ticker mobile adjustments */
+@media (max-width: 768px) {
+    #newsTicker .ticker-wrapper {
+        max-width: calc(100vw - 180px); /* Leave space for label and link */
+    }
+
+    .ticker-item a {
+        font-size: 0.75rem;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .ticker-content {
+        gap: 1.5rem;
+    }
+}
+
 /* Hide ticker on very small screens */
 @media (max-width: 480px) {
     #newsTicker .ticker-wrapper {
         display: none;
     }
 
-    #newsTicker {
-        justify-content: center;
+    #newsTicker > div {
+        justify-content: space-between;
+        width: 100%;
     }
 }
