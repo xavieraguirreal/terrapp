@@ -966,14 +966,23 @@ input[type="email"]:focus {
     }
 }
 
-/* Hide ticker on very small screens */
+/* Compact ticker on very small screens */
 @media (max-width: 480px) {
     #newsTicker .ticker-wrapper {
-        display: none;
+        flex: 1;
+        min-width: 0; /* Allow shrinking */
+    }
+
+    .ticker-item a {
+        font-size: 0.7rem;
+        max-width: 150px;
+    }
+
+    .ticker-content {
+        gap: 1rem;
     }
 
     #newsTicker > div {
-        justify-content: space-between;
         width: 100%;
     }
 }
