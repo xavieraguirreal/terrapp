@@ -84,8 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subir'])) {
             throw new Exception("Error al mover el archivo subido. Verificar permisos del servidor.");
         }
 
-        // Actualizar en BD
-        $relativePath = "../uploads/articulos/{$filename}";
+        // Actualizar en BD (ruta desde la raíz del blog)
+        $relativePath = "uploads/articulos/{$filename}";
         $pdo = getConnection();
         $stmt = $pdo->prepare("UPDATE blog_articulos SET imagen_url = ? WHERE id = ?");
         $stmt->execute([$relativePath, $articuloId]);

@@ -116,7 +116,7 @@ function descargarImagenArticulo(string $url, int $articuloId): ?string {
 
     // Carpeta de destino
     $uploadDir = __DIR__ . '/../../uploads/articulos/';
-    $webPath = '../uploads/articulos/'; // Ruta relativa para el frontend
+    $webPath = 'uploads/articulos/'; // Ruta desde la raíz del blog
 
     // Crear carpeta si no existe
     if (!is_dir($uploadDir)) {
