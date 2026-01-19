@@ -269,7 +269,14 @@ function renderArticles() {
     // Quitar skeletons
     container.querySelectorAll('.skeleton-card').forEach(el => el.remove());
 
-    if (articulosFiltrados.length === 0) {
+    // Si mostramos "todos", saltear el primer artículo (ya se muestra como destacado)
+    let articulosParaMostrar = articulosFiltrados;
+    if (categoriaActual === 'all' && articulos.length > 0 && articulosFiltrados.length === articulos.length) {
+        // Saltear el primer artículo solo cuando no hay filtro activo
+        articulosParaMostrar = articulosFiltrados.slice(1);
+    }
+
+    if (articulosParaMostrar.length === 0) {
         container.innerHTML = '';
         noResults?.classList.remove('hidden');
         loadMoreBtn?.classList.add('hidden');
@@ -278,12 +285,12 @@ function renderArticles() {
 
     noResults?.classList.add('hidden');
 
-    const visibles = articulosFiltrados.slice(0, articulosVisibles);
+    const visibles = articulosParaMostrar.slice(0, articulosVisibles);
 
     container.innerHTML = visibles.map(art => createArticleCard(art)).join('');
 
     // Mostrar/ocultar botón de cargar más
-    if (articulosFiltrados.length > articulosVisibles) {
+    if (articulosParaMostrar.length > articulosVisibles) {
         loadMoreBtn?.classList.remove('hidden');
     } else {
         loadMoreBtn?.classList.add('hidden');

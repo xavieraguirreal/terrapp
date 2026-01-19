@@ -964,6 +964,10 @@ input[type="email"]:focus {
     .ticker-content {
         gap: 1.5rem;
     }
+
+    .ticker-content.animate-ticker {
+        animation-duration: 15s; /* Faster on mobile */
+    }
 }
 
 /* Compact ticker on very small screens */
