@@ -115,15 +115,17 @@ try {
                 continue;
             }
 
-            // Validar relevancia
-            echo "  Validando relevancia con OpenAI...\n";
+            // Verificar duplicados contra artículos existentes
+            echo "  Verificando duplicados...\n";
             $titulo = $pendiente['titulo'] ?? '';
-            if (!$openai->validarRelevancia($titulo, $contenido)) {
+            $duplicado = verificarDuplicado($titulo, $pendiente['url']);
+            if ($duplicado) {
                 marcarPendienteUsada($pendiente['id']);
                 registrarUrl($pendiente['url']);
-                echo "  No relevante para agricultura urbana, saltando\n";
+                echo "  Duplicado encontrado ({$duplicado['tipo']}): {$duplicado['titulo_existente']} [{$duplicado['estado']}]\n";
                 continue;
             }
+            echo "  No es duplicado, continuando...\n";
 
             // Detectar región
             $regionInfo = $openai->detectarRegionYPais($pendiente['url'], $contenido);

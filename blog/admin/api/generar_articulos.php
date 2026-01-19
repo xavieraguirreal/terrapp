@@ -144,20 +144,22 @@ try {
                 continue;
             }
 
-            // Validar relevancia con OpenAI
+            // Verificar duplicados contra artículos existentes (todos los estados)
             $titulo = $pendiente['titulo'] ?? '';
             $debugItem['titulo'] = mb_substr($titulo, 0, 50);
-            $esRelevante = $openai->validarRelevancia($titulo, $contenido);
-            $debugItem['openai_respuesta'] = $openai->ultimaRespuestaValidacion;
 
-            if (!$esRelevante) {
+            $duplicado = verificarDuplicado($titulo, $pendiente['url']);
+            if ($duplicado) {
                 marcarPendienteUsada($pendiente['id']);
                 registrarUrl($pendiente['url']);
-                $debugItem['resultado'] = 'No relevante (OpenAI dijo: ' . $openai->ultimaRespuestaValidacion . ')';
+                $debugItem['resultado'] = "Duplicado por {$duplicado['tipo']}: '{$duplicado['titulo_existente']}' ({$duplicado['estado']})";
+                if (isset($duplicado['similitud'])) {
+                    $debugItem['resultado'] .= " - Similitud: {$duplicado['similitud']}";
+                }
                 $debug['procesamiento'][] = $debugItem;
                 continue;
             }
-            $debugItem['relevancia'] = 'OK';
+            $debugItem['duplicado'] = 'No es duplicado';
 
             // Detectar región
             $regionInfo = $openai->detectarRegionYPais($pendiente['url'], $contenido);

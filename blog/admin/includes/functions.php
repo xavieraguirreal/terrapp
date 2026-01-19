@@ -28,6 +28,76 @@ function registrarUrl(string $url): void {
     $stmt->execute([$url]);
 }
 
+/**
+ * Verifica si un artículo es duplicado comparando título y URL
+ * contra artículos existentes en cualquier estado (borrador, publicado, rechazado, programado)
+ *
+ * @param string $titulo Título del artículo a verificar
+ * @param string $url URL de la fuente original
+ * @return array|null Información del duplicado si existe, null si no es duplicado
+ */
+function verificarDuplicado(string $titulo, string $url): ?array {
+    $pdo = getConnection();
+
+    // Normalizar título para comparación
+    $tituloNormalizado = mb_strtolower(trim($titulo));
+    $tituloNormalizado = preg_replace('/[^\p{L}\p{N}\s]/u', '', $tituloNormalizado);
+
+    // 1. Buscar por URL exacta de fuente
+    $stmt = $pdo->prepare("
+        SELECT id, titulo, estado, fuente_url
+        FROM blog_articulos
+        WHERE fuente_url = ?
+        LIMIT 1
+    ");
+    $stmt->execute([$url]);
+    $duplicado = $stmt->fetch();
+
+    if ($duplicado) {
+        return [
+            'tipo' => 'url',
+            'articulo_id' => $duplicado['id'],
+            'titulo_existente' => $duplicado['titulo'],
+            'estado' => $duplicado['estado']
+        ];
+    }
+
+    // 2. Buscar por título similar (usando LIKE con las primeras palabras)
+    $palabras = explode(' ', $tituloNormalizado);
+    $palabrasClave = array_slice($palabras, 0, 5); // Primeras 5 palabras
+    $busqueda = '%' . implode('%', $palabrasClave) . '%';
+
+    $stmt = $pdo->prepare("
+        SELECT id, titulo, estado, fuente_url
+        FROM blog_articulos
+        WHERE LOWER(titulo) LIKE ?
+        LIMIT 1
+    ");
+    $stmt->execute([$busqueda]);
+    $duplicado = $stmt->fetch();
+
+    if ($duplicado) {
+        // Verificar similitud más estricta (Levenshtein o similar)
+        $tituloExistente = mb_strtolower($duplicado['titulo']);
+        $tituloExistente = preg_replace('/[^\p{L}\p{N}\s]/u', '', $tituloExistente);
+
+        // Si el título comienza igual o es muy similar
+        similar_text($tituloNormalizado, $tituloExistente, $porcentaje);
+
+        if ($porcentaje > 70) { // 70% de similitud
+            return [
+                'tipo' => 'titulo',
+                'articulo_id' => $duplicado['id'],
+                'titulo_existente' => $duplicado['titulo'],
+                'estado' => $duplicado['estado'],
+                'similitud' => round($porcentaje, 1) . '%'
+            ];
+        }
+    }
+
+    return null;
+}
+
 // ============================================
 // FUNCIONES DE IMÁGENES
 // ============================================
