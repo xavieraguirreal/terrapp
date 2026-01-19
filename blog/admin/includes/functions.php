@@ -958,6 +958,72 @@ function toggleSitioPreferido(int $id): bool {
     return $stmt->execute([$id]);
 }
 
+/**
+ * Elimina un artículo y sus datos relacionados
+ */
+function eliminarArticulo(int $id): bool {
+    $pdo = getConnection();
+
+    try {
+        $pdo->beginTransaction();
+
+        // Eliminar traducciones
+        $stmt = $pdo->prepare("DELETE FROM blog_articulos_traducciones WHERE articulo_id = ?");
+        $stmt->execute([$id]);
+
+        // Eliminar reacciones
+        $stmt = $pdo->prepare("DELETE FROM blog_reacciones WHERE articulo_id = ?");
+        $stmt->execute([$id]);
+
+        // Eliminar shares
+        $stmt = $pdo->prepare("DELETE FROM blog_articulo_shares WHERE articulo_id = ?");
+        $stmt->execute([$id]);
+
+        // Eliminar web stories asociadas
+        $stmt = $pdo->prepare("DELETE FROM blog_web_stories WHERE articulo_id = ?");
+        $stmt->execute([$id]);
+
+        // Eliminar el artículo
+        $stmt = $pdo->prepare("DELETE FROM blog_articulos WHERE id = ?");
+        $stmt->execute([$id]);
+
+        $pdo->commit();
+
+        // Regenerar JSON público
+        exportarArticulosJSON();
+
+        return true;
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        logError("Error eliminando artículo {$id}: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Despublica un artículo (lo vuelve a borrador)
+ */
+function despublicarArticulo(int $id): bool {
+    $pdo = getConnection();
+
+    $stmt = $pdo->prepare("
+        UPDATE blog_articulos
+        SET estado = 'borrador',
+            fecha_publicacion = NULL,
+            fecha_programada = NULL
+        WHERE id = ?
+    ");
+
+    $result = $stmt->execute([$id]);
+
+    if ($result) {
+        // Regenerar JSON público
+        exportarArticulosJSON();
+    }
+
+    return $result;
+}
+
 // ============================================
 // FUNCIONES DE PUBLICACIÓN PROGRAMADA
 // ============================================

@@ -299,19 +299,33 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
             <?php else: ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <?php foreach ($publicados as $art): ?>
-                    <div class="flex gap-3 p-3 bg-gray-50 rounded-lg">
+                    <div class="flex gap-3 p-3 bg-gray-50 rounded-lg" id="publicado-<?= $art['id'] ?>">
                         <?php if (!empty($art['imagen_url'])): ?>
-                        <img src="<?= htmlspecialchars($art['imagen_url']) ?>" alt="" class="w-20 h-20 object-cover rounded-lg">
+                        <img src="<?= htmlspecialchars($art['imagen_url']) ?>" alt="" class="w-20 h-20 object-cover rounded-lg flex-shrink-0">
                         <?php else: ?>
-                        <div class="w-20 h-20 bg-forest-100 rounded-lg flex items-center justify-center text-2xl">🌱</div>
+                        <div class="w-20 h-20 bg-forest-100 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">🌱</div>
                         <?php endif; ?>
-                        <div class="flex-1">
-                            <h3 class="font-medium text-sm"><?= htmlspecialchars(mb_substr($art['titulo'], 0, 50)) ?>...</h3>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-medium text-sm truncate"><?= htmlspecialchars(mb_substr($art['titulo'], 0, 50)) ?>...</h3>
                             <p class="text-xs text-gray-500 mt-1">
                                 <?= $art['region'] === 'sudamerica' ? '🌎' : '🌐' ?>
                                 <?= date('d/m/Y', strtotime($art['fecha_publicacion'])) ?>
-                                • 👁️ <?= $art['vistas'] ?> (<?= $art['vistas_unicas'] ?? 0 ?> únicas)
+                                • 👁️ <?= $art['vistas'] ?>
                             </p>
+                            <div class="flex gap-2 mt-2">
+                                <a href="../scriptum.php?titulus=<?= urlencode($art['slug']) ?>" target="_blank"
+                                   class="text-xs px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded">
+                                    Ver
+                                </a>
+                                <button onclick="despublicarArticulo(<?= $art['id'] ?>)"
+                                        class="text-xs px-2 py-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded">
+                                    Despublicar
+                                </button>
+                                <button onclick="eliminarArticulo(<?= $art['id'] ?>)"
+                                        class="text-xs px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded">
+                                    Eliminar
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -473,6 +487,51 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
                 const response = await fetch('api/generar_rss.php');
                 const data = await response.json();
                 alert(data.message || data.error);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function despublicarArticulo(id) {
+            if (!confirm('¿Despublicar este artículo?\n\nVolverá a la lista de borradores.')) return;
+
+            try {
+                const response = await fetch('api/gestionar_articulo.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, accion: 'despublicar' })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ ' + data.message);
+                    document.getElementById('publicado-' + id)?.remove();
+                    location.reload();
+                } else {
+                    alert('❌ ' + (data.error || 'Error al despublicar'));
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function eliminarArticulo(id) {
+            if (!confirm('⚠️ ¿ELIMINAR este artículo?\n\nEsta acción NO se puede deshacer.\nSe eliminarán también las traducciones, reacciones y stories asociadas.')) return;
+
+            try {
+                const response = await fetch('api/gestionar_articulo.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, accion: 'eliminar' })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ ' + data.message);
+                    document.getElementById('publicado-' + id)?.remove();
+                } else {
+                    alert('❌ ' + (data.error || 'Error al eliminar'));
+                }
             } catch (error) {
                 alert('Error: ' + error.message);
             }
