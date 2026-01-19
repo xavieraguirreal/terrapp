@@ -33,3 +33,13 @@ node_modules/
 
 # Claude Code settings
 .claude/
+
+# Stray media files in root (should be in uploads/)
+/*.jpg
+/*.jpeg
+/*.png
+/*.gif
+/*.webp
+/*.pdf
+/*.mp4
+/*.mp3
