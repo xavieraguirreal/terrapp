@@ -1,0 +1,14 @@
+# Permitir solo imágenes
+<FilesMatch "\.(jpg|jpeg|png|gif|webp)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Bloquear ejecución de scripts
+<FilesMatch "\.(php|php5|phtml|html|htm)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Deshabilitar listado de directorio
+Options -Indexes

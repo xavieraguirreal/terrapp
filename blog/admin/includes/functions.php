@@ -28,6 +28,123 @@ function registrarUrl(string $url): void {
     $stmt->execute([$url]);
 }
 
+// ============================================
+// FUNCIONES DE IMÁGENES
+// ============================================
+
+/**
+ * Descarga una imagen externa y la guarda localmente
+ *
+ * @param string $url URL de la imagen externa
+ * @param int $articuloId ID del artículo para nombrar el archivo
+ * @return string|null Ruta relativa de la imagen guardada o null si falla
+ */
+function descargarImagenArticulo(string $url, int $articuloId): ?string {
+    if (empty($url)) {
+        return null;
+    }
+
+    // Carpeta de destino
+    $uploadDir = __DIR__ . '/../../uploads/articulos/';
+    $webPath = '../uploads/articulos/'; // Ruta relativa para el frontend
+
+    // Crear carpeta si no existe
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    try {
+        // Obtener extensión de la URL
+        $pathInfo = pathinfo(parse_url($url, PHP_URL_PATH));
+        $extension = strtolower($pathInfo['extension'] ?? 'jpg');
+
+        // Validar extensión
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        if (!in_array($extension, $allowedExtensions)) {
+            $extension = 'jpg';
+        }
+
+        // Nombre del archivo: articulo-{id}-{timestamp}.{ext}
+        $filename = "articulo-{$articuloId}-" . time() . ".{$extension}";
+        $filepath = $uploadDir . $filename;
+
+        // Descargar imagen con cURL
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        ]);
+
+        $imageData = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        curl_close($ch);
+
+        // Verificar que se descargó correctamente
+        if ($httpCode !== 200 || empty($imageData)) {
+            logError("Error descargando imagen: HTTP {$httpCode} - {$url}");
+            return null;
+        }
+
+        // Verificar que es una imagen
+        if (strpos($contentType, 'image/') === false) {
+            logError("URL no es imagen válida: {$contentType} - {$url}");
+            return null;
+        }
+
+        // Guardar archivo
+        if (file_put_contents($filepath, $imageData) === false) {
+            logError("Error guardando imagen: {$filepath}");
+            return null;
+        }
+
+        // Devolver ruta web relativa
+        return $webPath . $filename;
+
+    } catch (Exception $e) {
+        logError("Excepción descargando imagen: " . $e->getMessage());
+        return null;
+    }
+}
+
+/**
+ * Actualiza la imagen de un artículo descargándola localmente
+ */
+function actualizarImagenArticulo(int $articuloId): bool {
+    $pdo = getConnection();
+
+    // Obtener URL actual de la imagen
+    $stmt = $pdo->prepare("SELECT imagen_url FROM blog_articulos WHERE id = ?");
+    $stmt->execute([$articuloId]);
+    $articulo = $stmt->fetch();
+
+    if (!$articulo || empty($articulo['imagen_url'])) {
+        return false;
+    }
+
+    $urlActual = $articulo['imagen_url'];
+
+    // Si ya es una imagen local, no hacer nada
+    if (strpos($urlActual, 'uploads/') !== false || strpos($urlActual, '/uploads/') !== false) {
+        return true;
+    }
+
+    // Descargar imagen
+    $localPath = descargarImagenArticulo($urlActual, $articuloId);
+
+    if ($localPath) {
+        // Actualizar en BD con la ruta local
+        $stmt = $pdo->prepare("UPDATE blog_articulos SET imagen_url = ? WHERE id = ?");
+        return $stmt->execute([$localPath, $articuloId]);
+    }
+
+    return false;
+}
+
 /**
  * Verifica si un título es muy similar a uno existente
  * Usa múltiples métodos: similitud de texto + palabras clave
@@ -497,6 +614,11 @@ function cambiarEstadoArticulo(int $id, string $estado, bool $saltearCriterio = 
     $articulo = obtenerArticulo($id);
 
     if (!$articulo) return false;
+
+    // Descargar imagen al servidor local cuando se aprueba
+    if ($estado === 'publicado') {
+        actualizarImagenArticulo($id);
+    }
 
     if ($estado === 'publicado') {
         // Actualizar contador regional
