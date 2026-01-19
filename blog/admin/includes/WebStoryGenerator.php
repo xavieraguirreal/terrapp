@@ -2,21 +2,44 @@
 /**
  * TERRApp Blog - Generador de Web Stories (AMP)
  * Crea historias visuales tipo Instagram para Google Discover
+ * Las stories se publican en el hub centralizado de VERUMax: stories.verumax.com
  */
 
 class WebStoryGenerator {
 
-    private string $storiesPath;
-    private string $blogUrl;
+    private string $storiesBasePath;    // Ruta al hub de stories (stories.verumax.com)
+    private string $appStoriesPath;     // Ruta para stories de esta app (stories.verumax.com/terrapp/)
+    private string $storiesBaseUrl;     // URL del hub de stories
+    private string $blogUrl;            // URL del blog de TERRApp
+    private string $appName;            // Nombre de la app (terrapp)
     private PDO $pdo;
 
     public function __construct() {
-        $this->storiesPath = __DIR__ . '/../../stories/';
-        $this->blogUrl = BLOG_URL ?? 'https://terrapp.verumax.com/blog/';
+        // Configuración del hub centralizado de stories
+        // En el servidor: terrapp/blog/admin/includes/ -> ../../../../stories/
+        $this->storiesBasePath = defined('STORIES_HUB_PATH')
+            ? STORIES_HUB_PATH
+            : realpath(__DIR__ . '/../../../../') . '/stories/';
+
+        $this->storiesBaseUrl = defined('STORIES_HUB_URL')
+            ? STORIES_HUB_URL
+            : 'https://stories.verumax.com/';
+
+        $this->blogUrl = defined('BLOG_URL')
+            ? BLOG_URL
+            : 'https://terrapp.verumax.com/blog/';
+
+        $this->appName = 'terrapp';
+        $this->appStoriesPath = $this->storiesBasePath . $this->appName . '/';
+
         $this->pdo = getConnection();
 
-        if (!is_dir($this->storiesPath)) {
-            mkdir($this->storiesPath, 0755, true);
+        // Crear carpetas si no existen
+        if (!is_dir($this->storiesBasePath)) {
+            @mkdir($this->storiesBasePath, 0755, true);
+        }
+        if (!is_dir($this->appStoriesPath)) {
+            @mkdir($this->appStoriesPath, 0755, true);
         }
     }
 
@@ -82,7 +105,7 @@ class WebStoryGenerator {
             $storyId = $this->pdo->lastInsertId();
         }
 
-        // Generar archivo HTML
+        // Generar archivo HTML en el hub centralizado
         $this->generarArchivoHTML($storyId, $articulo, $slides, $slug);
 
         return (int)$storyId;
@@ -121,12 +144,24 @@ class WebStoryGenerator {
     }
 
     /**
-     * Genera archivo HTML de la story
+     * Genera archivo HTML de la story en el hub centralizado
      */
     private function generarArchivoHTML(int $storyId, array $articulo, array $slides, string $slug): void {
         $html = $this->renderHTML($articulo, $slides, $slug);
         $filename = "story-{$slug}.html";
-        file_put_contents($this->storiesPath . $filename, $html);
+
+        // Guardar en la carpeta de la app dentro del hub
+        $result = @file_put_contents($this->appStoriesPath . $filename, $html);
+
+        if ($result === false) {
+            // Fallback: intentar en la carpeta local del blog
+            $localPath = __DIR__ . '/../../stories/';
+            if (!is_dir($localPath)) {
+                mkdir($localPath, 0755, true);
+            }
+            file_put_contents($localPath . $filename, $html);
+            error_log("WebStoryGenerator: No se pudo escribir en hub centralizado, usando fallback local");
+        }
     }
 
     /**
@@ -158,7 +193,7 @@ class WebStoryGenerator {
   <title>{$titulo} - TERRApp</title>
   <link rel="canonical" href="{$this->blogUrl}scriptum.php?titulus={$articulo['slug']}">
   <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-  <link rel="icon" type="image/png" href="../landing/assets/images/logo_terrapp_icono.png">
+  <link rel="icon" type="image/png" href="https://terrapp.verumax.com/landing/assets/images/logo_terrapp_icono.png">
   <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>
   <noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
   <style amp-custom>
@@ -302,9 +337,15 @@ HTML;
         $story = $stmt->fetch();
 
         if ($story) {
-            $file = $this->storiesPath . "story-{$story['slug']}.html";
+            // Eliminar del hub centralizado
+            $file = $this->appStoriesPath . "story-{$story['slug']}.html";
             if (file_exists($file)) {
-                unlink($file);
+                @unlink($file);
+            }
+            // Fallback: eliminar de carpeta local si existe
+            $localFile = __DIR__ . "/../../stories/story-{$story['slug']}.html";
+            if (file_exists($localFile)) {
+                @unlink($localFile);
             }
         }
 
@@ -319,27 +360,63 @@ HTML;
     }
 
     /**
-     * Exporta stories publicadas a JSON
+     * Exporta stories publicadas al JSON del hub centralizado
+     * Incluye el campo 'app' para identificar de qué aplicación viene cada story
      */
     public function exportarJSON(): void {
         $stories = $this->obtenerStories('publicado');
 
-        $data = array_map(function($s) {
+        // Datos de stories de TERRApp
+        $terrappStories = array_map(function($s) {
             return [
                 'id' => (int)$s['id'],
+                'app' => $this->appName,
                 'titulo' => $s['titulo'],
                 'slug' => $s['slug'],
                 'poster' => $s['poster_url'] ?: $s['articulo_imagen'],
-                'url' => $this->blogUrl . 'stories/story-' . $s['slug'] . '.html',
+                'url' => $this->storiesBaseUrl . $this->appName . '/story-' . $s['slug'] . '.html',
                 'fecha' => $s['fecha_publicacion'],
                 'vistas' => (int)$s['vistas']
             ];
         }, $stories);
 
-        file_put_contents(
-            $this->storiesPath . 'stories.json',
-            json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+        // Intentar cargar stories existentes de otras apps del hub
+        $hubJsonPath = $this->storiesBasePath . 'stories.json';
+        $allStories = [];
+
+        if (file_exists($hubJsonPath)) {
+            $existingData = @json_decode(file_get_contents($hubJsonPath), true);
+            if (is_array($existingData)) {
+                // Filtrar stories que NO son de esta app
+                $allStories = array_filter($existingData, function($s) {
+                    return ($s['app'] ?? '') !== $this->appName;
+                });
+            }
+        }
+
+        // Combinar con las stories de esta app
+        $allStories = array_merge(array_values($allStories), $terrappStories);
+
+        // Ordenar por fecha (más recientes primero)
+        usort($allStories, function($a, $b) {
+            return strtotime($b['fecha'] ?? '1970-01-01') - strtotime($a['fecha'] ?? '1970-01-01');
+        });
+
+        // Guardar en el hub centralizado
+        $result = @file_put_contents(
+            $hubJsonPath,
+            json_encode($allStories, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
         );
+
+        // Fallback: también guardar localmente
+        if ($result === false) {
+            $localJsonPath = __DIR__ . '/../../stories/stories.json';
+            file_put_contents(
+                $localJsonPath,
+                json_encode($terrappStories, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+            );
+            error_log("WebStoryGenerator: No se pudo escribir JSON en hub, usando fallback local");
+        }
     }
 
     /**

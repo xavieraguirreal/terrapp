@@ -173,7 +173,7 @@ $articulosSinStory = $generator->obtenerArticulosSinStory();
 
                     <!-- Acciones -->
                     <div class="flex gap-2 flex-shrink-0">
-                        <a href="../stories/story-<?= $story['slug'] ?>.html" target="_blank"
+                        <a href="https://stories.verumax.com/terrapp/story-<?= $story['slug'] ?>.html" target="_blank"
                            class="px-3 py-1 text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 rounded">
                             Ver
                         </a>
