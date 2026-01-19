@@ -72,10 +72,11 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
                         <p class="text-sm text-green-200">Panel de Administración</p>
                     </div>
                 </div>
-                <nav class="flex gap-4">
+                <nav class="flex flex-wrap gap-4">
+                    <a href="importar_url.php" class="hover:text-green-200 transition">🔗 Importar URL</a>
                     <a href="stories.php" class="hover:text-green-200 transition">Web Stories</a>
                     <a href="sitios.php" class="hover:text-green-200 transition">Sitios</a>
-                    <a href="subir_imagen.php" class="hover:text-green-200 transition">📤 Subir Imagen</a>
+                    <a href="subir_imagen.php" class="hover:text-green-200 transition">📤 Imagen</a>
                     <a href="migrar_imagenes.php" class="hover:text-green-200 transition">🖼️ Migrar</a>
                     <a href="../" class="hover:text-green-200 transition">Ver Blog</a>
                 </nav>
@@ -342,8 +343,10 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
             const resultado = document.getElementById('resultado');
 
             btn.disabled = true;
-            btn.innerHTML = '⏳ Generando...';
+            btn.innerHTML = '⏳ Buscando con Tavily...';
             resultado.classList.remove('hidden', 'bg-green-100', 'bg-red-100');
+            resultado.innerHTML = '<div class="text-center"><span class="animate-pulse">Buscando noticias...</span></div>';
+            resultado.classList.remove('hidden');
 
             try {
                 console.log('🚀 Iniciando generación de artículos...');
@@ -354,47 +357,147 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
 
                 // Debug en consola
                 console.log('📊 Respuesta completa:', data);
-                if (data.debug) {
-                    console.log('🔍 DEBUG INFO:');
-                    console.log('  - Inicio:', data.debug.inicio);
-                    console.log('  - Pendientes inicial:', data.debug.pendientes_inicial);
-                    console.log('  - Topics buscados:', data.debug.topics_buscados);
-                    console.log('  - Total candidatas:', data.debug.total_candidatas);
-                    console.log('  - Candidatas guardadas:', data.debug.candidatas_guardadas);
-                    console.log('  - Pendientes después:', data.debug.pendientes_despues_guardar);
-                    console.log('  - Procesamiento:', data.debug.procesamiento);
-                    console.log('  - Fin:', data.debug.fin);
-                }
-                if (data.errores && data.errores.length > 0) {
-                    console.log('❌ Errores:', data.errores);
-                }
+
+                // Mostrar informe detallado en modal
+                mostrarInformeGeneracion(data);
 
                 resultado.classList.add(data.success ? 'bg-green-100' : 'bg-red-100');
+                resultado.innerHTML = `${data.message || data.error} <button onclick="document.getElementById('modalInforme').classList.remove('hidden')" class="ml-2 text-blue-600 underline">Ver informe detallado</button>`;
 
-                // Mostrar mensaje más detallado
-                let html = data.message || data.error || 'Operación completada';
-                if (data.debug && data.debug.procesamiento && data.debug.procesamiento.length > 0) {
-                    html += '<br><br><strong>Detalle:</strong><ul class="text-sm mt-2 text-left">';
-                    data.debug.procesamiento.forEach(p => {
-                        html += `<li>• ${p.url}... → ${p.resultado}</li>`;
-                    });
-                    html += '</ul>';
-                }
-                resultado.innerHTML = html;
-                resultado.classList.remove('hidden');
-
-                if (data.success && data.articulos_generados > 0) {
-                    setTimeout(() => location.reload(), 3000);
-                }
             } catch (error) {
                 console.error('💥 Error:', error);
                 resultado.classList.add('bg-red-100');
                 resultado.innerHTML = 'Error de conexión: ' + error.message;
-                resultado.classList.remove('hidden');
             }
 
             btn.disabled = false;
             btn.innerHTML = '🔄 Buscar y Generar Artículos';
+        }
+
+        function mostrarInformeGeneracion(data) {
+            const modal = document.getElementById('modalInforme');
+            const contenido = document.getElementById('modalInformeContenido');
+
+            let html = '<div class="space-y-6">';
+
+            // Resumen
+            html += `
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-blue-50 p-3 rounded-lg text-center">
+                        <p class="text-2xl font-bold text-blue-600">${data.debug?.total_candidatas || 0}</p>
+                        <p class="text-xs text-gray-600">Candidatas Tavily</p>
+                    </div>
+                    <div class="bg-green-50 p-3 rounded-lg text-center">
+                        <p class="text-2xl font-bold text-green-600">${data.debug?.candidatas_guardadas || 0}</p>
+                        <p class="text-xs text-gray-600">Guardadas en cache</p>
+                    </div>
+                    <div class="bg-purple-50 p-3 rounded-lg text-center">
+                        <p class="text-2xl font-bold text-purple-600">${data.articulos_generados || 0}</p>
+                        <p class="text-xs text-gray-600">Artículos generados</p>
+                    </div>
+                    <div class="bg-orange-50 p-3 rounded-lg text-center">
+                        <p class="text-2xl font-bold text-orange-600">${data.pendientes_restantes || 0}</p>
+                        <p class="text-xs text-gray-600">Pendientes restantes</p>
+                    </div>
+                </div>
+            `;
+
+            // Topics buscados
+            if (data.debug?.topics_buscados) {
+                html += `
+                    <div>
+                        <h4 class="font-bold text-gray-700 mb-2">🔍 Topics buscados en Tavily</h4>
+                        <ul class="text-sm bg-gray-50 rounded p-3">
+                            ${data.debug.topics_buscados.map(t => `<li class="py-1">• ${t}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Estadísticas de filtrado
+            if (data.debug?.candidatas_estadisticas) {
+                const stats = data.debug.candidatas_estadisticas;
+                html += `
+                    <div>
+                        <h4 class="font-bold text-gray-700 mb-2">📊 Filtrado de candidatas</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                            <div class="bg-green-100 p-2 rounded">✅ Aceptadas: ${stats.ok}</div>
+                            <div class="bg-red-100 p-2 rounded">🔗 URL procesada: ${stats.url_procesada}</div>
+                            <div class="bg-yellow-100 p-2 rounded">📝 Título similar: ${stats.titulo_similar}</div>
+                            <div class="bg-gray-100 p-2 rounded">❌ URL vacía: ${stats.url_vacia}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Detalle de candidatas
+            if (data.debug?.candidatas_detalle && data.debug.candidatas_detalle.length > 0) {
+                html += `
+                    <div>
+                        <h4 class="font-bold text-gray-700 mb-2">📋 Detalle de candidatas (${data.debug.candidatas_detalle.length})</h4>
+                        <div class="max-h-64 overflow-y-auto border rounded">
+                            <table class="w-full text-xs">
+                                <thead class="bg-gray-100 sticky top-0">
+                                    <tr>
+                                        <th class="p-2 text-left">Título</th>
+                                        <th class="p-2 text-left">Fuente</th>
+                                        <th class="p-2 text-left">Estado</th>
+                                        <th class="p-2 text-left">Razón</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.debug.candidatas_detalle.map(c => `
+                                        <tr class="${c.estado === 'aceptada' ? 'bg-green-50' : 'bg-red-50'} border-b">
+                                            <td class="p-2">${c.titulo || '(sin título)'}</td>
+                                            <td class="p-2">${c.fuente}${c.preferido ? ' ⭐' : ''}</td>
+                                            <td class="p-2">${c.estado === 'aceptada' ? '✅' : '❌'}</td>
+                                            <td class="p-2">${c.razon}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Procesamiento
+            if (data.debug?.procesamiento && data.debug.procesamiento.length > 0) {
+                html += `
+                    <div>
+                        <h4 class="font-bold text-gray-700 mb-2">⚙️ Procesamiento</h4>
+                        <div class="space-y-2 text-sm">
+                            ${data.debug.procesamiento.map(p => `
+                                <div class="p-2 rounded ${p.resultado?.includes('GUARDADO') ? 'bg-green-100' : 'bg-gray-100'}">
+                                    <strong>${p.titulo || p.url}</strong><br>
+                                    <span class="text-gray-600">${p.resultado}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Errores
+            if (data.errores && data.errores.length > 0) {
+                html += `
+                    <div>
+                        <h4 class="font-bold text-red-700 mb-2">❌ Errores</h4>
+                        <ul class="text-sm bg-red-50 rounded p-3 text-red-700">
+                            ${data.errores.map(e => `<li>• ${e}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+
+            contenido.innerHTML = html;
+            modal.classList.remove('hidden');
+        }
+
+        function cerrarModalInforme() {
+            document.getElementById('modalInforme').classList.add('hidden');
         }
 
         async function cambiarEstado(id, estado, genTraducciones = true) {
@@ -539,5 +642,18 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
             }
         }
     </script>
+
+    <!-- Modal Informe de Generación -->
+    <div id="modalInforme" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div class="bg-forest-600 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="text-lg font-bold">📊 Informe de Generación</h3>
+                <button onclick="cerrarModalInforme()" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+            </div>
+            <div id="modalInformeContenido" class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
 </body>
 </html>

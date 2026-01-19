@@ -68,17 +68,51 @@ try {
 
         // Guardar candidatas en cache
         if (!empty($todasLasCandidatas)) {
-            // Debug: mostrar por qué no se guardan
+            // Debug COMPLETO: mostrar TODAS las candidatas con razón de filtrado
             $debugCandidatas = [];
-            foreach (array_slice($todasLasCandidatas, 0, 5) as $c) {
+            $estadisticas = [
+                'total' => count($todasLasCandidatas),
+                'ok' => 0,
+                'url_vacia' => 0,
+                'url_procesada' => 0,
+                'titulo_similar' => 0
+            ];
+
+            foreach ($todasLasCandidatas as $c) {
                 $url = $c['url'] ?? '';
                 $titulo = $c['title'] ?? '';
+                $fuente = parse_url($url, PHP_URL_HOST) ?? 'desconocido';
                 $razon = 'OK';
-                if (empty($url)) $razon = 'URL vacía';
-                elseif (urlYaProcesada($url)) $razon = 'URL ya procesada';
-                elseif (!empty($titulo) && tituloEsSimilar($titulo)) $razon = 'Título similar';
-                $debugCandidatas[] = ['url' => substr($url, 0, 40), 'razon' => $razon];
+                $estado = 'aceptada';
+
+                if (empty($url)) {
+                    $razon = 'URL vacía';
+                    $estado = 'rechazada';
+                    $estadisticas['url_vacia']++;
+                } elseif (urlYaProcesada($url)) {
+                    $razon = 'URL ya procesada anteriormente';
+                    $estado = 'rechazada';
+                    $estadisticas['url_procesada']++;
+                } elseif (!empty($titulo) && tituloEsSimilar($titulo)) {
+                    $razon = 'Título similar a artículo existente';
+                    $estado = 'rechazada';
+                    $estadisticas['titulo_similar']++;
+                } else {
+                    $estadisticas['ok']++;
+                }
+
+                $debugCandidatas[] = [
+                    'titulo' => mb_substr($titulo, 0, 80),
+                    'url' => $url,
+                    'fuente' => $fuente,
+                    'preferido' => $c['_preferido'] ?? false,
+                    'estado' => $estado,
+                    'razon' => $razon,
+                    'contenido_chars' => strlen($c['content'] ?? $c['raw_content'] ?? '')
+                ];
             }
+
+            $debug['candidatas_estadisticas'] = $estadisticas;
             $debug['candidatas_detalle'] = $debugCandidatas;
 
             $guardadas = guardarCandidatasPendientes($todasLasCandidatas);
