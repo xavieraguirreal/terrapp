@@ -17,6 +17,7 @@ require_once __DIR__ . '/../includes/EmailNotifier.php';
 try {
     $debug = [];
     $debug['inicio'] = date('H:i:s');
+    $debug['etapas'] = []; // Para tracking detallado de cada etapa
 
     $tavily = new TavilyClient(TAVILY_API_KEY);
     $openai = new OpenAIClient(OPENAI_API_KEY, OPENAI_MODEL);
@@ -29,7 +30,24 @@ try {
     $pendientesDisponibles = contarPendientes();
     $debug['pendientes_inicial'] = $pendientesDisponibles;
 
-    if ($pendientesDisponibles < 5) {
+    // ETAPA 1: Decidir si buscar en Tavily
+    if ($pendientesDisponibles >= 5) {
+        $debug['tavily_ejecutado'] = false;
+        $debug['tavily_razon'] = "No se ejecutó Tavily porque ya hay {$pendientesDisponibles} pendientes en cache (umbral: 5)";
+        $debug['etapas'][] = [
+            'etapa' => '1. Búsqueda Tavily',
+            'estado' => 'omitida',
+            'detalle' => "Ya hay suficientes pendientes ({$pendientesDisponibles}). Tavily solo busca cuando hay menos de 5."
+        ];
+    } else {
+        $debug['tavily_ejecutado'] = true;
+        $debug['tavily_razon'] = "Se ejecutó Tavily porque solo hay {$pendientesDisponibles} pendientes (menos de 5)";
+        $debug['etapas'][] = [
+            'etapa' => '1. Búsqueda Tavily',
+            'estado' => 'ejecutada',
+            'detalle' => "Buscando noticias nuevas..."
+        ];
+
         // Buscar nuevas noticias con Tavily
         $topics = SEARCH_TOPICS;
         shuffle($topics);
@@ -119,8 +137,18 @@ try {
             $debug['candidatas_guardadas'] = $guardadas;
             $pendientesDisponibles = contarPendientes();
             $debug['pendientes_despues_guardar'] = $pendientesDisponibles;
+
+            // Actualizar etapa con resultados
+            $debug['etapas'][0]['detalle'] = "Tavily trajo {$debug['total_candidatas']} candidatas. Después de filtrar: {$guardadas} guardadas en cache.";
         }
-    }
+    } // Fin del else de Tavily
+
+    // ETAPA 2: Procesar pendientes
+    $debug['etapas'][] = [
+        'etapa' => '2. Procesar Pendientes',
+        'estado' => 'ejecutada',
+        'detalle' => "Procesando hasta 3 artículos de los {$pendientesDisponibles} pendientes..."
+    ];
 
     // Procesar hasta 3 pendientes
     $procesadas = 0;
@@ -135,7 +163,12 @@ try {
             break;
         }
 
-        $debugItem = ['url' => substr($pendiente['url'], 0, 50)];
+        $debugItem = [
+            'url' => $pendiente['url'],
+            'titulo_original' => $pendiente['titulo'] ?? '(sin título)',
+            'fuente' => parse_url($pendiente['url'], PHP_URL_HOST),
+            'origen' => $pendiente['fuente'] ?? 'importación manual'
+        ];
 
         try {
             // Verificar URL no procesada
@@ -236,6 +269,14 @@ try {
             // Guardar artículo
             $articuloId = guardarArticulo($datosArticulo);
 
+            // Agregar info del artículo generado al debug
+            $debugItem['titulo_generado'] = $articuloGenerado['titulo'];
+            $debugItem['region'] = $regionInfo['region'];
+            $debugItem['pais'] = $regionInfo['pais'];
+            $debugItem['categoria'] = $articuloGenerado['categoria'] ?? 'noticias';
+            $debugItem['contenido_chars'] = strlen($contenido);
+            $debugItem['openai_usado'] = true;
+
             // Marcar pendiente y URL como procesadas
             marcarPendienteUsada($pendiente['id']);
             registrarUrl($pendiente['url']);
@@ -262,10 +303,28 @@ try {
     }
 
     $debug['fin'] = date('H:i:s');
+    $pendientesFinales = contarPendientes();
+
+    // Actualizar etapa de procesamiento con resultados
+    $debug['etapas'][1]['detalle'] = "Se procesaron {$procesadas} pendientes. Generados: {$articulosGenerados} artículos.";
+
+    // Resumen final
+    $debug['resumen'] = [
+        'tavily_ejecutado' => $debug['tavily_ejecutado'] ?? false,
+        'candidatas_tavily' => $debug['total_candidatas'] ?? 0,
+        'candidatas_filtradas' => ($debug['candidatas_estadisticas']['total'] ?? 0) - ($debug['candidatas_estadisticas']['ok'] ?? 0),
+        'candidatas_guardadas' => $debug['candidatas_guardadas'] ?? 0,
+        'pendientes_inicio' => $debug['pendientes_inicial'],
+        'pendientes_fin' => $pendientesFinales,
+        'articulos_procesados' => $procesadas,
+        'articulos_generados' => $articulosGenerados,
+        'articulos_fallidos' => $procesadas - $articulosGenerados,
+        'openai_llamadas' => $articulosGenerados // Cada artículo generado = 1 llamada a OpenAI
+    ];
 
     $mensaje = "Se generaron {$articulosGenerados} artículo(s).";
-    if ($pendientesDisponibles > 0) {
-        $mensaje .= " Quedan {$pendientesDisponibles} noticias en cache.";
+    if ($pendientesFinales > 0) {
+        $mensaje .= " Quedan {$pendientesFinales} noticias en cache.";
     }
     if (!empty($errores)) {
         $mensaje .= " Errores: " . count($errores);
@@ -275,7 +334,7 @@ try {
         'success' => true,
         'message' => $mensaje,
         'articulos_generados' => $articulosGenerados,
-        'pendientes_restantes' => contarPendientes(),
+        'pendientes_restantes' => $pendientesFinales,
         'errores' => $errores,
         'debug' => $debug
     ], JSON_UNESCAPED_UNICODE);

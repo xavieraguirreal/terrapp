@@ -377,65 +377,120 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
         function mostrarInformeGeneracion(data) {
             const modal = document.getElementById('modalInforme');
             const contenido = document.getElementById('modalInformeContenido');
+            const resumen = data.debug?.resumen || {};
 
             let html = '<div class="space-y-6">';
 
-            // Resumen
+            // ETAPAS del proceso
+            if (data.debug?.etapas) {
+                html += `<div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="font-bold text-gray-700 mb-3">📋 Etapas del proceso</h4>
+                    <div class="space-y-2">
+                        ${data.debug.etapas.map(e => `
+                            <div class="flex items-start gap-3 p-2 rounded ${e.estado === 'ejecutada' ? 'bg-green-100' : 'bg-yellow-100'}">
+                                <span class="text-lg">${e.estado === 'ejecutada' ? '✅' : '⏭️'}</span>
+                                <div>
+                                    <strong>${e.etapa}</strong>
+                                    <p class="text-sm text-gray-600">${e.detalle}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+            }
+
+            // Resumen numérico
             html += `
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-blue-50 p-3 rounded-lg text-center">
-                        <p class="text-2xl font-bold text-blue-600">${data.debug?.total_candidatas || 0}</p>
-                        <p class="text-xs text-gray-600">Candidatas Tavily</p>
-                    </div>
-                    <div class="bg-green-50 p-3 rounded-lg text-center">
-                        <p class="text-2xl font-bold text-green-600">${data.debug?.candidatas_guardadas || 0}</p>
-                        <p class="text-xs text-gray-600">Guardadas en cache</p>
-                    </div>
-                    <div class="bg-purple-50 p-3 rounded-lg text-center">
-                        <p class="text-2xl font-bold text-purple-600">${data.articulos_generados || 0}</p>
-                        <p class="text-xs text-gray-600">Artículos generados</p>
-                    </div>
-                    <div class="bg-orange-50 p-3 rounded-lg text-center">
-                        <p class="text-2xl font-bold text-orange-600">${data.pendientes_restantes || 0}</p>
-                        <p class="text-xs text-gray-600">Pendientes restantes</p>
+                <div>
+                    <h4 class="font-bold text-gray-700 mb-3">📊 Resumen</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                        <div class="bg-blue-50 p-3 rounded-lg text-center border-2 ${resumen.tavily_ejecutado ? 'border-blue-300' : 'border-gray-200'}">
+                            <p class="text-2xl font-bold text-blue-600">${resumen.candidatas_tavily || 0}</p>
+                            <p class="text-xs text-gray-600">Tavily trajo</p>
+                            ${!resumen.tavily_ejecutado ? '<p class="text-xs text-yellow-600 mt-1">⏭️ No ejecutado</p>' : ''}
+                        </div>
+                        <div class="bg-red-50 p-3 rounded-lg text-center">
+                            <p class="text-2xl font-bold text-red-500">${resumen.candidatas_filtradas || 0}</p>
+                            <p class="text-xs text-gray-600">Filtradas</p>
+                        </div>
+                        <div class="bg-green-50 p-3 rounded-lg text-center">
+                            <p class="text-2xl font-bold text-green-600">${resumen.candidatas_guardadas || 0}</p>
+                            <p class="text-xs text-gray-600">→ Cache</p>
+                        </div>
+                        <div class="bg-purple-50 p-3 rounded-lg text-center border-2 border-purple-300">
+                            <p class="text-2xl font-bold text-purple-600">${resumen.articulos_generados || 0}</p>
+                            <p class="text-xs text-gray-600">Generados (OpenAI)</p>
+                        </div>
+                        <div class="bg-orange-50 p-3 rounded-lg text-center">
+                            <p class="text-2xl font-bold text-orange-600">${resumen.pendientes_fin || 0}</p>
+                            <p class="text-xs text-gray-600">Pendientes</p>
+                            <p class="text-xs text-gray-400">(era ${resumen.pendientes_inicio || 0})</p>
+                        </div>
                     </div>
                 </div>
             `;
 
-            // Topics buscados
-            if (data.debug?.topics_buscados) {
+            // Por qué Tavily se ejecutó o no
+            if (data.debug?.tavily_razon) {
+                const ejecutado = data.debug.tavily_ejecutado;
                 html += `
-                    <div>
-                        <h4 class="font-bold text-gray-700 mb-2">🔍 Topics buscados en Tavily</h4>
-                        <ul class="text-sm bg-gray-50 rounded p-3">
-                            ${data.debug.topics_buscados.map(t => `<li class="py-1">• ${t}</li>`).join('')}
-                        </ul>
+                    <div class="p-3 rounded-lg ${ejecutado ? 'bg-blue-50 border border-blue-200' : 'bg-yellow-50 border border-yellow-200'}">
+                        <p class="text-sm">
+                            <strong>${ejecutado ? '🔍 Tavily:' : '⏭️ Tavily omitido:'}</strong>
+                            ${data.debug.tavily_razon}
+                        </p>
                     </div>
                 `;
             }
 
-            // Estadísticas de filtrado
-            if (data.debug?.candidatas_estadisticas) {
-                const stats = data.debug.candidatas_estadisticas;
+            // Topics buscados (si Tavily se ejecutó)
+            if (data.debug?.topics_buscados && data.debug.tavily_ejecutado) {
                 html += `
                     <div>
-                        <h4 class="font-bold text-gray-700 mb-2">📊 Filtrado de candidatas</h4>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-                            <div class="bg-green-100 p-2 rounded">✅ Aceptadas: ${stats.ok}</div>
-                            <div class="bg-red-100 p-2 rounded">🔗 URL procesada: ${stats.url_procesada}</div>
-                            <div class="bg-yellow-100 p-2 rounded">📝 Título similar: ${stats.titulo_similar}</div>
-                            <div class="bg-gray-100 p-2 rounded">❌ URL vacía: ${stats.url_vacia}</div>
+                        <h4 class="font-bold text-gray-700 mb-2">🔍 Topics buscados en Tavily</h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${data.debug.topics_buscados.map(t => `<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${t}</span>`).join('')}
                         </div>
                     </div>
                 `;
             }
 
-            // Detalle de candidatas
-            if (data.debug?.candidatas_detalle && data.debug.candidatas_detalle.length > 0) {
+            // Estadísticas de filtrado (si hay)
+            if (data.debug?.candidatas_estadisticas && data.debug.tavily_ejecutado) {
+                const stats = data.debug.candidatas_estadisticas;
                 html += `
                     <div>
-                        <h4 class="font-bold text-gray-700 mb-2">📋 Detalle de candidatas (${data.debug.candidatas_detalle.length})</h4>
-                        <div class="max-h-64 overflow-y-auto border rounded">
+                        <h4 class="font-bold text-gray-700 mb-2">🚫 Por qué se filtraron candidatas</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                            <div class="bg-green-100 p-2 rounded text-center">
+                                <span class="text-lg">✅</span><br>
+                                <strong>${stats.ok}</strong> Aceptadas
+                            </div>
+                            <div class="bg-red-100 p-2 rounded text-center">
+                                <span class="text-lg">🔗</span><br>
+                                <strong>${stats.url_procesada}</strong> URL repetida
+                            </div>
+                            <div class="bg-yellow-100 p-2 rounded text-center">
+                                <span class="text-lg">📝</span><br>
+                                <strong>${stats.titulo_similar}</strong> Título similar
+                            </div>
+                            <div class="bg-gray-100 p-2 rounded text-center">
+                                <span class="text-lg">❌</span><br>
+                                <strong>${stats.url_vacia}</strong> URL vacía
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Detalle de candidatas (colapsable)
+            if (data.debug?.candidatas_detalle && data.debug.candidatas_detalle.length > 0) {
+                html += `
+                    <details class="border rounded-lg">
+                        <summary class="font-bold text-gray-700 p-3 cursor-pointer hover:bg-gray-50">
+                            📋 Ver ${data.debug.candidatas_detalle.length} candidatas de Tavily
+                        </summary>
+                        <div class="max-h-64 overflow-y-auto border-t">
                             <table class="w-full text-xs">
                                 <thead class="bg-gray-100 sticky top-0">
                                     <tr>
@@ -457,33 +512,64 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </details>
                 `;
             }
 
-            // Procesamiento
+            // Procesamiento de pendientes (artículos generados)
             if (data.debug?.procesamiento && data.debug.procesamiento.length > 0) {
-                html += `
-                    <div>
-                        <h4 class="font-bold text-gray-700 mb-2">⚙️ Procesamiento</h4>
-                        <div class="space-y-2 text-sm">
-                            ${data.debug.procesamiento.map(p => `
-                                <div class="p-2 rounded ${p.resultado?.includes('GUARDADO') ? 'bg-green-100' : 'bg-gray-100'}">
-                                    <strong>${p.titulo || p.url}</strong><br>
-                                    <span class="text-gray-600">${p.resultado}</span>
+                const generados = data.debug.procesamiento.filter(p => p.resultado?.includes('GUARDADO'));
+                const fallidos = data.debug.procesamiento.filter(p => !p.resultado?.includes('GUARDADO') && p.resultado !== 'No hay más pendientes');
+
+                html += `<div>
+                    <h4 class="font-bold text-gray-700 mb-2">⚙️ Procesamiento de pendientes → Artículos</h4>`;
+
+                if (generados.length > 0) {
+                    html += `<div class="space-y-2 mb-4">
+                        <p class="text-sm text-green-700 font-medium">✅ ${generados.length} artículo(s) generado(s):</p>
+                        ${generados.map(p => `
+                            <div class="p-3 rounded bg-green-100 border border-green-200">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <strong class="text-green-800">${p.titulo_generado || p.titulo_original || '(sin título)'}</strong>
+                                        <p class="text-xs text-gray-600 mt-1">
+                                            Fuente: ${p.fuente} |
+                                            Región: ${p.region || '?'}${p.pais ? ' (' + p.pais + ')' : ''} |
+                                            Categoría: ${p.categoria || '?'}
+                                        </p>
+                                    </div>
+                                    <span class="bg-green-600 text-white text-xs px-2 py-1 rounded">ID: ${p.resultado.match(/ID: (\d+)/)?.[1] || '?'}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>`;
+                }
+
+                if (fallidos.length > 0) {
+                    html += `<details class="border border-red-200 rounded-lg">
+                        <summary class="p-2 cursor-pointer bg-red-50 text-red-700 text-sm">
+                            ❌ ${fallidos.length} pendiente(s) no se pudieron procesar
+                        </summary>
+                        <div class="p-2 space-y-1 text-xs">
+                            ${fallidos.map(p => `
+                                <div class="p-2 bg-red-50 rounded">
+                                    <strong>${p.titulo_original || p.url}</strong><br>
+                                    <span class="text-red-600">${p.resultado}</span>
                                 </div>
                             `).join('')}
                         </div>
-                    </div>
-                `;
+                    </details>`;
+                }
+
+                html += `</div>`;
             }
 
             // Errores
             if (data.errores && data.errores.length > 0) {
                 html += `
-                    <div>
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
                         <h4 class="font-bold text-red-700 mb-2">❌ Errores</h4>
-                        <ul class="text-sm bg-red-50 rounded p-3 text-red-700">
+                        <ul class="text-sm text-red-700 space-y-1">
                             ${data.errores.map(e => `<li>• ${e}</li>`).join('')}
                         </ul>
                     </div>
