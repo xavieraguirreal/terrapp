@@ -415,6 +415,11 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
                     <h3 class="text-xl font-bold mb-6" data-i18n="related_articles">Artículos Relacionados</h3>
                     <div id="relatedArticles" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
                 </div>
+
+                <!-- Comments Section -->
+                <div id="commentsSection" class="mt-12">
+                    <!-- Se carga dinámicamente con JavaScript -->
+                </div>
             </div>
 
             <!-- Article Not Found -->

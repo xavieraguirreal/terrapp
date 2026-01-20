@@ -52,9 +52,24 @@
 
 ### 2.1 Comentarios con Giscus
 - **Estado:** ❌ DESCARTADO
-- **Razón:** El público objetivo (agricultura urbana, Sudamérica) probablemente no tiene cuenta de GitHub. El engagement se logra con reacciones emoji, Chat Terri y compartir en WhatsApp.
+- **Razón:** El público objetivo (agricultura urbana, Sudamérica) probablemente no tiene cuenta de GitHub.
 
-### 2.2 Artículos Relacionados por Similitud
+### 2.2 Sistema de Comentarios Propio
+- **Estado:** ✅ COMPLETADO (2026-01-20)
+- **Complejidad:** Media
+- **Descripción:** Sistema de comentarios propio vinculado a suscriptores del newsletter
+- **Ubicación:** blog/api/comentarios.php, blog.js, blog.css
+- **Características:**
+  - [x] Solo suscriptores del newsletter pueden comentar
+  - [x] Captcha matemático anti-spam
+  - [x] Comentarios anidados (respuestas)
+  - [x] Sistema de likes por IP (sin duplicados)
+  - [x] Notificación por email al admin
+  - [x] Multi-idioma (ES, PT, EN, FR, NL)
+  - [x] Diseño responsive con modo oscuro
+  - [x] Animaciones y feedback visual
+
+### 2.3 Artículos Relacionados por Similitud
 - **Estado:** ✅ COMPLETADO (2026-01-20)
 - **Complejidad:** Media
 - **Descripción:** Mejorar el algoritmo de artículos relacionados usando similitud de contenido
@@ -105,15 +120,15 @@
 
 ## Resumen de Prioridades
 
-| # | Funcionalidad | Prioridad | Complejidad | Fase |
-|---|---------------|-----------|-------------|------|
-| 1 | TOC (Índice de Contenidos) | Alta | Media | 1 |
-| 2 | Bento Grid Layout | Alta | Media | 1 |
-| 3 | Tipografía Cinética | Alta | Baja | 1 |
-| 4 | Comentarios Giscus | Media | Baja | 2 |
-| 5 | Artículos Relacionados (similitud) | Media | Media | 2 |
-| 6 | Búsqueda Semántica | Baja | Alta | 3 |
-| 7 | Chat RAG | Baja | Alta | 3 |
+| # | Funcionalidad | Estado | Complejidad | Fase |
+|---|---------------|--------|-------------|------|
+| 1 | TOC (Índice de Contenidos) | ✅ Completado | Media | 1 |
+| 2 | Bento Grid Layout | ✅ Completado | Media | 1 |
+| 3 | Tipografía Cinética | ✅ Completado | Baja | 1 |
+| 4 | Sistema de Comentarios | ✅ Completado | Media | 2 |
+| 5 | Artículos Relacionados (similitud) | ✅ Completado | Media | 2 |
+| 6 | Búsqueda Semántica | ✅ Completado | Alta | 3 |
+| 7 | Chat RAG (Terri) | ✅ Completado | Alta | 3 |
 
 ---
 

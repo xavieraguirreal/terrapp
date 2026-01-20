@@ -605,6 +605,9 @@ function renderArticle(art) {
     setTimeout(() => {
         generateTOC();
     }, 100); // Pequeño delay para asegurar que el DOM está listo
+
+    // Cargar comentarios
+    loadComments(art.id);
 }
 
 function loadRelatedArticles(currentArt) {
@@ -1978,3 +1981,405 @@ document.addEventListener('DOMContentLoaded', () => {
         initChatRAG();
     }
 });
+
+// ============================================
+// SISTEMA DE COMENTARIOS
+// ============================================
+
+let comentariosCaptcha = { a: 0, b: 0 };
+
+/**
+ * Traducciones para comentarios
+ */
+const COMMENTS_I18N = {
+    es: {
+        title: 'Comentarios',
+        no_comments: 'Sé el primero en comentar',
+        login_hint: 'Debés estar suscrito al newsletter para comentar',
+        placeholder: 'Escribe tu comentario...',
+        email_placeholder: 'Tu email (de suscriptor)',
+        submit: 'Publicar',
+        reply: 'Responder',
+        cancel: 'Cancelar',
+        likes: 'Me gusta',
+        admin_badge: 'Admin',
+        captcha_label: '¿Cuánto es',
+        subscribe_cta: '¿No estás suscrito?',
+        subscribe_link: 'Suscribite gratis',
+        success: '¡Comentario publicado!',
+        error_captcha: 'Respuesta incorrecta',
+        error_email: 'Email inválido',
+        error_content: 'El comentario es muy corto',
+        error_subscriber: 'Debés estar suscrito para comentar'
+    },
+    pt: {
+        title: 'Comentários',
+        no_comments: 'Seja o primeiro a comentar',
+        login_hint: 'Você precisa estar inscrito na newsletter para comentar',
+        placeholder: 'Escreva seu comentário...',
+        email_placeholder: 'Seu email (de inscrito)',
+        submit: 'Publicar',
+        reply: 'Responder',
+        cancel: 'Cancelar',
+        likes: 'Curtir',
+        admin_badge: 'Admin',
+        captcha_label: 'Quanto é',
+        subscribe_cta: 'Não está inscrito?',
+        subscribe_link: 'Inscreva-se grátis',
+        success: 'Comentário publicado!',
+        error_captcha: 'Resposta incorreta',
+        error_email: 'Email inválido',
+        error_content: 'O comentário é muito curto',
+        error_subscriber: 'Você precisa estar inscrito para comentar'
+    },
+    en: {
+        title: 'Comments',
+        no_comments: 'Be the first to comment',
+        login_hint: 'You must be subscribed to the newsletter to comment',
+        placeholder: 'Write your comment...',
+        email_placeholder: 'Your email (subscriber)',
+        submit: 'Post',
+        reply: 'Reply',
+        cancel: 'Cancel',
+        likes: 'Like',
+        admin_badge: 'Admin',
+        captcha_label: 'What is',
+        subscribe_cta: 'Not subscribed?',
+        subscribe_link: 'Subscribe free',
+        success: 'Comment posted!',
+        error_captcha: 'Wrong answer',
+        error_email: 'Invalid email',
+        error_content: 'Comment is too short',
+        error_subscriber: 'You must be subscribed to comment'
+    },
+    fr: {
+        title: 'Commentaires',
+        no_comments: 'Soyez le premier à commenter',
+        login_hint: 'Vous devez être abonné à la newsletter pour commenter',
+        placeholder: 'Écrivez votre commentaire...',
+        email_placeholder: 'Votre email (abonné)',
+        submit: 'Publier',
+        reply: 'Répondre',
+        cancel: 'Annuler',
+        likes: 'J\'aime',
+        admin_badge: 'Admin',
+        captcha_label: 'Combien font',
+        subscribe_cta: 'Pas abonné?',
+        subscribe_link: 'Abonnez-vous gratuitement',
+        success: 'Commentaire publié!',
+        error_captcha: 'Mauvaise réponse',
+        error_email: 'Email invalide',
+        error_content: 'Le commentaire est trop court',
+        error_subscriber: 'Vous devez être abonné pour commenter'
+    },
+    nl: {
+        title: 'Reacties',
+        no_comments: 'Wees de eerste om te reageren',
+        login_hint: 'Je moet geabonneerd zijn op de nieuwsbrief om te reageren',
+        placeholder: 'Schrijf je reactie...',
+        email_placeholder: 'Je email (abonnee)',
+        submit: 'Plaatsen',
+        reply: 'Reageren',
+        cancel: 'Annuleren',
+        likes: 'Leuk',
+        admin_badge: 'Admin',
+        captcha_label: 'Hoeveel is',
+        subscribe_cta: 'Niet geabonneerd?',
+        subscribe_link: 'Abonneer gratis',
+        success: 'Reactie geplaatst!',
+        error_captcha: 'Verkeerd antwoord',
+        error_email: 'Ongeldige email',
+        error_content: 'De reactie is te kort',
+        error_subscriber: 'Je moet geabonneerd zijn om te reageren'
+    }
+};
+
+function commentsT(key) {
+    const lang = getCurrentLanguage();
+    return COMMENTS_I18N[lang]?.[key] || COMMENTS_I18N['es'][key];
+}
+
+/**
+ * Carga y renderiza los comentarios de un artículo
+ */
+async function loadComments(articuloId) {
+    const container = document.getElementById('commentsSection');
+    if (!container) return;
+
+    try {
+        const response = await fetch(`api/comentarios.php?articulo_id=${articuloId}`);
+        const data = await response.json();
+
+        if (data.success) {
+            renderComments(data.comentarios, articuloId);
+        }
+    } catch (error) {
+        console.error('Error cargando comentarios:', error);
+    }
+}
+
+/**
+ * Renderiza los comentarios
+ */
+function renderComments(comentarios, articuloId) {
+    const container = document.getElementById('commentsSection');
+    if (!container) return;
+
+    // Generar captcha
+    comentariosCaptcha = generarCaptcha();
+
+    const t = commentsT;
+    const lang = getCurrentLanguage();
+
+    let html = `
+        <div class="comments-container">
+            <h3 class="comments-title">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                </svg>
+                ${t('title')} (${comentarios.length})
+            </h3>
+
+            <div class="comments-list">
+    `;
+
+    if (comentarios.length === 0) {
+        html += `
+            <div class="comments-empty">
+                <span class="text-4xl">💬</span>
+                <p>${t('no_comments')}</p>
+            </div>
+        `;
+    } else {
+        comentarios.forEach(c => {
+            html += renderComentario(c);
+        });
+    }
+
+    html += `
+            </div>
+
+            <!-- Formulario de comentario -->
+            <div class="comment-form-container">
+                <h4 class="comment-form-title">💬 ${t('title')}</h4>
+                <p class="comment-form-hint">${t('login_hint')}</p>
+
+                <form id="commentForm" onsubmit="submitComment(event, ${articuloId})" class="comment-form">
+                    <input type="hidden" id="commentParentId" value="">
+
+                    <div class="comment-form-row">
+                        <input type="email" id="commentEmail" placeholder="${t('email_placeholder')}" required class="comment-input">
+                    </div>
+
+                    <div class="comment-form-row">
+                        <textarea id="commentContent" placeholder="${t('placeholder')}" required minlength="10" maxlength="2000" class="comment-textarea"></textarea>
+                    </div>
+
+                    <div class="comment-form-footer">
+                        <div class="comment-captcha">
+                            <label>${t('captcha_label')} ${comentariosCaptcha.a} + ${comentariosCaptcha.b}?</label>
+                            <input type="number" id="commentCaptcha" required class="comment-captcha-input">
+                        </div>
+
+                        <button type="submit" id="commentSubmitBtn" class="comment-submit-btn">
+                            ${t('submit')}
+                        </button>
+                    </div>
+
+                    <p class="comment-subscribe-hint">
+                        ${t('subscribe_cta')} <a href="#notify">${t('subscribe_link')}</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    `;
+
+    container.innerHTML = html;
+    container.classList.remove('hidden');
+}
+
+/**
+ * Renderiza un comentario individual
+ */
+function renderComentario(c) {
+    const t = commentsT;
+    const adminBadge = c.es_admin ? `<span class="comment-admin-badge">${t('admin_badge')}</span>` : '';
+
+    let html = `
+        <div class="comment" data-id="${c.id}">
+            <div class="comment-header">
+                <span class="comment-avatar">${c.nombre.charAt(0).toUpperCase()}</span>
+                <div class="comment-meta">
+                    <span class="comment-author">${escapeHtml(c.nombre)} ${adminBadge}</span>
+                    <span class="comment-date">${c.fecha_formateada}</span>
+                </div>
+            </div>
+            <div class="comment-body">
+                <p>${escapeHtml(c.contenido)}</p>
+            </div>
+            <div class="comment-actions">
+                <button onclick="likeComment(${c.id})" class="comment-like-btn">
+                    👍 <span id="likes-${c.id}">${c.likes}</span>
+                </button>
+                <button onclick="replyToComment(${c.id}, '${escapeHtml(c.nombre)}')" class="comment-reply-btn">
+                    💬 ${t('reply')}
+                </button>
+            </div>
+    `;
+
+    // Respuestas
+    if (c.respuestas && c.respuestas.length > 0) {
+        html += `<div class="comment-replies">`;
+        c.respuestas.forEach(r => {
+            const rAdminBadge = r.es_admin ? `<span class="comment-admin-badge">${t('admin_badge')}</span>` : '';
+            html += `
+                <div class="comment comment-reply" data-id="${r.id}">
+                    <div class="comment-header">
+                        <span class="comment-avatar comment-avatar-sm">${r.nombre.charAt(0).toUpperCase()}</span>
+                        <div class="comment-meta">
+                            <span class="comment-author">${escapeHtml(r.nombre)} ${rAdminBadge}</span>
+                            <span class="comment-date">${r.fecha_formateada}</span>
+                        </div>
+                    </div>
+                    <div class="comment-body">
+                        <p>${escapeHtml(r.contenido)}</p>
+                    </div>
+                    <div class="comment-actions">
+                        <button onclick="likeComment(${r.id})" class="comment-like-btn">
+                            👍 <span id="likes-${r.id}">${r.likes}</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+    }
+
+    html += `</div>`;
+    return html;
+}
+
+/**
+ * Genera captcha matemático simple
+ */
+function generarCaptcha() {
+    const a = Math.floor(Math.random() * 10) + 1;
+    const b = Math.floor(Math.random() * 10) + 1;
+    return { a, b, result: a + b };
+}
+
+/**
+ * Envía un nuevo comentario
+ */
+async function submitComment(event, articuloId) {
+    event.preventDefault();
+
+    const t = commentsT;
+    const email = document.getElementById('commentEmail').value.trim();
+    const contenido = document.getElementById('commentContent').value.trim();
+    const captcha = document.getElementById('commentCaptcha').value.trim();
+    const parentId = document.getElementById('commentParentId').value || null;
+    const submitBtn = document.getElementById('commentSubmitBtn');
+
+    // Validar captcha localmente primero
+    if (parseInt(captcha) !== comentariosCaptcha.result) {
+        showToast(t('error_captcha'));
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '...';
+
+    try {
+        const response = await fetch('api/comentarios.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                articulo_id: articuloId,
+                email,
+                contenido,
+                captcha,
+                captcha_expected: comentariosCaptcha.result,
+                parent_id: parentId ? parseInt(parentId) : null
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showToast(t('success'));
+            // Recargar comentarios
+            loadComments(articuloId);
+            // Limpiar formulario
+            document.getElementById('commentContent').value = '';
+            document.getElementById('commentCaptcha').value = '';
+            document.getElementById('commentParentId').value = '';
+        } else {
+            showToast(data.error || 'Error');
+        }
+    } catch (error) {
+        console.error('Error enviando comentario:', error);
+        showToast('Error de conexión');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = t('submit');
+        // Regenerar captcha
+        comentariosCaptcha = generarCaptcha();
+        const captchaLabel = document.querySelector('.comment-captcha label');
+        if (captchaLabel) {
+            captchaLabel.textContent = `${t('captcha_label')} ${comentariosCaptcha.a} + ${comentariosCaptcha.b}?`;
+        }
+    }
+}
+
+/**
+ * Dar like a un comentario
+ */
+async function likeComment(comentarioId) {
+    try {
+        const response = await fetch(`api/comentarios.php?action=like&id=${comentarioId}`, {
+            method: 'POST'
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            document.getElementById(`likes-${comentarioId}`).textContent = data.likes;
+        } else {
+            showToast(data.error);
+        }
+    } catch (error) {
+        console.error('Error dando like:', error);
+    }
+}
+
+/**
+ * Responder a un comentario
+ */
+function replyToComment(comentarioId, autorNombre) {
+    const t = commentsT;
+    document.getElementById('commentParentId').value = comentarioId;
+    document.getElementById('commentContent').placeholder = `${t('reply')} a ${autorNombre}...`;
+    document.getElementById('commentContent').focus();
+
+    // Mostrar botón cancelar
+    const form = document.getElementById('commentForm');
+    if (!document.getElementById('cancelReplyBtn')) {
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.id = 'cancelReplyBtn';
+        cancelBtn.className = 'comment-cancel-btn';
+        cancelBtn.textContent = t('cancel');
+        cancelBtn.onclick = cancelReply;
+        form.querySelector('.comment-form-footer').appendChild(cancelBtn);
+    }
+}
+
+/**
+ * Cancelar respuesta
+ */
+function cancelReply() {
+    const t = commentsT;
+    document.getElementById('commentParentId').value = '';
+    document.getElementById('commentContent').placeholder = t('placeholder');
+    document.getElementById('cancelReplyBtn')?.remove();
+}
