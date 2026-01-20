@@ -51,18 +51,8 @@
 ## Fase 2: Engagement y Comunidad (Prioridad Media)
 
 ### 2.1 Comentarios con Giscus
-- **Estado:** Pendiente
-- **Complejidad:** Baja
-- **Descripción:** Sistema de comentarios usando GitHub Discussions, sin ads ni tracking
-- **Tecnología:** Giscus (GitHub Discussions API)
-- **Ubicación:** scriptum.php (final del artículo)
-- **Requisitos:**
-  - [ ] Crear repositorio público para discussions (o usar terrapp existente)
-  - [ ] Habilitar GitHub Discussions en el repo
-  - [ ] Configurar Giscus (giscus.app)
-  - [ ] Integrar componente en scriptum.php
-  - [ ] Soporte para modo oscuro
-  - [ ] Lazy loading del componente
+- **Estado:** ❌ DESCARTADO
+- **Razón:** El público objetivo (agricultura urbana, Sudamérica) probablemente no tiene cuenta de GitHub. El engagement se logra con reacciones emoji, Chat Terri y compartir en WhatsApp.
 
 ### 2.2 Artículos Relacionados por Similitud
 - **Estado:** ✅ COMPLETADO (2026-01-20)
@@ -97,17 +87,19 @@
   - [x] Badge de similitud en resultados (🧠 78.5%)
   - [x] Cache de búsquedas frecuentes (blog_search_cache)
 
-### 3.2 Chat RAG con el Blog
-- **Estado:** Pendiente
+### 3.2 Chat RAG con el Blog (Terri)
+- **Estado:** ✅ COMPLETADO (2026-01-20)
 - **Complejidad:** Alta
-- **Descripción:** Interfaz de chat para "preguntar al blog" usando RAG
-- **Tecnología:** Embeddings + OpenAI GPT-4
+- **Descripción:** Asistente virtual "Terri" para preguntar al blog usando RAG
+- **Tecnología:** Embeddings + OpenAI GPT-4o-mini
 - **Características:**
-  - [ ] Interfaz de chat en el blog
-  - [ ] Retrieval de fragmentos relevantes
-  - [ ] Generación de respuesta basada en contenido del blog
-  - [ ] Citas/referencias a artículos fuente
-  - [ ] Historial de conversación
+  - [x] Interfaz de chat flotante (botón + modal)
+  - [x] Retrieval de artículos relevantes via embeddings
+  - [x] Generación de respuesta basada en contenido del blog
+  - [x] Citas/referencias a artículos fuente con links
+  - [x] Historial de conversación (sessionStorage)
+  - [x] Multi-idioma (detecta idioma de la pregunta)
+  - [x] Disponible en blog y landing page
 
 ---
 
