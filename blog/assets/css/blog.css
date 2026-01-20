@@ -1025,6 +1025,39 @@ html {
     scroll-behavior: smooth;
 }
 
+/* Related Articles Cards */
+.related-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.related-card:hover {
+    transform: translateY(-4px);
+}
+
+.related-title {
+    transition: color 0.3s ease, transform 0.3s ease;
+    position: relative;
+}
+
+.related-card:hover .related-title {
+    color: #2d7553;
+    transform: translateX(3px);
+}
+
+[data-theme="dark"] .related-card:hover .related-title {
+    color: #6ee7b7;
+}
+
+/* Similarity badge */
+.related-card .text-xs {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.related-card:hover .text-xs {
+    opacity: 1;
+}
+
 /* Print styles */
 @media print {
     header, footer, #reactionsContainer, .share-buttons, #relatedSection {

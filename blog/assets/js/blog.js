@@ -599,9 +599,24 @@ function renderArticle(art) {
 }
 
 function loadRelatedArticles(currentArt) {
-    const related = articulos
-        .filter(a => a.id !== currentArt.id && a.categoria === currentArt.categoria)
+    // Calcular score de similitud para cada artículo
+    const articlesWithScore = articulos
+        .filter(a => a.id !== currentArt.id)
+        .map(art => ({
+            ...art,
+            score: calculateSimilarityScore(currentArt, art)
+        }))
+        .filter(a => a.score > 0) // Solo artículos con alguna similitud
+        .sort((a, b) => b.score - a.score) // Ordenar por score descendente
         .slice(0, 3);
+
+    // Fallback: si no hay similares, mostrar de la misma categoría
+    let related = articlesWithScore;
+    if (related.length === 0) {
+        related = articulos
+            .filter(a => a.id !== currentArt.id && a.categoria === currentArt.categoria)
+            .slice(0, 3);
+    }
 
     if (related.length === 0) return;
 
@@ -610,16 +625,76 @@ function loadRelatedArticles(currentArt) {
         const traducido = getArticuloEnIdioma(art);
         const imagenHtml = generarImagenConFallback(art.imagen_url, traducido.titulo, 'card');
         return `
-            <a href="scriptum.php?titulus=${art.slug}" class="block bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition">
+            <a href="scriptum.php?titulus=${art.slug}" class="related-card block bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition">
                 <div class="h-32 bg-gray-200 dark:bg-gray-700">
                     ${imagenHtml}
                 </div>
                 <div class="p-4">
-                    <h4 class="font-semibold text-sm line-clamp-2">${escapeHtml(traducido.titulo)}</h4>
+                    <h4 class="related-title font-semibold text-sm line-clamp-2">${escapeHtml(traducido.titulo)}</h4>
+                    ${art.score ? `<div class="text-xs text-gray-400 mt-1">${Math.round(art.score * 100)}% similar</div>` : ''}
                 </div>
             </a>
         `;
     }).join('');
+}
+
+/**
+ * Calcula un score de similitud entre dos artículos
+ * Basado en: tags compartidos, palabras del título, y categoría
+ */
+function calculateSimilarityScore(artA, artB) {
+    let score = 0;
+
+    // 1. Tags compartidos (peso: 40%)
+    const tagsA = (artA.tags || []).map(t => t.toLowerCase());
+    const tagsB = (artB.tags || []).map(t => t.toLowerCase());
+    const sharedTags = tagsA.filter(t => tagsB.includes(t));
+
+    if (tagsA.length > 0 && tagsB.length > 0) {
+        const tagScore = sharedTags.length / Math.max(tagsA.length, tagsB.length);
+        score += tagScore * 0.4;
+    }
+
+    // 2. Palabras comunes en el título (peso: 35%)
+    const wordsA = extractKeywords(artA.titulo);
+    const wordsB = extractKeywords(artB.titulo);
+    const sharedWords = wordsA.filter(w => wordsB.includes(w));
+
+    if (wordsA.length > 0 && wordsB.length > 0) {
+        const wordScore = sharedWords.length / Math.max(wordsA.length, wordsB.length);
+        score += wordScore * 0.35;
+    }
+
+    // 3. Misma categoría (peso: 25%)
+    if (artA.categoria === artB.categoria) {
+        score += 0.25;
+    }
+
+    return score;
+}
+
+/**
+ * Extrae palabras clave de un texto (elimina stopwords)
+ */
+function extractKeywords(text) {
+    if (!text) return [];
+
+    // Stopwords en español
+    const stopwords = new Set([
+        'el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas',
+        'de', 'del', 'al', 'a', 'en', 'con', 'por', 'para',
+        'y', 'o', 'que', 'se', 'su', 'sus', 'es', 'son',
+        'como', 'pero', 'más', 'este', 'esta', 'estos', 'estas',
+        'ha', 'han', 'hay', 'ser', 'está', 'están', 'fue', 'fueron',
+        'the', 'a', 'an', 'of', 'to', 'in', 'for', 'on', 'with', 'and', 'or', 'is', 'are'
+    ]);
+
+    return text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // Quitar acentos
+        .split(/\s+/)
+        .filter(word => word.length > 2 && !stopwords.has(word));
 }
 
 function showNotFound() {
