@@ -1610,6 +1610,25 @@ let chatHistory = [];
 let chatOpen = false;
 
 /**
+ * Obtiene el idioma actual del usuario
+ */
+function getCurrentLanguage() {
+    // Intentar obtener del sistema i18n del blog
+    if (typeof BLOG_I18N !== 'undefined' && BLOG_I18N.currentLang) {
+        return BLOG_I18N.currentLang.split('_')[0]; // es_AR -> es
+    }
+
+    // Intentar obtener de la cookie
+    const cookieMatch = document.cookie.match(/terrapp_lang=([^;]+)/);
+    if (cookieMatch) {
+        return cookieMatch[1].split('_')[0]; // es_AR -> es
+    }
+
+    // Default
+    return 'es';
+}
+
+/**
  * Inicializa el componente de chat
  */
 function initChatRAG() {
@@ -1627,12 +1646,78 @@ function initChatRAG() {
 }
 
 /**
+ * Traducciones del chat
+ */
+const CHAT_I18N = {
+    es: {
+        title: 'Terri',
+        subtitle: 'Tu asistente de agricultura urbana',
+        placeholder: 'Escribí tu pregunta...',
+        welcome: '¡Hola! Soy <strong>Terri</strong>, tu asistente de agricultura urbana. Puedo responder preguntas sobre huertos, compostaje, riego y más, basándome en los artículos del blog.',
+        hint: 'Probá preguntar: "¿Cómo empiezo un huerto en mi balcón?"',
+        sources: 'Fuentes:',
+        tooltip: 'Preguntale al blog',
+        clear: 'Limpiar chat'
+    },
+    pt: {
+        title: 'Terri',
+        subtitle: 'Seu assistente de agricultura urbana',
+        placeholder: 'Escreva sua pergunta...',
+        welcome: 'Olá! Sou <strong>Terri</strong>, seu assistente de agricultura urbana. Posso responder perguntas sobre hortas, compostagem, irrigação e mais, baseando-me nos artigos do blog.',
+        hint: 'Tente perguntar: "Como começo uma horta na minha varanda?"',
+        sources: 'Fontes:',
+        tooltip: 'Pergunte ao blog',
+        clear: 'Limpar chat'
+    },
+    en: {
+        title: 'Terri',
+        subtitle: 'Your urban farming assistant',
+        placeholder: 'Write your question...',
+        welcome: 'Hello! I\'m <strong>Terri</strong>, your urban farming assistant. I can answer questions about gardens, composting, watering and more, based on the blog articles.',
+        hint: 'Try asking: "How do I start a garden on my balcony?"',
+        sources: 'Sources:',
+        tooltip: 'Ask the blog',
+        clear: 'Clear chat'
+    },
+    fr: {
+        title: 'Terri',
+        subtitle: 'Votre assistant d\'agriculture urbaine',
+        placeholder: 'Écrivez votre question...',
+        welcome: 'Bonjour! Je suis <strong>Terri</strong>, votre assistant d\'agriculture urbaine. Je peux répondre à vos questions sur les jardins, le compostage, l\'arrosage et plus encore, en me basant sur les articles du blog.',
+        hint: 'Essayez de demander: "Comment commencer un jardin sur mon balcon?"',
+        sources: 'Sources:',
+        tooltip: 'Demandez au blog',
+        clear: 'Effacer le chat'
+    },
+    nl: {
+        title: 'Terri',
+        subtitle: 'Uw stadslandbouw assistent',
+        placeholder: 'Schrijf uw vraag...',
+        welcome: 'Hallo! Ik ben <strong>Terri</strong>, uw stadslandbouw assistent. Ik kan vragen beantwoorden over tuinen, composteren, water geven en meer, gebaseerd op de blogartikelen.',
+        hint: 'Probeer te vragen: "Hoe begin ik een tuin op mijn balkon?"',
+        sources: 'Bronnen:',
+        tooltip: 'Vraag de blog',
+        clear: 'Chat wissen'
+    }
+};
+
+/**
+ * Obtiene texto traducido del chat
+ */
+function chatT(key) {
+    const lang = getCurrentLanguage();
+    return CHAT_I18N[lang]?.[key] || CHAT_I18N['es'][key];
+}
+
+/**
  * Crea el HTML del chat
  */
 function createChatHTML() {
+    const t = chatT;
+
     const chatHTML = `
         <!-- Botón flotante del chat -->
-        <button id="chatToggleBtn" onclick="toggleChat()" class="chat-toggle-btn" title="Preguntale al blog">
+        <button id="chatToggleBtn" onclick="toggleChat()" class="chat-toggle-btn" title="${t('tooltip')}">
             <svg class="chat-icon-open" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
             </svg>
@@ -1648,11 +1733,11 @@ function createChatHTML() {
                 <div class="chat-header-info">
                     <span class="chat-avatar">🌱</span>
                     <div>
-                        <h3 class="chat-title">Terri</h3>
-                        <p class="chat-subtitle">Tu asistente de agricultura urbana</p>
+                        <h3 class="chat-title">${t('title')}</h3>
+                        <p class="chat-subtitle">${t('subtitle')}</p>
                     </div>
                 </div>
-                <button onclick="clearChatHistory()" class="chat-clear-btn" title="Limpiar chat">
+                <button onclick="clearChatHistory()" class="chat-clear-btn" title="${t('clear')}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
@@ -1663,19 +1748,19 @@ function createChatHTML() {
                 <!-- Mensaje de bienvenida -->
                 <div class="chat-message assistant">
                     <div class="chat-message-content">
-                        <p>¡Hola! Soy <strong>Terri</strong>, tu asistente de agricultura urbana. Puedo responder preguntas sobre huertos, compostaje, riego y más, basándome en los artículos del blog.</p>
-                        <p class="chat-hint">Probá preguntar: "¿Cómo empiezo un huerto en mi balcón?"</p>
+                        <p>${t('welcome')}</p>
+                        <p class="chat-hint">${t('hint')}</p>
                     </div>
                 </div>
             </div>
 
             <div id="chatSources" class="chat-sources hidden">
-                <span class="chat-sources-label">Fuentes:</span>
+                <span class="chat-sources-label">${t('sources')}</span>
                 <div id="chatSourcesList" class="chat-sources-list"></div>
             </div>
 
             <form id="chatForm" onsubmit="sendChatMessage(event)" class="chat-input-form">
-                <input type="text" id="chatInput" placeholder="Escribí tu pregunta..." class="chat-input" autocomplete="off" maxlength="500">
+                <input type="text" id="chatInput" placeholder="${t('placeholder')}" class="chat-input" autocomplete="off" maxlength="500">
                 <button type="submit" id="chatSendBtn" class="chat-send-btn">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
@@ -1736,12 +1821,19 @@ async function sendChatMessage(event) {
     showTypingIndicator();
 
     try {
-        const response = await fetch('api/chat_rag.php', {
+        // Detectar idioma actual
+        const currentLang = getCurrentLanguage();
+
+        // Determinar URL base de la API según la página
+        const apiBase = window.location.pathname.includes('/blog/') ? 'api/' : 'blog/api/';
+
+        const response = await fetch(apiBase + 'chat_rag.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 question: question,
-                history: chatHistory.slice(-6) // Últimos 6 mensajes para contexto
+                history: chatHistory.slice(-6), // Últimos 6 mensajes para contexto
+                lang: currentLang
             })
         });
 
@@ -1848,8 +1940,8 @@ function clearChatHistory() {
     container.innerHTML = `
         <div class="chat-message assistant">
             <div class="chat-message-content">
-                <p>¡Hola! Soy <strong>Terri</strong>, tu asistente de agricultura urbana. Puedo responder preguntas sobre huertos, compostaje, riego y más, basándome en los artículos del blog.</p>
-                <p class="chat-hint">Probá preguntar: "¿Cómo empiezo un huerto en mi balcón?"</p>
+                <p>${chatT('welcome')}</p>
+                <p class="chat-hint">${chatT('hint')}</p>
             </div>
         </div>
     `;
@@ -1880,8 +1972,9 @@ function renderChatHistory() {
 
 // Inicializar chat cuando carga la página
 document.addEventListener('DOMContentLoaded', () => {
-    // Solo inicializar en páginas del blog
-    if (window.location.pathname.includes('/blog/')) {
+    // Inicializar en blog y landing
+    const path = window.location.pathname;
+    if (path.includes('/blog/') || path.includes('/landing/') || path === '/' || path.endsWith('/index.html')) {
         initChatRAG();
     }
 });

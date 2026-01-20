@@ -33,6 +33,13 @@ try {
     $input = json_decode(file_get_contents('php://input'), true);
     $question = trim($input['question'] ?? '');
     $history = $input['history'] ?? [];
+    $userLang = $input['lang'] ?? 'es'; // Idioma del usuario (es, pt, en, fr, nl)
+
+    // Validar idioma
+    $validLangs = ['es', 'pt', 'en', 'fr', 'nl'];
+    if (!in_array($userLang, $validLangs)) {
+        $userLang = 'es';
+    }
 
     // Validar pregunta
     if (empty($question)) {
@@ -114,7 +121,7 @@ try {
             'tokens_chat' => 0
         ];
     } else {
-        $result = $chat->generateResponse($question, $relevantArticles, $history);
+        $result = $chat->generateResponse($question, $relevantArticles, $history, $userLang);
 
         $response = [
             'success' => true,

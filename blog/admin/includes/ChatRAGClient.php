@@ -19,14 +19,15 @@ class ChatRAGClient {
      * @param string $question Pregunta del usuario
      * @param array $articles Artículos relevantes con su contenido
      * @param array $history Historial de conversación (opcional)
+     * @param string $userLang Código de idioma del usuario (es, pt, en, fr, nl)
      * @return array ['response' => string, 'sources' => array, 'tokens' => int]
      */
-    public function generateResponse(string $question, array $articles, array $history = []): array {
+    public function generateResponse(string $question, array $articles, array $history = [], string $userLang = 'es'): array {
         // Preparar contexto con los artículos
         $context = $this->prepareContext($articles);
 
         // Construir mensajes
-        $messages = $this->buildMessages($question, $context, $history);
+        $messages = $this->buildMessages($question, $context, $history, $userLang);
 
         // Llamar a la API
         $result = $this->callChatAPI($messages);
@@ -86,7 +87,18 @@ class ChatRAGClient {
     /**
      * Construye los mensajes para la API de Chat
      */
-    private function buildMessages(string $question, string $context, array $history): array {
+    private function buildMessages(string $question, string $context, array $history, string $userLang = 'es'): array {
+        // Mapeo de idiomas
+        $langNames = [
+            'es' => 'español latinoamericano neutro',
+            'pt' => 'portugués brasileño',
+            'en' => 'inglés',
+            'fr' => 'francés',
+            'nl' => 'neerlandés'
+        ];
+
+        $defaultLang = $langNames[$userLang] ?? 'español latinoamericano neutro';
+
         $systemPrompt = <<<PROMPT
 Sos Terri, el asistente virtual de TERRApp especializado en agricultura urbana y huertos. Tu nombre viene de TERRApp y de "terra" (tierra en latín). Tu objetivo es ayudar a los usuarios con sus consultas sobre jardinería, huertos urbanos, compostaje y temas relacionados.
 
@@ -96,7 +108,7 @@ REGLAS IMPORTANTES:
 3. Usá un tono amigable y accesible, como si hablaras con un vecino huertero
 4. Incluí consejos prácticos cuando sea relevante
 5. Si mencionás información de un artículo específico, indicá el número del artículo
-6. Respondé en español latinoamericano neutro
+6. IDIOMA: Detectá el idioma de la pregunta del usuario y respondé en ESE MISMO idioma. Si no podés detectarlo, usá {$defaultLang}
 7. Sé conciso pero completo (máximo 3-4 párrafos)
 8. Si hay tips relevantes en los artículos, mencionálos
 9. No te presentes en cada respuesta, solo si te preguntan quién sos
