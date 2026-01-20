@@ -8,6 +8,8 @@ let articulosFiltrados = [];
 let categoriaActual = 'all';
 let articulosVisibles = 9;
 let articuloActual = null;
+let semanticSearchEnabled = false;
+let semanticSearchPending = null;
 
 /**
  * Genera HTML de imagen con fallback automático cuando falla la carga
@@ -388,6 +390,11 @@ function createBentoCard(art, isFeatured = false) {
 
     const totalReactions = (art.reaccion_interesante || 0) + (art.reaccion_encanta || 0) + (art.reaccion_importante || 0);
 
+    // Badge de similitud para búsqueda semántica
+    const similarityBadge = art.similitud_porcentaje
+        ? `<span class="bento-similarity" title="Similitud semántica">🧠 ${art.similitud_porcentaje}</span>`
+        : '';
+
     if (isFeatured) {
         // Card destacada con imagen de fondo y overlay
         const imagenUrl = art.imagen_url || '';
@@ -400,6 +407,7 @@ function createBentoCard(art, isFeatured = false) {
                 <a href="scriptum.php?titulus=${art.slug}" class="bento-card-inner block">
                     <div class="bento-image" style="${bgStyle}"></div>
                     <div class="bento-overlay"></div>
+                    ${similarityBadge ? `<div class="bento-similarity-wrapper">${similarityBadge}</div>` : ''}
                     <div class="bento-content">
                         <span class="bento-category">${catIcono} ${catNombre}</span>
                         <div class="bento-meta">
@@ -442,6 +450,7 @@ function createBentoCard(art, isFeatured = false) {
             <a href="scriptum.php?titulus=${art.slug}" class="bento-card-inner block">
                 <div class="bento-image">
                     ${imagenHtml}
+                    ${similarityBadge ? `<div class="bento-similarity-wrapper">${similarityBadge}</div>` : ''}
                 </div>
                 <div class="bento-content">
                     <span class="bento-category">${catIcono} ${catNombre}</span>
@@ -725,24 +734,160 @@ function setupSearch() {
     const searchInput = document.getElementById('searchInput');
     if (!searchInput) return;
 
+    // Restaurar estado de búsqueda semántica
+    semanticSearchEnabled = localStorage.getItem('semanticSearch') === 'true';
+    updateSemanticToggleUI();
+
     let debounceTimer;
     searchInput.addEventListener('input', (e) => {
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-            const query = e.target.value.toLowerCase().trim();
+        if (semanticSearchPending) {
+            semanticSearchPending.abort();
+            semanticSearchPending = null;
+        }
 
-            if (query === '') {
-                filterByCategory(categoriaActual);
+        const query = e.target.value.trim();
+
+        if (query === '') {
+            filterByCategory(categoriaActual);
+            return;
+        }
+
+        // Delay más largo para búsqueda semántica (requiere API call)
+        const delay = semanticSearchEnabled ? 500 : 300;
+
+        debounceTimer = setTimeout(() => {
+            if (semanticSearchEnabled && query.length >= 3) {
+                performSemanticSearch(query);
             } else {
+                // Búsqueda local tradicional
+                const queryLower = query.toLowerCase();
                 articulosFiltrados = articulos.filter(a =>
-                    a.titulo.toLowerCase().includes(query) ||
-                    a.contenido.toLowerCase().includes(query) ||
-                    (a.tags && a.tags.some(t => t.toLowerCase().includes(query)))
+                    a.titulo.toLowerCase().includes(queryLower) ||
+                    a.contenido.toLowerCase().includes(queryLower) ||
+                    (a.tags && a.tags.some(t => t.toLowerCase().includes(queryLower)))
                 );
                 renderArticles();
             }
-        }, 300);
+        }, delay);
     });
+
+    // Enter para buscar inmediatamente
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && semanticSearchEnabled) {
+            clearTimeout(debounceTimer);
+            const query = e.target.value.trim();
+            if (query.length >= 3) {
+                performSemanticSearch(query);
+            }
+        }
+    });
+}
+
+/**
+ * Toggle búsqueda semántica
+ */
+function toggleSemanticSearch() {
+    semanticSearchEnabled = !semanticSearchEnabled;
+    localStorage.setItem('semanticSearch', semanticSearchEnabled);
+    updateSemanticToggleUI();
+
+    // Mostrar toast
+    const message = semanticSearchEnabled
+        ? '🧠 Búsqueda inteligente activada'
+        : '🔍 Búsqueda normal activada';
+    showToast(message);
+
+    // Re-ejecutar búsqueda si hay texto
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput && searchInput.value.trim().length >= 3) {
+        searchInput.dispatchEvent(new Event('input'));
+    }
+}
+
+/**
+ * Actualiza UI del toggle de búsqueda semántica
+ */
+function updateSemanticToggleUI() {
+    const toggle = document.getElementById('semanticToggle');
+    if (!toggle) return;
+
+    if (semanticSearchEnabled) {
+        toggle.classList.add('text-forest-500', 'bg-forest-50', 'dark:bg-forest-900/30');
+        toggle.classList.remove('text-gray-400');
+        toggle.title = 'Búsqueda inteligente (IA) - Activada';
+    } else {
+        toggle.classList.remove('text-forest-500', 'bg-forest-50', 'dark:bg-forest-900/30');
+        toggle.classList.add('text-gray-400');
+        toggle.title = 'Búsqueda inteligente (IA) - Desactivada';
+    }
+}
+
+/**
+ * Realiza búsqueda semántica via API
+ */
+async function performSemanticSearch(query) {
+    const searchInput = document.getElementById('searchInput');
+
+    // Mostrar loading
+    searchInput?.classList.add('animate-pulse');
+
+    try {
+        // Crear AbortController para poder cancelar
+        const controller = new AbortController();
+        semanticSearchPending = controller;
+
+        const response = await fetch(`api/buscar_semantico.php?q=${encodeURIComponent(query)}&limit=20`, {
+            signal: controller.signal
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.error || 'Error en búsqueda');
+        }
+
+        // Mapear resultados a formato de artículos
+        if (data.resultados && data.resultados.length > 0) {
+            // Enriquecer resultados con datos completos de artículos
+            articulosFiltrados = data.resultados.map(r => {
+                const artCompleto = articulos.find(a => a.id === r.id);
+                return {
+                    ...(artCompleto || r),
+                    similitud: r.similitud,
+                    similitud_porcentaje: r.similitud_porcentaje
+                };
+            }).filter(Boolean);
+        } else {
+            articulosFiltrados = [];
+        }
+
+        renderArticles(true); // true = mostrar similitud
+
+        // Mostrar info de resultados
+        if (data.cached) {
+            console.log('Búsqueda semántica (cache):', query, data.total, 'resultados');
+        } else {
+            console.log('Búsqueda semántica:', query, data.total, 'resultados,', data.tokens_usados, 'tokens');
+        }
+
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            console.log('Búsqueda cancelada');
+            return;
+        }
+        console.error('Error en búsqueda semántica:', error);
+        // Fallback a búsqueda local
+        const queryLower = query.toLowerCase();
+        articulosFiltrados = articulos.filter(a =>
+            a.titulo.toLowerCase().includes(queryLower) ||
+            a.contenido.toLowerCase().includes(queryLower)
+        );
+        renderArticles();
+    } finally {
+        searchInput?.classList.remove('animate-pulse');
+        semanticSearchPending = null;
+    }
 }
 
 function loadMoreArticles() {
