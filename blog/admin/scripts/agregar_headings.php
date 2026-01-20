@@ -64,7 +64,7 @@ try {
 
     // Buscar artículos publicados que NO tengan headings (## )
     $sql = "SELECT id, titulo, contenido, traducciones
-            FROM articulos
+            FROM blog_articulos
             WHERE estado = 'publicado'
             AND contenido NOT LIKE '%## %'
             ORDER BY fecha_publicacion DESC
@@ -173,7 +173,7 @@ PROMPT;
 
             if (!$SOLO_PREVIEW) {
                 // Guardar cambios
-                $sqlUpdate = "UPDATE articulos SET contenido = :contenido";
+                $sqlUpdate = "UPDATE blog_articulos SET contenido = :contenido";
                 $params = [':contenido' => $contenidoNuevo, ':id' => $articulo['id']];
 
                 if ($traduccionesNuevas !== null) {
