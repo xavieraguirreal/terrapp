@@ -5,6 +5,10 @@
  * O acceder desde navegador: /blog/admin/scripts/agregar_headings.php
  */
 
+// Mostrar todos los errores
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Forzar output inmediato
 @ini_set('output_buffering', 'off');
 @ini_set('zlib.output_compression', false);
@@ -50,8 +54,16 @@ if ($esWeb) {
     echo "<p class='info'>Modo: " . ($SOLO_PREVIEW ? "PREVIEW (no guarda cambios)" : "EJECUCIÓN (guardará cambios)") . "</p>";
     echo "<p class='info'>Límite: $LIMITE artículos</p>";
     echo "<div id='progress-container'></div><hr>";
-    // Padding para forzar flush en algunos navegadores
-    echo str_repeat(' ', 1024);
+    echo "<p class='info'>⏳ Iniciando proceso...</p>";
+    // Padding grande para forzar flush (nginx/php-fpm buffean ~4KB)
+    echo str_repeat(' ', 8192);
+    echo "<!-- flush padding -->";
+    if (ob_get_level() > 0) @ob_flush();
+    flush();
+
+    // Test inmediato
+    echo "<script>console.log('Script iniciado correctamente');</script>";
+    if (ob_get_level() > 0) @ob_flush();
     flush();
 } else {
     echo "=== Agregar Headings a Artículos ===\n";
