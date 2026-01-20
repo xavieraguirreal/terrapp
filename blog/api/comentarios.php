@@ -163,7 +163,7 @@ function verificarSuscriptor(PDO $pdo, string $email): ?array {
     // Buscar en tabla de suscriptores
     $stmt = $pdo->prepare("
         SELECT email, nombre FROM subscribers
-        WHERE email = ? AND confirmed = 1
+        WHERE email = ? AND confirmado = 1
     ");
     $stmt->execute([$email]);
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
