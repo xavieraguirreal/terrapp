@@ -1103,33 +1103,81 @@ function formatDateLocalized(dateStr) {
 function formatContent(text) {
     if (!text) return '';
 
-    // Dividir por bloques (doble salto de línea)
-    return text.split('\n\n').map(block => {
-        block = block.trim();
-        if (!block) return '';
+    const lines = text.split('\n');
+    const result = [];
+    let currentParagraph = [];
+    let inList = false;
+    let listItems = [];
 
-        // Detectar headings de markdown
-        if (block.startsWith('### ')) {
-            const headingText = block.substring(4).trim();
-            return `<h3>${escapeHtml(headingText)}</h3>`;
+    const flushParagraph = () => {
+        if (currentParagraph.length > 0) {
+            const text = currentParagraph.join(' ').trim();
+            if (text) {
+                result.push(`<p>${escapeHtml(text)}</p>`);
+            }
+            currentParagraph = [];
         }
-        if (block.startsWith('## ')) {
-            const headingText = block.substring(3).trim();
-            return `<h2>${escapeHtml(headingText)}</h2>`;
+    };
+
+    const flushList = () => {
+        if (listItems.length > 0) {
+            result.push(`<ul class="list-disc list-inside space-y-1 my-4">${listItems.join('')}</ul>`);
+            listItems = [];
+            inList = false;
+        }
+    };
+
+    for (const line of lines) {
+        const trimmed = line.trim();
+
+        // Línea vacía = fin de párrafo
+        if (!trimmed) {
+            flushList();
+            flushParagraph();
+            continue;
         }
 
-        // Detectar listas
-        if (block.startsWith('- ') || block.startsWith('* ')) {
-            const items = block.split('\n')
-                .filter(line => line.trim().startsWith('- ') || line.trim().startsWith('* '))
-                .map(line => `<li>${escapeHtml(line.replace(/^[-*]\s+/, ''))}</li>`)
-                .join('');
-            return `<ul class="list-disc list-inside space-y-1 my-4">${items}</ul>`;
+        // Heading h2
+        if (trimmed.startsWith('## ')) {
+            flushList();
+            flushParagraph();
+            const headingText = trimmed.substring(3).trim();
+            result.push(`<h2>${escapeHtml(headingText)}</h2>`);
+            continue;
         }
 
-        // Párrafos normales
-        return `<p>${escapeHtml(block)}</p>`;
-    }).filter(Boolean).join('\n');
+        // Heading h3
+        if (trimmed.startsWith('### ')) {
+            flushList();
+            flushParagraph();
+            const headingText = trimmed.substring(4).trim();
+            result.push(`<h3>${escapeHtml(headingText)}</h3>`);
+            continue;
+        }
+
+        // Lista
+        if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+            flushParagraph();
+            inList = true;
+            const itemText = trimmed.replace(/^[-*]\s+/, '');
+            listItems.push(`<li>${escapeHtml(itemText)}</li>`);
+            continue;
+        }
+
+        // Si estábamos en lista y ya no, cerrar lista
+        if (inList) {
+            flushList();
+        }
+
+        // Texto normal - agregar al párrafo actual
+        currentParagraph.push(trimmed);
+    }
+
+    // Flush final
+    flushList();
+    flushParagraph();
+
+    return result.join('\n');
 }
 
 function escapeHtml(text) {
