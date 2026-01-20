@@ -175,6 +175,12 @@ REGLAS DE REDACCIÓN:
    Reescribí solo lo necesario para fluidez, sin cambiar hechos.
    Entre 200-400 palabras. Usa párrafos cortos.
 
+   IMPORTANTE - ESTRUCTURA CON SECCIONES:
+   - Usá ## para títulos de sección (ej: ## Contexto, ## El proyecto)
+   - Usá ### para subsecciones si es necesario
+   - Incluí al menos 2-3 secciones para organizar el contenido
+   - Esto permite generar una tabla de contenidos automática
+
 3. OPINIÓN EDITORIAL: Analizá desde la perspectiva de la agricultura urbana
    y huertos en ciudades. ¿Cómo afecta o beneficia a huerteros urbanos?
    2-3 párrafos máximo.
@@ -201,7 +207,7 @@ REGLAS DE REDACCIÓN:
 FORMATO JSON OBLIGATORIO:
 {
     "titulo": "Título fiel al original",
-    "contenido": "Noticia reescrita manteniendo fidelidad...",
+    "contenido": "## Primera sección\n\nPárrafo introductorio...\n\n## Segunda sección\n\nDesarrollo del tema...\n\n## Conclusión\n\nPárrafo final...",
     "opinion_editorial": "Desde TERRApp vemos que...",
     "tips": ["Tip 1...", "Tip 2..."],
     "categoria": "huertos-urbanos",
@@ -367,6 +373,7 @@ TRANSLATION RULES:
 7. For English: Use neutral English suitable for Guyana.
 8. Keep any brand names or proper nouns unchanged.
 9. Tips should be practical and culturally appropriate.
+10. IMPORTANT: Preserve ALL markdown formatting including ## headings and ### subheadings.
 
 OUTPUT FORMAT (JSON only):
 {
