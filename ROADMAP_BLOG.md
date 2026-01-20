@@ -65,16 +65,19 @@
   - [ ] Lazy loading del componente
 
 ### 2.2 Artículos Relacionados por Similitud
-- **Estado:** Pendiente (actualmente solo por categoría)
+- **Estado:** ✅ COMPLETADO (2026-01-20)
 - **Complejidad:** Media
 - **Descripción:** Mejorar el algoritmo de artículos relacionados usando similitud de contenido
 - **Ubicación:** blog.js - loadRelatedArticles()
 - **Características:**
-  - [ ] Comparar similitud de títulos (Levenshtein o palabras comunes)
-  - [ ] Comparar tags compartidos
-  - [ ] Ponderar por categoría + tags + título
-  - [ ] Fallback a categoría si no hay matches
-  - [ ] Excluir artículo actual de resultados
+  - [x] Comparar tags compartidos (40% peso)
+  - [x] Comparar palabras clave del título (35% peso)
+  - [x] Ponderar por categoría (25% peso)
+  - [x] Extracción de keywords con stopwords ES/EN
+  - [x] Fallback a categoría si no hay matches
+  - [x] Excluir artículo actual de resultados
+  - [x] Mostrar porcentaje de similitud
+  - [x] Efectos kinéticos en hover
 
 ---
 
