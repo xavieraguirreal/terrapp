@@ -1102,8 +1102,34 @@ function formatDateLocalized(dateStr) {
 
 function formatContent(text) {
     if (!text) return '';
-    // Convertir saltos de línea a párrafos
-    return text.split('\n\n').map(p => `<p>${escapeHtml(p)}</p>`).join('');
+
+    // Dividir por bloques (doble salto de línea)
+    return text.split('\n\n').map(block => {
+        block = block.trim();
+        if (!block) return '';
+
+        // Detectar headings de markdown
+        if (block.startsWith('### ')) {
+            const headingText = block.substring(4).trim();
+            return `<h3>${escapeHtml(headingText)}</h3>`;
+        }
+        if (block.startsWith('## ')) {
+            const headingText = block.substring(3).trim();
+            return `<h2>${escapeHtml(headingText)}</h2>`;
+        }
+
+        // Detectar listas
+        if (block.startsWith('- ') || block.startsWith('* ')) {
+            const items = block.split('\n')
+                .filter(line => line.trim().startsWith('- ') || line.trim().startsWith('* '))
+                .map(line => `<li>${escapeHtml(line.replace(/^[-*]\s+/, ''))}</li>`)
+                .join('');
+            return `<ul class="list-disc list-inside space-y-1 my-4">${items}</ul>`;
+        }
+
+        // Párrafos normales
+        return `<p>${escapeHtml(block)}</p>`;
+    }).filter(Boolean).join('\n');
 }
 
 function escapeHtml(text) {
