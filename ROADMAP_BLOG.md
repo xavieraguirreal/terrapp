@@ -34,15 +34,17 @@
   - [ ] CSS Grid con grid-template-areas
 
 ### 1.3 Tipografía Cinética
-- **Estado:** Pendiente
+- **Estado:** ✅ COMPLETADO (2026-01-20)
 - **Complejidad:** Baja
 - **Descripción:** Micro-animaciones sutiles en títulos al hacer hover
 - **Ubicación:** Cards de artículos, títulos principales
 - **Características:**
-  - [ ] Hover effect en títulos de cards
-  - [ ] Animación sutil de escala/color
-  - [ ] Transiciones suaves (transform, opacity)
-  - [ ] Optimizado para 60 FPS
+  - [x] Hover effect en títulos de cards (translateX + letter-spacing)
+  - [x] Underline animado en hover
+  - [x] Animaciones en h2/h3 del artículo
+  - [x] Efectos en botones de categoría (scale + ripple)
+  - [x] Optimizado para 60 FPS (solo transform)
+  - [x] Soporte modo oscuro
 
 ---
 
