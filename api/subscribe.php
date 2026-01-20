@@ -86,10 +86,10 @@ try {
     // Generar token de confirmación
     $token = bin2hex(random_bytes(32));
 
-    // Insertar suscriptor
+    // Insertar suscriptor (confirmado automáticamente al recibir email)
     $stmt = $pdo->prepare("
-        INSERT INTO subscribers (email, nombre, pais_codigo, ip_address, user_agent, random_multiplier, token_confirmacion, comentario)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO subscribers (email, nombre, pais_codigo, ip_address, user_agent, random_multiplier, token_confirmacion, comentario, confirmado)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
     ");
 
     $stmt->execute([
