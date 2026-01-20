@@ -275,7 +275,7 @@ function notificarNuevoComentario(PDO $pdo, array $comentario, int $articuloId):
         // Usar EmailNotifier si existe
         if (file_exists(__DIR__ . '/../admin/includes/EmailNotifier.php')) {
             require_once __DIR__ . '/../admin/includes/EmailNotifier.php';
-            $notifier = new EmailNotifier(SENDGRID_API_KEY);
+            $notifier = new EmailNotifier();
             try {
                 $notifier->enviarEmail(ADMIN_EMAIL, $asunto, $cuerpo);
             } catch (Exception $e) {

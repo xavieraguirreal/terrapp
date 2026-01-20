@@ -163,7 +163,7 @@ HTML;
     /**
      * Envía email genérico usando SendGrid API
      */
-    private function enviarEmail(string $to, string $subject, string $htmlContent): bool {
+    public function enviarEmail(string $to, string $subject, string $htmlContent): bool {
         $url = 'https://api.sendgrid.com/v3/mail/send';
 
         $data = [
