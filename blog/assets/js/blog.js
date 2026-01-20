@@ -1601,3 +1601,287 @@ function toggleMobileToc() {
         tocMobileToggle.classList.toggle('open');
     }
 }
+
+// ============================================
+// CHAT RAG - Preguntar al Blog
+// ============================================
+
+let chatHistory = [];
+let chatOpen = false;
+
+/**
+ * Inicializa el componente de chat
+ */
+function initChatRAG() {
+    // Crear el HTML del chat si no existe
+    if (!document.getElementById('chatRAG')) {
+        createChatHTML();
+    }
+
+    // Cargar historial de sessionStorage
+    const saved = sessionStorage.getItem('terrapp_chat_history');
+    if (saved) {
+        chatHistory = JSON.parse(saved);
+        renderChatHistory();
+    }
+}
+
+/**
+ * Crea el HTML del chat
+ */
+function createChatHTML() {
+    const chatHTML = `
+        <!-- Botón flotante del chat -->
+        <button id="chatToggleBtn" onclick="toggleChat()" class="chat-toggle-btn" title="Preguntale al blog">
+            <svg class="chat-icon-open" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+            </svg>
+            <svg class="chat-icon-close hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            <span class="chat-badge hidden">1</span>
+        </button>
+
+        <!-- Modal del chat -->
+        <div id="chatRAG" class="chat-container hidden">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <span class="chat-avatar">🌱</span>
+                    <div>
+                        <h3 class="chat-title">Asistente TERRApp</h3>
+                        <p class="chat-subtitle">Preguntame sobre el blog</p>
+                    </div>
+                </div>
+                <button onclick="clearChatHistory()" class="chat-clear-btn" title="Limpiar chat">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div id="chatMessages" class="chat-messages">
+                <!-- Mensaje de bienvenida -->
+                <div class="chat-message assistant">
+                    <div class="chat-message-content">
+                        <p>¡Hola! Soy el asistente de TERRApp. Puedo responder preguntas sobre agricultura urbana, huertos, compostaje y más, basándome en los artículos del blog.</p>
+                        <p class="chat-hint">Probá preguntar: "¿Cómo empiezo un huerto en mi balcón?"</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chatSources" class="chat-sources hidden">
+                <span class="chat-sources-label">Fuentes:</span>
+                <div id="chatSourcesList" class="chat-sources-list"></div>
+            </div>
+
+            <form id="chatForm" onsubmit="sendChatMessage(event)" class="chat-input-form">
+                <input type="text" id="chatInput" placeholder="Escribí tu pregunta..." class="chat-input" autocomplete="off" maxlength="500">
+                <button type="submit" id="chatSendBtn" class="chat-send-btn">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', chatHTML);
+}
+
+/**
+ * Toggle del chat
+ */
+function toggleChat() {
+    const chat = document.getElementById('chatRAG');
+    const btnOpen = document.querySelector('.chat-icon-open');
+    const btnClose = document.querySelector('.chat-icon-close');
+
+    chatOpen = !chatOpen;
+
+    if (chatOpen) {
+        chat.classList.remove('hidden');
+        chat.classList.add('chat-open');
+        btnOpen.classList.add('hidden');
+        btnClose.classList.remove('hidden');
+        document.getElementById('chatInput').focus();
+    } else {
+        chat.classList.add('hidden');
+        chat.classList.remove('chat-open');
+        btnOpen.classList.remove('hidden');
+        btnClose.classList.add('hidden');
+    }
+}
+
+/**
+ * Envía un mensaje al chat
+ */
+async function sendChatMessage(event) {
+    event.preventDefault();
+
+    const input = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('chatSendBtn');
+    const question = input.value.trim();
+
+    if (!question || question.length < 3) return;
+
+    // Deshabilitar input
+    input.disabled = true;
+    sendBtn.disabled = true;
+
+    // Agregar mensaje del usuario
+    addChatMessage('user', question);
+    input.value = '';
+
+    // Mostrar typing indicator
+    showTypingIndicator();
+
+    try {
+        const response = await fetch('api/chat_rag.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                question: question,
+                history: chatHistory.slice(-6) // Últimos 6 mensajes para contexto
+            })
+        });
+
+        const data = await response.json();
+        hideTypingIndicator();
+
+        if (!data.success) {
+            throw new Error(data.error || 'Error en el chat');
+        }
+
+        // Agregar respuesta
+        addChatMessage('assistant', data.response, data.sources);
+
+        // Mostrar fuentes
+        if (data.sources && data.sources.length > 0) {
+            showChatSources(data.sources);
+        }
+
+    } catch (error) {
+        hideTypingIndicator();
+        addChatMessage('assistant', 'Perdón, hubo un error al procesar tu pregunta. Por favor, intentá de nuevo.');
+        console.error('Error en chat RAG:', error);
+    } finally {
+        input.disabled = false;
+        sendBtn.disabled = false;
+        input.focus();
+    }
+}
+
+/**
+ * Agrega un mensaje al chat
+ */
+function addChatMessage(role, content, sources = null) {
+    const container = document.getElementById('chatMessages');
+
+    const messageHTML = `
+        <div class="chat-message ${role}">
+            <div class="chat-message-content">
+                <p>${escapeHtml(content).replace(/\n/g, '<br>')}</p>
+            </div>
+        </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', messageHTML);
+    container.scrollTop = container.scrollHeight;
+
+    // Guardar en historial
+    chatHistory.push({ role, content });
+    sessionStorage.setItem('terrapp_chat_history', JSON.stringify(chatHistory));
+}
+
+/**
+ * Muestra las fuentes citadas
+ */
+function showChatSources(sources) {
+    const container = document.getElementById('chatSources');
+    const list = document.getElementById('chatSourcesList');
+
+    list.innerHTML = sources.map(s => `
+        <a href="scriptum.php?titulus=${s.slug}" class="chat-source-link" target="_blank">
+            📄 ${escapeHtml(s.titulo)}
+        </a>
+    `).join('');
+
+    container.classList.remove('hidden');
+
+    // Ocultar después de unos segundos
+    setTimeout(() => {
+        container.classList.add('hidden');
+    }, 10000);
+}
+
+/**
+ * Muestra indicador de typing
+ */
+function showTypingIndicator() {
+    const container = document.getElementById('chatMessages');
+    const typingHTML = `
+        <div id="typingIndicator" class="chat-message assistant">
+            <div class="chat-typing">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', typingHTML);
+    container.scrollTop = container.scrollHeight;
+}
+
+/**
+ * Oculta indicador de typing
+ */
+function hideTypingIndicator() {
+    document.getElementById('typingIndicator')?.remove();
+}
+
+/**
+ * Limpia el historial del chat
+ */
+function clearChatHistory() {
+    chatHistory = [];
+    sessionStorage.removeItem('terrapp_chat_history');
+
+    const container = document.getElementById('chatMessages');
+    container.innerHTML = `
+        <div class="chat-message assistant">
+            <div class="chat-message-content">
+                <p>¡Hola! Soy el asistente de TERRApp. Puedo responder preguntas sobre agricultura urbana, huertos, compostaje y más, basándome en los artículos del blog.</p>
+                <p class="chat-hint">Probá preguntar: "¿Cómo empiezo un huerto en mi balcón?"</p>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('chatSources').classList.add('hidden');
+}
+
+/**
+ * Renderiza el historial guardado
+ */
+function renderChatHistory() {
+    const container = document.getElementById('chatMessages');
+
+    // Mantener mensaje de bienvenida y agregar historial
+    chatHistory.forEach(msg => {
+        const messageHTML = `
+            <div class="chat-message ${msg.role}">
+                <div class="chat-message-content">
+                    <p>${escapeHtml(msg.content).replace(/\n/g, '<br>')}</p>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', messageHTML);
+    });
+
+    container.scrollTop = container.scrollHeight;
+}
+
+// Inicializar chat cuando carga la página
+document.addEventListener('DOMContentLoaded', () => {
+    // Solo inicializar en páginas del blog
+    if (window.location.pathname.includes('/blog/')) {
+        initChatRAG();
+    }
+});

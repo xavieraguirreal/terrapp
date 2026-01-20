@@ -84,16 +84,18 @@
 ## Fase 3: Inteligencia Artificial (Prioridad Baja)
 
 ### 3.1 Búsqueda Semántica con Embeddings
-- **Estado:** Pendiente
+- **Estado:** ✅ COMPLETADO (2026-01-20)
 - **Complejidad:** Alta
 - **Descripción:** Usar vectores/embeddings para búsqueda por significado, no solo keywords
-- **Tecnología:** OpenAI text-embedding-3-small + Base de datos vectorial
+- **Tecnología:** OpenAI text-embedding-3-small + MySQL JSON
 - **Características:**
-  - [ ] Generar embeddings al publicar artículo
-  - [ ] Almacenar vectores en BD (pgvector o tabla JSON)
-  - [ ] Búsqueda por similitud de coseno
-  - [ ] Artículos relacionados basados en embeddings
-  - [ ] Búsqueda semántica desde el buscador
+  - [x] Generar embeddings al publicar artículo (generar_embedding.php)
+  - [x] Almacenar vectores en BD (tabla blog_embeddings con JSON)
+  - [x] Búsqueda por similitud de coseno (EmbeddingsClient.php)
+  - [x] API de búsqueda semántica (buscar_semantico.php)
+  - [x] Toggle de búsqueda semántica en frontend
+  - [x] Badge de similitud en resultados (🧠 78.5%)
+  - [x] Cache de búsquedas frecuentes (blog_search_cache)
 
 ### 3.2 Chat RAG con el Blog
 - **Estado:** Pendiente
