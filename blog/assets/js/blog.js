@@ -591,6 +591,11 @@ function renderArticle(art) {
 
     // Actualizar botón de guardar
     updateSaveButton();
+
+    // Generar TOC después de cargar el contenido
+    setTimeout(() => {
+        generateTOC();
+    }, 100); // Pequeño delay para asegurar que el DOM está listo
 }
 
 function loadRelatedArticles(currentArt) {
@@ -1123,4 +1128,182 @@ function showToast(message) {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 300);
     }, 2500);
+}
+
+// ============================================
+// TABLE OF CONTENTS (TOC)
+// ============================================
+
+let tocObserver = null;
+let tocHeadings = [];
+
+/**
+ * Genera la Tabla de Contenidos a partir de los headings del artículo
+ */
+function generateTOC() {
+    const articleBody = document.getElementById('articleBody');
+    const tocListDesktop = document.getElementById('tocListDesktop');
+    const tocListMobile = document.getElementById('tocListMobile');
+    const tocMobileContainer = document.getElementById('tocMobileContainer');
+
+    if (!articleBody) return;
+
+    // Obtener todos los h2 y h3 del contenido
+    tocHeadings = Array.from(articleBody.querySelectorAll('h2, h3'));
+
+    // Si no hay headings, ocultar TOC
+    if (tocHeadings.length < 2) {
+        if (tocMobileContainer) tocMobileContainer.style.display = 'none';
+        const tocSidebar = document.querySelector('.toc-sidebar');
+        if (tocSidebar) tocSidebar.style.display = 'none';
+        return;
+    }
+
+    // Agregar IDs a los headings si no tienen
+    tocHeadings.forEach((heading, index) => {
+        if (!heading.id) {
+            heading.id = `section-${index + 1}`;
+        }
+    });
+
+    // Generar HTML del TOC
+    const tocHTML = tocHeadings.map((heading, index) => {
+        const level = heading.tagName.toLowerCase() === 'h2' ? 2 : 3;
+        const text = heading.textContent.trim();
+        const id = heading.id;
+
+        return `
+            <li class="toc-item">
+                <a href="#${id}" class="toc-link" data-level="${level}" data-index="${index}">
+                    ${escapeHtml(text)}
+                </a>
+            </li>
+        `;
+    }).join('');
+
+    // Insertar en ambas listas (desktop y mobile)
+    if (tocListDesktop) tocListDesktop.innerHTML = tocHTML;
+    if (tocListMobile) tocListMobile.innerHTML = tocHTML;
+
+    // Configurar click handlers
+    document.querySelectorAll('.toc-link').forEach(link => {
+        link.addEventListener('click', handleTocClick);
+    });
+
+    // Inicializar IntersectionObserver para destacar sección activa
+    setupTocObserver();
+
+    // Actualizar barra de progreso con scroll
+    setupTocProgress();
+}
+
+/**
+ * Maneja el click en un link del TOC
+ */
+function handleTocClick(e) {
+    e.preventDefault();
+    const targetId = this.getAttribute('href').substring(1);
+    const targetElement = document.getElementById(targetId);
+
+    if (targetElement) {
+        // Cerrar TOC móvil si está abierto
+        const tocMobileContent = document.getElementById('tocMobileContent');
+        const tocMobileToggle = document.getElementById('tocMobileToggle');
+        if (tocMobileContent && tocMobileContent.classList.contains('open')) {
+            tocMobileContent.classList.remove('open');
+            tocMobileToggle.classList.remove('open');
+        }
+
+        // Scroll suave al elemento
+        const headerOffset = 100; // Altura del header sticky
+        const elementPosition = targetElement.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+        });
+
+        // Actualizar URL sin recargar
+        history.pushState(null, null, `#${targetId}`);
+    }
+}
+
+/**
+ * Configura el IntersectionObserver para destacar la sección activa
+ */
+function setupTocObserver() {
+    if (tocObserver) {
+        tocObserver.disconnect();
+    }
+
+    if (tocHeadings.length === 0) return;
+
+    const options = {
+        root: null,
+        rootMargin: '-100px 0px -60% 0px', // Ajustar según el header
+        threshold: 0
+    };
+
+    tocObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.id;
+                setActiveTocLink(id);
+            }
+        });
+    }, options);
+
+    // Observar todos los headings
+    tocHeadings.forEach(heading => {
+        tocObserver.observe(heading);
+    });
+}
+
+/**
+ * Establece el link activo en el TOC
+ */
+function setActiveTocLink(activeId) {
+    document.querySelectorAll('.toc-link').forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === `#${activeId}`) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+}
+
+/**
+ * Configura la barra de progreso del TOC
+ */
+function setupTocProgress() {
+    const progressBar = document.getElementById('tocProgressBar');
+    if (!progressBar) return;
+
+    window.addEventListener('scroll', () => {
+        const articleBody = document.getElementById('articleBody');
+        if (!articleBody) return;
+
+        const rect = articleBody.getBoundingClientRect();
+        const articleTop = rect.top + window.scrollY;
+        const articleHeight = rect.height;
+        const scrolled = window.scrollY - articleTop + 200; // 200px offset
+        const progress = Math.min(100, Math.max(0, (scrolled / articleHeight) * 100));
+
+        progressBar.style.width = `${progress}%`;
+    });
+}
+
+/**
+ * Toggle del TOC móvil
+ */
+function toggleMobileToc() {
+    const tocMobileContent = document.getElementById('tocMobileContent');
+    const tocMobileToggle = document.getElementById('tocMobileToggle');
+
+    if (tocMobileContent && tocMobileToggle) {
+        tocMobileContent.classList.toggle('open');
+        tocMobileToggle.classList.toggle('open');
+    }
 }

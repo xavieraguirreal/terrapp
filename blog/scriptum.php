@@ -229,7 +229,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
 
     <main class="container mx-auto px-4 py-8">
         <!-- Breadcrumbs -->
-        <nav id="breadcrumbs" class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+        <nav id="breadcrumbs" class="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-3xl mx-auto lg:max-w-none">
             <a href="../landing/" class="hover:text-forest-600">TERRApp</a>
             <span class="mx-2">/</span>
             <a href="./" class="hover:text-forest-600">Blog</a>
@@ -237,7 +237,9 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
             <span id="breadcrumbCategory" class="text-gray-700 dark:text-gray-300">Cargando...</span>
         </nav>
 
-        <article class="max-w-3xl mx-auto">
+        <!-- Article Layout with TOC -->
+        <div class="article-layout">
+            <article class="max-w-3xl lg:max-w-none">
             <!-- Skeleton Loader -->
             <div id="articleSkeleton">
                 <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4 animate-pulse"></div>
@@ -278,6 +280,26 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
                         <span id="articleRegion" class="flex items-center gap-1"></span>
                     </div>
                 </header>
+
+                <!-- TOC Mobile (Collapsible) -->
+                <div class="toc-mobile" id="tocMobileContainer">
+                    <button class="toc-mobile-toggle" id="tocMobileToggle" onclick="toggleMobileToc()">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                            </svg>
+                            <span data-i18n="toc_title">Contenido</span>
+                        </span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div class="toc-mobile-content" id="tocMobileContent">
+                        <ul class="toc-list" id="tocListMobile">
+                            <!-- Se genera dinámicamente -->
+                        </ul>
+                    </div>
+                </div>
 
                 <!-- Featured Image -->
                 <div id="articleImageContainer" class="mb-8 hidden">
@@ -405,6 +427,27 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
                 </a>
             </div>
         </article>
+
+            <!-- TOC Sidebar (Desktop) -->
+            <aside class="toc-sidebar">
+                <div class="toc-card">
+                    <h4 class="toc-title">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                        </svg>
+                        <span data-i18n="toc_title">Contenido</span>
+                    </h4>
+                    <nav id="tocDesktop">
+                        <ul class="toc-list" id="tocListDesktop">
+                            <!-- Se genera dinámicamente -->
+                        </ul>
+                    </nav>
+                    <div class="toc-progress">
+                        <div class="toc-progress-bar" id="tocProgressBar"></div>
+                    </div>
+                </div>
+            </aside>
+        </div><!-- /article-layout -->
     </main>
 
     <!-- Footer -->
