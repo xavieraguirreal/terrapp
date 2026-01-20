@@ -1,23 +1,24 @@
 # Roadmap Blog TERRApp
 
-**Última actualización:** 2026-01-19
+**Última actualización:** 2026-01-20
 
 ---
 
 ## Fase 1: Mejoras de UX/UI (Prioridad Alta)
 
 ### 1.1 TOC - Tabla de Contenidos
-- **Estado:** Pendiente
+- **Estado:** ✅ COMPLETADO (2026-01-20)
 - **Complejidad:** Media
 - **Descripción:** Índice de contenidos sticky en sidebar que resalta la sección activa mientras el usuario hace scroll
 - **Tecnología:** IntersectionObserver API
 - **Ubicación:** Artículos largos (scriptum.php)
 - **Características:**
-  - [ ] Generar TOC automáticamente desde headings (h2, h3)
-  - [ ] Sidebar sticky en desktop
-  - [ ] Acordeón colapsable en móvil
-  - [ ] Resaltado de sección activa al hacer scroll
-  - [ ] Click para navegar a sección
+  - [x] Generar TOC automáticamente desde headings (h2, h3)
+  - [x] Sidebar sticky en desktop
+  - [x] Acordeón colapsable en móvil
+  - [x] Resaltado de sección activa al hacer scroll
+  - [x] Click para navegar a sección
+  - [x] Barra de progreso de lectura
 
 ### 1.2 Bento Grid Layout
 - **Estado:** ✅ COMPLETADO (2026-01-19)
