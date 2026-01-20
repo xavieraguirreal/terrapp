@@ -136,8 +136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Re-renderizar artículos en el nuevo idioma
         if (articulos.length > 0) {
             if (document.getElementById('articlesGrid')) {
-                renderArticles();
-                renderFeatured();
+                renderArticles(); // Bento Grid incluye el featured
             }
             if (articuloActual) {
                 renderArticle(articuloActual);
@@ -161,7 +160,7 @@ async function loadArticles() {
 
         renderCategories();
         renderArticles();
-        renderFeatured();
+        // renderFeatured ya no es necesario, está integrado en renderArticles con Bento Grid
 
     } catch (error) {
         console.error('Error cargando artículos:', error);
@@ -269,14 +268,10 @@ function renderArticles() {
     // Quitar skeletons
     container.querySelectorAll('.skeleton-card').forEach(el => el.remove());
 
-    // Si mostramos "todos", saltear el primer artículo (ya se muestra como destacado)
-    let articulosParaMostrar = articulosFiltrados;
-    if (categoriaActual === 'all' && articulos.length > 0 && articulosFiltrados.length === articulos.length) {
-        // Saltear el primer artículo solo cuando no hay filtro activo
-        articulosParaMostrar = articulosFiltrados.slice(1);
-    }
+    // Determinar si mostrar featured (solo cuando no hay filtro)
+    const showFeatured = categoriaActual === 'all' && articulosFiltrados.length === articulos.length;
 
-    if (articulosParaMostrar.length === 0) {
+    if (articulosFiltrados.length === 0) {
         container.innerHTML = '';
         noResults?.classList.remove('hidden');
         loadMoreBtn?.classList.add('hidden');
@@ -285,12 +280,27 @@ function renderArticles() {
 
     noResults?.classList.add('hidden');
 
-    const visibles = articulosParaMostrar.slice(0, articulosVisibles);
+    // Construir HTML del Bento Grid
+    let html = '';
 
-    container.innerHTML = visibles.map(art => createArticleCard(art)).join('');
+    if (showFeatured && articulosFiltrados.length > 0) {
+        // Primer artículo como featured (2x2)
+        html += createBentoCard(articulosFiltrados[0], true);
+
+        // Resto de artículos como cards normales
+        const resto = articulosFiltrados.slice(1, articulosVisibles);
+        html += resto.map(art => createBentoCard(art, false)).join('');
+    } else {
+        // Sin featured, mostrar todos como cards normales
+        const visibles = articulosFiltrados.slice(0, articulosVisibles);
+        html += visibles.map(art => createBentoCard(art, false)).join('');
+    }
+
+    container.innerHTML = html;
 
     // Mostrar/ocultar botón de cargar más
-    if (articulosParaMostrar.length > articulosVisibles) {
+    const totalMostrados = showFeatured ? articulosVisibles : articulosVisibles;
+    if (articulosFiltrados.length > totalMostrados) {
         loadMoreBtn?.classList.remove('hidden');
     } else {
         loadMoreBtn?.classList.add('hidden');
@@ -350,7 +360,12 @@ function renderFeatured() {
     container.classList.remove('hidden');
 }
 
-function createArticleCard(art) {
+/**
+ * Crea una card para el Bento Grid
+ * @param {Object} art - Artículo
+ * @param {boolean} isFeatured - Si es el artículo destacado (2x2)
+ */
+function createBentoCard(art, isFeatured = false) {
     const fecha = formatDateLocalized(art.fecha_publicacion);
     const isSaved = isInReadingList(art.id);
     const traducido = getArticuloEnIdioma(art);
@@ -371,50 +386,93 @@ function createArticleCard(art) {
     const catNombre = t(catKey) || CATEGORIAS[art.categoria]?.nombre || 'Noticias';
     const catIcono = CATEGORIAS[art.categoria]?.icono || '📰';
 
-    const imagenHtml = generarImagenConFallback(
-        art.imagen_url,
-        traducido.titulo,
-        'card',
-        'hover:scale-105 transition-transform duration-300'
-    );
+    const totalReactions = (art.reaccion_interesante || 0) + (art.reaccion_encanta || 0) + (art.reaccion_importante || 0);
+
+    if (isFeatured) {
+        // Card destacada con imagen de fondo y overlay
+        const imagenUrl = art.imagen_url || '';
+        const bgStyle = imagenUrl
+            ? `background-image: url('${imagenUrl}'); background-size: cover; background-position: center;`
+            : `background: linear-gradient(135deg, #2d7553 0%, #3d9268 50%, #558b2f 100%);`;
+
+        return `
+            <article class="bento-card bento-featured">
+                <a href="scriptum.php?titulus=${art.slug}" class="bento-card-inner block">
+                    <div class="bento-image" style="${bgStyle}"></div>
+                    <div class="bento-overlay"></div>
+                    <div class="bento-content">
+                        <span class="bento-category">${catIcono} ${catNombre}</span>
+                        <div class="bento-meta">
+                            <span>${fecha}</span>
+                            <span>•</span>
+                            <span>${art.tiempo_lectura} ${t('min_read')}</span>
+                            <span>•</span>
+                            <span>${art.region === 'sudamerica' ? '🌎' : '🌐'}</span>
+                        </div>
+                        <h3 class="bento-title">${escapeHtml(traducido.titulo)}</h3>
+                        <p class="bento-excerpt">${escapeHtml(traducido.contenido.substring(0, 150))}...</p>
+                        <div class="bento-footer">
+                            <div class="bento-stats">
+                                <span class="bento-stat">👁️ ${art.vistas}</span>
+                                <span class="bento-stat">❤️ ${totalReactions}</span>
+                            </div>
+                            <button onclick="event.preventDefault(); event.stopPropagation(); toggleSave(${art.id})"
+                                    class="bento-save ${isSaved ? 'saved' : ''}">
+                                <svg class="w-5 h-5" fill="${isSaved ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </a>
+            </article>
+        `;
+    }
+
+    // Card normal
+    const imagenHtml = art.imagen_url
+        ? `<img src="${art.imagen_url}" alt="${escapeHtml(traducido.titulo)}" class="w-full h-full object-cover" loading="lazy">`
+        : `<div class="w-full h-full flex flex-col items-center justify-center text-white p-4">
+               <span class="text-sm font-semibold text-center line-clamp-2 mb-2">${escapeHtml(traducido.titulo)}</span>
+               <span class="text-2xl">🌱</span>
+           </div>`;
 
     return `
-        <article class="article-card bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md">
-            <a href="scriptum.php?titulus=${art.slug}" class="block">
-                <div class="h-48 bg-gray-200 dark:bg-gray-700 relative overflow-hidden">
+        <article class="bento-card">
+            <a href="scriptum.php?titulus=${art.slug}" class="bento-card-inner block">
+                <div class="bento-image">
                     ${imagenHtml}
-                    <span class="absolute top-3 left-3 px-2 py-1 bg-white/90 dark:bg-gray-800/90 rounded-full text-xs font-medium">
-                        ${catIcono} ${catNombre}
-                    </span>
+                </div>
+                <div class="bento-content">
+                    <span class="bento-category">${catIcono} ${catNombre}</span>
+                    <div class="bento-meta">
+                        <span>${fecha}</span>
+                        <span>•</span>
+                        <span>${art.tiempo_lectura} ${t('min_read')}</span>
+                    </div>
+                    <h3 class="bento-title">${escapeHtml(traducido.titulo)}</h3>
+                    <p class="bento-excerpt">${escapeHtml(traducido.contenido.substring(0, 100))}...</p>
+                    <div class="bento-footer">
+                        <div class="bento-stats">
+                            <span class="bento-stat">👁️ ${art.vistas}</span>
+                            <span class="bento-stat">❤️ ${totalReactions}</span>
+                        </div>
+                        <button onclick="event.preventDefault(); event.stopPropagation(); toggleSave(${art.id})"
+                                class="bento-save ${isSaved ? 'saved' : ''}">
+                            <svg class="w-5 h-5" fill="${isSaved ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </a>
-            <div class="p-5">
-                <div class="flex items-center justify-between mb-2 text-xs text-gray-500 dark:text-gray-400">
-                    <span>${fecha} • ${art.tiempo_lectura} ${t('min_read')}</span>
-                    <span>${art.region === 'sudamerica' ? '🌎' : '🌐'}</span>
-                </div>
-                <a href="scriptum.php?titulus=${art.slug}" class="block">
-                    <h3 class="font-bold text-lg mb-2 line-clamp-2 hover:text-forest-600 transition">
-                        ${escapeHtml(traducido.titulo)}
-                    </h3>
-                </a>
-                <p class="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-3">
-                    ${escapeHtml(traducido.contenido.substring(0, 120))}...
-                </p>
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3 text-sm text-gray-500">
-                        <span>👁️ ${art.vistas}</span>
-                        <span>❤️ ${(art.reaccion_interesante || 0) + (art.reaccion_encanta || 0) + (art.reaccion_importante || 0)}</span>
-                    </div>
-                    <button onclick="event.preventDefault(); toggleSave(${art.id})" class="p-1 ${isSaved ? 'text-forest-600' : 'text-gray-400'} hover:text-forest-600 transition">
-                        <svg class="w-5 h-5" fill="${isSaved ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
         </article>
     `;
+}
+
+// Mantener función anterior para compatibilidad (lista de lectura, etc.)
+function createArticleCard(art) {
+    return createBentoCard(art, false);
 }
 
 function renderArticle(art) {

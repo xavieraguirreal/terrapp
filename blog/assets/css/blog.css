@@ -374,19 +374,300 @@
     background: linear-gradient(135deg, #265e44 0%, #2d7553 50%, #3d9268 100%);
 }
 
-/* Bento grid for featured layout */
-@media (min-width: 768px) {
+/* ====================================
+   BENTO GRID LAYOUT
+   ==================================== */
+
+.bento-grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+}
+
+/* Tablet: 2 columnas */
+@media (min-width: 640px) {
     .bento-grid {
-        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Desktop: 3 columnas con featured 2x2 */
+@media (min-width: 1024px) {
+    .bento-grid {
         grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(2, auto);
-        gap: 1.5rem;
+        grid-auto-rows: minmax(200px, auto);
     }
 
     .bento-featured {
         grid-column: span 2;
         grid-row: span 2;
     }
+
+    .bento-featured .bento-card-inner {
+        height: 100%;
+        min-height: 420px;
+    }
+
+    .bento-featured .bento-image {
+        height: 60%;
+    }
+
+    .bento-featured .bento-content {
+        height: 40%;
+    }
+
+    .bento-featured h3 {
+        font-size: 1.5rem;
+        line-height: 1.3;
+    }
+}
+
+/* Card dentro de bento */
+.bento-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.bento-card-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-theme="dark"] .bento-card-inner {
+    background: #1f2937;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+.bento-card:hover .bento-card-inner {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .bento-card:hover .bento-card-inner {
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+.bento-image {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #2d7553 0%, #3d9268 50%, #558b2f 100%);
+}
+
+.bento-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.bento-card:hover .bento-image img {
+    transform: scale(1.05);
+}
+
+.bento-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+}
+
+.bento-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    background: #dcf0e4;
+    color: #2d7553;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    width: fit-content;
+    margin-bottom: 0.75rem;
+}
+
+[data-theme="dark"] .bento-category {
+    background: rgba(45, 117, 83, 0.2);
+    color: #6ee7b7;
+}
+
+.bento-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+[data-theme="dark"] .bento-meta {
+    color: #9ca3af;
+}
+
+.bento-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.2s ease;
+}
+
+[data-theme="dark"] .bento-title {
+    color: #f3f4f6;
+}
+
+.bento-card:hover .bento-title {
+    color: #2d7553;
+}
+
+[data-theme="dark"] .bento-card:hover .bento-title {
+    color: #6ee7b7;
+}
+
+.bento-excerpt {
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+}
+
+[data-theme="dark"] .bento-excerpt {
+    color: #9ca3af;
+}
+
+.bento-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+[data-theme="dark"] .bento-footer {
+    border-top-color: #374151;
+}
+
+.bento-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+.bento-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.bento-save {
+    padding: 0.375rem;
+    border-radius: 0.5rem;
+    color: #9ca3af;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+}
+
+.bento-save:hover {
+    color: #2d7553;
+    background: #dcf0e4;
+}
+
+.bento-save.saved {
+    color: #2d7553;
+}
+
+[data-theme="dark"] .bento-save:hover {
+    background: rgba(45, 117, 83, 0.2);
+}
+
+/* Featured card overlay style */
+.bento-featured .bento-card-inner {
+    position: relative;
+}
+
+.bento-featured .bento-image {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+}
+
+.bento-featured .bento-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+}
+
+.bento-featured .bento-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+    color: white;
+}
+
+.bento-featured .bento-category {
+    background: rgba(45, 117, 83, 0.9);
+    color: white;
+}
+
+.bento-featured .bento-meta {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.bento-featured .bento-title {
+    color: white;
+    font-size: 1.25rem;
+    -webkit-line-clamp: 3;
+}
+
+@media (min-width: 1024px) {
+    .bento-featured .bento-title {
+        font-size: 1.75rem;
+    }
+}
+
+.bento-featured:hover .bento-title {
+    color: #6ee7b7;
+}
+
+.bento-featured .bento-excerpt {
+    color: rgba(255, 255, 255, 0.8);
+    -webkit-line-clamp: 2;
+}
+
+.bento-featured .bento-footer {
+    border-top-color: rgba(255, 255, 255, 0.2);
+}
+
+.bento-featured .bento-stats,
+.bento-featured .bento-save {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.bento-featured .bento-save:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Smooth scrolling */
