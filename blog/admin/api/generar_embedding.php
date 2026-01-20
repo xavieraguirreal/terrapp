@@ -101,13 +101,14 @@ function generarEmbeddingArticulo(PDO $pdo, EmbeddingsClient $embeddings, int $a
  * Genera embeddings para todos los artículos publicados que no tienen
  */
 function generarEmbeddingsTodos(PDO $pdo, EmbeddingsClient $embeddings): array {
-    // Obtener artículos publicados sin embedding o con embedding desactualizado
+    // Obtener artículos publicados sin embedding
+    // La función generarEmbeddingArticulo ya verifica via texto_hash si cambió el contenido
     $stmt = $pdo->query("
         SELECT a.*
         FROM blog_articulos a
         LEFT JOIN blog_embeddings e ON a.id = e.articulo_id
         WHERE a.estado = 'publicado'
-        AND (e.id IS NULL OR e.fecha_actualizacion < a.fecha_actualizacion)
+        AND e.id IS NULL
         ORDER BY a.fecha_publicacion DESC
         LIMIT 50
     ");
