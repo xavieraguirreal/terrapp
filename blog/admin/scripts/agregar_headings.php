@@ -24,7 +24,7 @@ if ($esWeb) {
         .error { color: #f87171; }
         .info { color: #60a5fa; }
         .warning { color: #fbbf24; }
-        pre { background: #2d2d2d; padding: 15px; border-radius: 8px; overflow-x: auto; }
+        pre { background: #2d2d2d; padding: 15px; border-radius: 8px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; }
         h1 { color: #4ade80; }
         hr { border-color: #444; margin: 20px 0; }
     </style>
@@ -63,7 +63,7 @@ try {
     $openai = new OpenAIClient(OPENAI_API_KEY, 'gpt-4o-mini');
 
     // Buscar artículos publicados que NO tengan headings (## )
-    $sql = "SELECT id, titulo, contenido, traducciones
+    $sql = "SELECT id, titulo, contenido
             FROM blog_articulos
             WHERE estado = 'publicado'
             AND contenido NOT LIKE '%## %'
@@ -77,6 +77,7 @@ try {
 
     if (empty($articulos)) {
         output("✅ No hay artículos sin headings. Todos ya tienen estructura.", "success");
+        if ($esWeb) echo "</body></html>";
         exit;
     }
 
@@ -118,32 +119,59 @@ PROMPT;
 
             // Verificar que tenga headings
             if (strpos($contenidoNuevo, '## ') === false) {
-                output("⚠️ OpenAI no agregó headings, reintentando...", "warning");
+                output("⚠️ OpenAI no agregó headings, saltando...", "warning");
+                $errores++;
                 continue;
             }
 
             output("✅ Contenido reestructurado:", "success");
             outputPre(mb_substr($contenidoNuevo, 0, 500) . "...");
 
+            // Buscar traducciones en tabla separada
+            $stmtTrad = $pdo->prepare("
+                SELECT idioma, contenido
+                FROM blog_articulos_traducciones
+                WHERE articulo_id = ? AND contenido IS NOT NULL AND contenido != ''
+            ");
+            $stmtTrad->execute([$articulo['id']]);
+            $traducciones = $stmtTrad->fetchAll(PDO::FETCH_ASSOC);
+
+            if (!$SOLO_PREVIEW) {
+                // Guardar contenido principal
+                $stmtUpdate = $pdo->prepare("UPDATE blog_articulos SET contenido = ? WHERE id = ?");
+                $stmtUpdate->execute([$contenidoNuevo, $articulo['id']]);
+                output("💾 Contenido principal guardado", "success");
+            }
+
             // Procesar traducciones si existen
-            $traduccionesNuevas = null;
-            if (!empty($articulo['traducciones'])) {
-                $traducciones = json_decode($articulo['traducciones'], true);
-                if ($traducciones) {
-                    output("🌍 Procesando traducciones...", "info");
-                    $traduccionesNuevas = [];
+            if (!empty($traducciones)) {
+                output("🌍 Procesando " . count($traducciones) . " traducciones...", "info");
 
-                    foreach ($traducciones as $idioma => $trad) {
-                        if (empty($trad['contenido'])) continue;
+                foreach ($traducciones as $trad) {
+                    $idioma = $trad['idioma'];
 
-                        $promptTrad = <<<PROMPT
-Reestructurá este contenido en {$idioma} agregando títulos de sección con formato markdown (## Título).
+                    // Saltar si la traducción ya tiene headings
+                    if (strpos($trad['contenido'], '## ') !== false) {
+                        output("  ⏭️ {$idioma} ya tiene headings, saltando", "info");
+                        continue;
+                    }
+
+                    $nombresIdiomas = [
+                        'pt' => 'portugués brasileño',
+                        'en' => 'inglés',
+                        'fr' => 'francés',
+                        'nl' => 'neerlandés'
+                    ];
+                    $nombreIdioma = $nombresIdiomas[$idioma] ?? $idioma;
+
+                    $promptTrad = <<<PROMPT
+Reestructurá este contenido en {$nombreIdioma} agregando títulos de sección con formato markdown (## Título).
 
 REGLAS:
 1. NO cambies el contenido, solo agregá estructura
 2. Dividí el texto en 2-4 secciones lógicas
 3. Usá ## para secciones principales
-4. Los títulos deben estar en el mismo idioma que el contenido
+4. Los títulos deben estar en {$nombreIdioma}
 
 CONTENIDO:
 {$trad['contenido']}
@@ -151,43 +179,35 @@ CONTENIDO:
 Respondé SOLO con el contenido reestructurado.
 PROMPT;
 
-                        try {
-                            $contenidoTrad = $openai->chat(
-                                "Eres un editor que estructura textos agregando títulos de sección markdown.",
-                                $promptTrad
-                            );
+                    try {
+                        $contenidoTrad = $openai->chat(
+                            "Eres un editor que estructura textos agregando títulos de sección markdown.",
+                            $promptTrad
+                        );
 
-                            $traduccionesNuevas[$idioma] = $trad;
-                            $traduccionesNuevas[$idioma]['contenido'] = $contenidoTrad;
+                        if (strpos($contenidoTrad, '## ') !== false) {
+                            if (!$SOLO_PREVIEW) {
+                                $stmtUpdateTrad = $pdo->prepare("
+                                    UPDATE blog_articulos_traducciones
+                                    SET contenido = ?
+                                    WHERE articulo_id = ? AND idioma = ?
+                                ");
+                                $stmtUpdateTrad->execute([$contenidoTrad, $articulo['id'], $idioma]);
+                            }
                             output("  ✅ {$idioma} procesado", "success");
-                        } catch (Exception $e) {
-                            output("  ⚠️ Error en {$idioma}: " . $e->getMessage(), "warning");
-                            $traduccionesNuevas[$idioma] = $trad; // Mantener original
+                        } else {
+                            output("  ⚠️ {$idioma}: OpenAI no agregó headings", "warning");
                         }
-
-                        // Pequeña pausa para no saturar API
-                        usleep(500000); // 0.5 segundos
+                    } catch (Exception $e) {
+                        output("  ⚠️ Error en {$idioma}: " . $e->getMessage(), "warning");
                     }
+
+                    // Pequeña pausa para no saturar API
+                    usleep(500000); // 0.5 segundos
                 }
             }
 
-            if (!$SOLO_PREVIEW) {
-                // Guardar cambios
-                $sqlUpdate = "UPDATE blog_articulos SET contenido = :contenido";
-                $params = [':contenido' => $contenidoNuevo, ':id' => $articulo['id']];
-
-                if ($traduccionesNuevas !== null) {
-                    $sqlUpdate .= ", traducciones = :traducciones";
-                    $params[':traducciones'] = json_encode($traduccionesNuevas, JSON_UNESCAPED_UNICODE);
-                }
-
-                $sqlUpdate .= " WHERE id = :id";
-
-                $stmtUpdate = $pdo->prepare($sqlUpdate);
-                $stmtUpdate->execute($params);
-
-                output("💾 Guardado en base de datos", "success");
-            } else {
+            if ($SOLO_PREVIEW) {
                 output("👁️ PREVIEW: No se guardaron cambios", "warning");
             }
 
