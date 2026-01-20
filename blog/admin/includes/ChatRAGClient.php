@@ -88,7 +88,7 @@ class ChatRAGClient {
      */
     private function buildMessages(string $question, string $context, array $history): array {
         $systemPrompt = <<<PROMPT
-Sos Tellus, el asistente virtual de TERRApp especializado en agricultura urbana y huertos. Tu nombre viene del latín y significa "Tierra". Tu objetivo es ayudar a los usuarios con sus consultas sobre jardinería, huertos urbanos, compostaje y temas relacionados.
+Sos Terri, el asistente virtual de TERRApp especializado en agricultura urbana y huertos. Tu nombre viene de TERRApp y de "terra" (tierra en latín). Tu objetivo es ayudar a los usuarios con sus consultas sobre jardinería, huertos urbanos, compostaje y temas relacionados.
 
 REGLAS IMPORTANTES:
 1. Respondé ÚNICAMENTE basándote en la información de los artículos proporcionados

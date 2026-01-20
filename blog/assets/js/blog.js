@@ -1648,7 +1648,7 @@ function createChatHTML() {
                 <div class="chat-header-info">
                     <span class="chat-avatar">🌱</span>
                     <div>
-                        <h3 class="chat-title">Tellus</h3>
+                        <h3 class="chat-title">Terri</h3>
                         <p class="chat-subtitle">Tu asistente de agricultura urbana</p>
                     </div>
                 </div>
@@ -1663,7 +1663,7 @@ function createChatHTML() {
                 <!-- Mensaje de bienvenida -->
                 <div class="chat-message assistant">
                     <div class="chat-message-content">
-                        <p>¡Hola! Soy <strong>Tellus</strong>, tu asistente de agricultura urbana. Puedo responder preguntas sobre huertos, compostaje, riego y más, basándome en los artículos del blog.</p>
+                        <p>¡Hola! Soy <strong>Terri</strong>, tu asistente de agricultura urbana. Puedo responder preguntas sobre huertos, compostaje, riego y más, basándome en los artículos del blog.</p>
                         <p class="chat-hint">Probá preguntar: "¿Cómo empiezo un huerto en mi balcón?"</p>
                     </div>
                 </div>
@@ -1848,7 +1848,7 @@ function clearChatHistory() {
     container.innerHTML = `
         <div class="chat-message assistant">
             <div class="chat-message-content">
-                <p>¡Hola! Soy <strong>Tellus</strong>, tu asistente de agricultura urbana. Puedo responder preguntas sobre huertos, compostaje, riego y más, basándome en los artículos del blog.</p>
+                <p>¡Hola! Soy <strong>Terri</strong>, tu asistente de agricultura urbana. Puedo responder preguntas sobre huertos, compostaje, riego y más, basándome en los artículos del blog.</p>
                 <p class="chat-hint">Probá preguntar: "¿Cómo empiezo un huerto en mi balcón?"</p>
             </div>
         </div>
