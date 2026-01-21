@@ -12,6 +12,20 @@ if (!verificarAcceso()) {
 
 require_once __DIR__ . '/includes/functions.php';
 
+/**
+ * Ajusta URL de imagen para mostrar correctamente desde /admin/
+ */
+function adminImageUrl(?string $url): string {
+    if (empty($url)) return '';
+    if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
+        return $url;
+    }
+    if (str_starts_with($url, 'uploads/')) {
+        return '../' . $url;
+    }
+    return $url;
+}
+
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $articulo = $id > 0 ? obtenerArticulo($id) : null;
 
@@ -214,7 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
 
                     <?php if ($articulo['imagen_url']): ?>
                     <div class="mt-4">
-                        <img src="<?= htmlspecialchars($articulo['imagen_url']) ?>" alt="Imagen del artículo"
+                        <img src="<?= htmlspecialchars(adminImageUrl($articulo['imagen_url'])) ?>" alt="Imagen del artículo"
                              class="w-full rounded-lg"
                              onerror="this.src='../assets/images/placeholder.svg'; this.classList.add('opacity-50');">
                         <p class="text-xs text-gray-400 mt-1 break-all"><?= htmlspecialchars($articulo['imagen_url']) ?></p>

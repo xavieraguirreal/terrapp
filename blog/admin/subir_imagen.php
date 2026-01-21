@@ -16,6 +16,20 @@ if (!verificarAcceso()) {
 
 require_once __DIR__ . '/includes/functions.php';
 
+/**
+ * Ajusta URL de imagen para mostrar correctamente desde /admin/
+ */
+function adminImageUrl(?string $url): string {
+    if (empty($url)) return '';
+    if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
+        return $url;
+    }
+    if (str_starts_with($url, 'uploads/')) {
+        return '../' . $url;
+    }
+    return $url;
+}
+
 $mensaje = '';
 $error = '';
 $articuloSeleccionado = null;
@@ -193,7 +207,7 @@ $articulos = $stmt->fetchAll();
                     <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
                         <?php if ($articuloSeleccionado && !empty($articuloSeleccionado['imagen_url'])): ?>
                         <img id="img-actual"
-                             src="<?= htmlspecialchars($articuloSeleccionado['imagen_url']) ?>"
+                             src="<?= htmlspecialchars(adminImageUrl($articuloSeleccionado['imagen_url'])) ?>"
                              alt="Imagen actual"
                              class="max-h-48 rounded mx-auto"
                              onerror="this.src='../assets/images/placeholder.svg'; this.classList.add('opacity-50');">
@@ -262,10 +276,11 @@ $articulos = $stmt->fetchAll();
     </main>
 
     <script>
-        // Data de artículos para JS
+        // Data de artículos para JS (con URLs ajustadas para admin)
         const articulos = <?= json_encode(array_map(fn($a) => [
             'id' => $a['id'],
-            'imagen_url' => $a['imagen_url']
+            'imagen_url' => $a['imagen_url'],
+            'imagen_url_admin' => adminImageUrl($a['imagen_url'])
         ], $articulos)) ?>;
 
         function mostrarPreview(articuloId) {
@@ -283,7 +298,7 @@ $articulos = $stmt->fetchAll();
 
             const articulo = articulos.find(a => a.id == articuloId);
             if (articulo && articulo.imagen_url) {
-                imgActual.src = articulo.imagen_url;
+                imgActual.src = articulo.imagen_url_admin || articulo.imagen_url;
                 imgActual.classList.remove('hidden');
                 urlActual.textContent = articulo.imagen_url;
                 urlActual.classList.remove('hidden');

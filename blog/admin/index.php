@@ -12,6 +12,27 @@ if (!verificarAcceso()) {
 
 require_once __DIR__ . '/includes/functions.php';
 
+/**
+ * Ajusta URL de imagen para mostrar correctamente desde /admin/
+ * Las imágenes locales se guardan como uploads/articulos/... (relativo a /blog/)
+ * Desde /blog/admin/ necesitamos agregar ../
+ */
+function adminImageUrl(?string $url): string {
+    if (empty($url)) return '';
+
+    // Si es URL absoluta (http/https), dejar como está
+    if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
+        return $url;
+    }
+
+    // Si es ruta relativa de uploads, agregar ../
+    if (str_starts_with($url, 'uploads/')) {
+        return '../' . $url;
+    }
+
+    return $url;
+}
+
 // Publicar artículos programados cuya fecha ya pasó
 $publicadosVencidos = publicarProgramadosVencidos();
 
@@ -307,7 +328,7 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
                     <?php foreach ($publicados as $art): ?>
                     <div class="flex gap-3 p-3 bg-gray-50 rounded-lg" id="publicado-<?= $art['id'] ?>">
                         <?php if (!empty($art['imagen_url'])): ?>
-                        <img src="<?= htmlspecialchars($art['imagen_url']) ?>" alt="" class="w-20 h-20 object-cover rounded-lg flex-shrink-0">
+                        <img src="<?= htmlspecialchars(adminImageUrl($art['imagen_url'])) ?>" alt="" class="w-20 h-20 object-cover rounded-lg flex-shrink-0">
                         <?php else: ?>
                         <div class="w-20 h-20 bg-forest-100 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">🌱</div>
                         <?php endif; ?>

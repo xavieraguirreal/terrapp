@@ -1731,6 +1731,18 @@
             }
         }
 
+        // Handler para errores de imagen del blog
+        function handleBlogImageError(img) {
+            const container = img.parentElement;
+            if (!container) return;
+            const title = container.dataset.title || 'Blog';
+            container.innerHTML = `
+                <div class="w-full h-full flex flex-col items-center justify-center text-white p-4" style="background: linear-gradient(135deg, #2d7553 0%, #3d9268 50%, #558b2f 100%);">
+                    <span class="text-sm font-semibold text-center line-clamp-3 mb-2">${title}</span>
+                    <span class="text-3xl">🌱</span>
+                </div>`;
+        }
+
         // Blog Carousel
         async function loadBlogArticles() {
             const container = document.getElementById('blogCarousel');
@@ -1765,8 +1777,17 @@
                     const fecha = new Date(art.fecha_publicacion).toLocaleDateString(dateLocale, {
                         day: 'numeric', month: 'short', year: 'numeric'
                     });
-                    const imagenHtml = art.imagen_url
-                        ? `<img src="${art.imagen_url}" alt="${traducido.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
+                    // Ajustar URL de imagen: si es relativa (uploads/...), agregar prefijo del blog
+                    let imagenUrl = art.imagen_url || '';
+                    if (imagenUrl && !imagenUrl.startsWith('http://') && !imagenUrl.startsWith('https://')) {
+                        imagenUrl = '../blog/' + imagenUrl;
+                    }
+                    const tituloSafe = traducido.titulo.replace(/"/g, '&quot;');
+                    const imagenHtml = imagenUrl
+                        ? `<div class="blog-img-container w-full h-full" data-title="${tituloSafe}">
+                               <img src="${imagenUrl}" alt="${tituloSafe}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    onerror="handleBlogImageError(this)">
+                           </div>`
                         : `<div class="w-full h-full flex flex-col items-center justify-center text-white p-4" style="background: linear-gradient(135deg, #2d7553 0%, #3d9268 50%, #558b2f 100%);">
                                <span class="text-sm font-semibold text-center line-clamp-3 mb-2">${traducido.titulo}</span>
                                <span class="text-3xl">🌱</span>

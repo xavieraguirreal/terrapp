@@ -53,6 +53,21 @@ function handleImageError(img) {
     </div>`;
 }
 
+/**
+ * Maneja errores de imagen en cards del bento grid
+ */
+function handleBentoImageError(img) {
+    const container = img.parentElement;
+    if (!container) return;
+
+    const title = container.dataset.fallbackTitle || 'Artículo';
+
+    container.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-white p-4 bento-placeholder">
+        <span class="text-sm font-semibold text-center line-clamp-2 mb-2">${title}</span>
+        <span class="text-2xl">🌱</span>
+    </div>`;
+}
+
 // ============================================
 // MULTI-IDIOMA
 // ============================================
@@ -450,13 +465,18 @@ function createBentoCard(art, isFeatured = false) {
         `;
     }
 
-    // Card normal
-    const imagenHtml = art.imagen_url
-        ? `<img src="${art.imagen_url}" alt="${escapeHtml(traducido.titulo)}" class="w-full h-full object-cover" loading="lazy">`
-        : `<div class="w-full h-full flex flex-col items-center justify-center text-white p-4">
+    // Card normal - con handler de error para imágenes
+    const tituloEscapado = escapeHtml(traducido.titulo).replace(/"/g, '&quot;');
+    const placeholderCard = `<div class="w-full h-full flex flex-col items-center justify-center text-white p-4 bento-placeholder">
                <span class="text-sm font-semibold text-center line-clamp-2 mb-2">${escapeHtml(traducido.titulo)}</span>
                <span class="text-2xl">🌱</span>
            </div>`;
+    const imagenHtml = art.imagen_url
+        ? `<div class="w-full h-full img-fallback-container" data-fallback-title="${tituloEscapado}">
+               <img src="${art.imagen_url}" alt="${escapeHtml(traducido.titulo)}" class="w-full h-full object-cover" loading="lazy"
+                    onerror="handleBentoImageError(this)">
+           </div>`
+        : placeholderCard;
 
     return `
         <article class="bento-card">
