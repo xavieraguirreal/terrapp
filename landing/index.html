@@ -337,47 +337,17 @@
                     </div>
                 </div>
 
-                <!-- Email Registration Form in Hero -->
-                <div class="max-w-xl mx-auto mb-8 hero-cta">
-                    <p class="text-earth-600 mb-4 font-medium" data-i18n="hero_cta_text">Dejá tu email y sé de las primeras personas en probar TERRApp:</p>
-                    <form id="heroNotifyForm" class="bg-white/80 backdrop-blur-sm rounded-2xl p-5 border border-earth-200 shadow-lg space-y-4">
-                        <!-- Email field -->
-                        <div>
-                            <label class="block text-sm font-medium text-earth-700 mb-2" data-i18n="form_email_label">Tu email</label>
-                            <input
-                                type="email"
-                                id="heroEmailInput"
-                                placeholder="tu@correo.com"
-                                required
-                                class="w-full px-4 py-3 rounded-xl bg-white border-2 border-earth-200 text-earth-800 placeholder-earth-400 focus:outline-none focus:border-forest-500 focus:ring-2 focus:ring-forest-200 transition-all"
-                                data-i18n-placeholder="notify_placeholder"
-                            >
-                        </div>
-                        <!-- Comment field (optional, always visible) -->
-                        <div>
-                            <label class="block text-sm font-medium text-earth-700 mb-2">
-                                <span data-i18n="form_comment_label">¿Alguna sugerencia?</span>
-                                <span class="text-earth-400 font-normal" data-i18n="form_optional">(opcional)</span>
-                            </label>
-                            <textarea
-                                id="heroCommentInput"
-                                rows="2"
-                                placeholder="¿Qué te gustaría ver en TERRApp?"
-                                class="w-full px-4 py-3 rounded-xl bg-white border-2 border-earth-200 text-earth-800 placeholder-earth-400 focus:outline-none focus:border-forest-500 focus:ring-2 focus:ring-forest-200 transition-all resize-none text-sm"
-                                data-i18n-placeholder="comment_placeholder"
-                            ></textarea>
-                        </div>
-                        <!-- Submit button -->
-                        <button type="submit" class="w-full px-8 py-4 bg-gradient-to-r from-forest-600 to-forest-500 hover:from-forest-700 hover:to-forest-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-forest-500/30 hover:shadow-xl hover:shadow-forest-500/40 transform hover:-translate-y-0.5 ripple">
-                            <span data-i18n="notify_button">Avisame</span>
-                        </button>
-                    </form>
-                    <div id="heroFormSuccess" class="hidden mt-4 p-4 bg-forest-100 border border-forest-200 rounded-xl text-forest-700">
-                        <svg class="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <!-- Quiz CTA in Hero -->
+                <div class="max-w-xl mx-auto mb-8 hero-cta text-center">
+                    <p class="text-earth-600 mb-6 font-medium text-lg" data-i18n="hero_quiz_cta">Descubrí qué tipo de huertero/a sos y recibí consejos personalizados:</p>
+                    <button onclick="openQuiz()" class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-yellow-900 font-bold text-lg rounded-xl transition-all shadow-lg shadow-yellow-500/30 hover:shadow-xl hover:shadow-yellow-500/40 transform hover:-translate-y-0.5 hover:scale-105">
+                        <span>🎯</span>
+                        <span data-i18n="hero_quiz_button">Hacer el test de 30 segundos</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                         </svg>
-                        <p class="font-semibold text-center" data-i18n="notify_success">¡Excelente! Te avisaremos cuando TERRApp esté disponible.</p>
-                    </div>
+                    </button>
+                    <p class="mt-4 text-sm text-earth-500" data-i18n="hero_quiz_note">4 preguntas · Sin registro · 100% gratis</p>
                 </div>
 
                 <!-- CTA secundario -->
@@ -1356,36 +1326,43 @@
         </div>
     </section>
 
-    <!-- Notification Section -->
-    <section id="notify" class="py-20 bg-gradient-to-br from-forest-600 to-forest-800 text-white">
+    <!-- Suggestions Section -->
+    <section id="suggestions" class="py-20 bg-gradient-to-br from-forest-600 to-forest-800 text-white">
         <div class="container mx-auto px-4 sm:px-6">
             <div class="max-w-2xl mx-auto text-center reveal">
                 <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 rounded-full mb-8">
-                    <span class="relative flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-                    </span>
-                    <span class="text-sm font-semibold" data-i18n="notify_badge">Proximamente en 2026</span>
+                    <span class="text-2xl">💡</span>
+                    <span class="text-sm font-semibold" data-i18n="suggestions_badge">Tu opinion importa</span>
                 </div>
 
-                <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="notify_title">Se el primero en probar TERRApp</h2>
-                <p class="text-forest-100 text-lg mb-8" data-i18n="notify_subtitle">Dejanos tu correo y te avisaremos cuando este lista la version beta. Sin spam, solo novedades importantes.</p>
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="suggestions_title">¿Que te gustaria ver en TERRApp?</h2>
+                <p class="text-forest-100 text-lg mb-8" data-i18n="suggestions_subtitle">Estamos construyendo TERRApp con la comunidad. Contanos que funciones te serian utiles.</p>
 
-                <form id="notifyForm" class="max-w-md mx-auto">
-                    <div class="flex flex-col sm:flex-row gap-3">
+                <form id="suggestionsForm" class="max-w-lg mx-auto space-y-4">
+                    <div>
                         <input
                             type="email"
-                            id="emailInput"
+                            id="suggestionEmail"
                             placeholder="tu@correo.com"
                             required
-                            class="flex-1 px-5 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-white/50 focus:bg-white/20 transition-all"
+                            class="w-full px-5 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-white/50 focus:bg-white/20 transition-all"
                             data-i18n-placeholder="notify_placeholder"
                         >
-                        <button type="submit" class="px-8 py-4 bg-white text-forest-700 font-bold rounded-xl hover:bg-forest-50 transition-all shadow-lg">
-                            <span data-i18n="notify_button">Avisarme</span>
-                        </button>
                     </div>
-                    <p class="text-forest-200 text-sm mt-4" data-i18n="notify_privacy">Al registrarte aceptas recibir novedades de TERRApp. Podes darte de baja en cualquier momento.</p>
+                    <div>
+                        <textarea
+                            id="suggestionText"
+                            rows="3"
+                            placeholder="¿Que funcionalidad te gustaria que tenga TERRApp?"
+                            required
+                            class="w-full px-5 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-white/50 focus:bg-white/20 transition-all resize-none"
+                            data-i18n-placeholder="suggestion_placeholder"
+                        ></textarea>
+                    </div>
+                    <button type="submit" class="w-full px-8 py-4 bg-white text-forest-700 font-bold rounded-xl hover:bg-forest-50 transition-all shadow-lg">
+                        <span data-i18n="suggestion_button">Enviar sugerencia</span>
+                    </button>
+                    <p class="text-forest-200 text-sm" data-i18n="suggestion_note">Si no estas suscrito/a, te suscribiremos automaticamente para mantenerte al tanto.</p>
 
                     <!-- Security Badges -->
                     <div class="flex flex-wrap items-center justify-center gap-4 mt-6">
@@ -2150,98 +2127,57 @@
         // Cargar datos al iniciar
         setTimeout(loadInitialData, 500);
 
-        // Form Submit con API
-        document.getElementById('notifyForm').addEventListener('submit', async (e) => {
+        // Suggestions Form Submit
+        document.getElementById('suggestionsForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('emailInput').value;
+            const email = document.getElementById('suggestionEmail').value;
+            const suggestion = document.getElementById('suggestionText').value.trim();
             const submitBtn = e.target.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
+
+            if (!suggestion) {
+                alert('Por favor escribí tu sugerencia');
+                return;
+            }
 
             // Estado de carga
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
 
             try {
+                // Subscribe with suggestion (auto-confirms if new)
                 const response = await fetch(API_BASE + '/subscribe.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         email: email,
+                        comment: suggestion,
                         lang: TERRAPP_I18N.currentLang || 'es_AR',
-                        source: 'form_bottom'
+                        source: 'suggestions_form'
                     })
                 });
 
                 const result = await response.json();
 
                 if (result.success) {
-                    document.getElementById('notifyForm').classList.add('hidden');
+                    document.getElementById('suggestionsForm').classList.add('hidden');
                     document.getElementById('formSuccess').classList.remove('hidden');
+                    // Update success message for suggestions
+                    document.querySelector('#formSuccess p').innerHTML = '¡Gracias por tu sugerencia! ' + (result.already_subscribed ? '' : 'Te hemos suscrito para mantenerte al tanto.');
 
                     // Actualizar contador
                     if (result.counter) {
                         updateCounter(result.counter.display);
                     }
                 } else {
-                    alert(result.error || 'Error al registrar');
+                    alert(result.error || 'Error al enviar');
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalText;
                 }
             } catch (error) {
-                // Fallback si la API no esta disponible
                 console.log('API no disponible, mostrando exito de todos modos');
-                document.getElementById('notifyForm').classList.add('hidden');
+                document.getElementById('suggestionsForm').classList.add('hidden');
                 document.getElementById('formSuccess').classList.remove('hidden');
-            }
-        });
-
-        // Hero Form Submit (formulario en el hero)
-        document.getElementById('heroNotifyForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('heroEmailInput').value;
-            const comment = document.getElementById('heroCommentInput').value.trim();
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
-
-            try {
-                const payload = {
-                    email: email,
-                    lang: TERRAPP_I18N.currentLang || 'es_AR',
-                    source: 'form_hero'
-                };
-                if (comment) {
-                    payload.comment = comment;
-                }
-                const response = await fetch(API_BASE + '/subscribe.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    document.getElementById('heroNotifyForm').classList.add('hidden');
-                    document.getElementById('heroFormSuccess').classList.remove('hidden');
-                    // También ocultar el formulario de abajo
-                    document.getElementById('notifyForm').classList.add('hidden');
-                    document.getElementById('formSuccess').classList.remove('hidden');
-
-                    if (result.counter) {
-                        updateCounter(result.counter.display);
-                    }
-                } else {
-                    alert(result.error || 'Error al registrar');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                }
-            } catch (error) {
-                console.log('API no disponible');
-                document.getElementById('heroNotifyForm').classList.add('hidden');
-                document.getElementById('heroFormSuccess').classList.remove('hidden');
             }
         });
 
@@ -2441,11 +2377,9 @@
                     document.getElementById('quizEmailForm').classList.add('hidden');
                     document.getElementById('quizSuccess').classList.remove('hidden');
 
-                    // Mark other forms as done
-                    document.getElementById('heroNotifyForm').classList.add('hidden');
-                    document.getElementById('heroFormSuccess').classList.remove('hidden');
-                    document.getElementById('notifyForm').classList.add('hidden');
-                    document.getElementById('formSuccess').classList.remove('hidden');
+                    // Mark suggestions form as done too
+                    document.getElementById('suggestionsForm')?.classList.add('hidden');
+                    document.getElementById('formSuccess')?.classList.remove('hidden');
 
                     if (result.counter) {
                         updateCounter(result.counter.display);
@@ -2560,11 +2494,9 @@
                     document.getElementById('exitPopupDismiss').classList.add('hidden');
                     document.getElementById('exitPopupSuccess').classList.remove('hidden');
 
-                    // Also mark main forms as done
-                    document.getElementById('heroNotifyForm').classList.add('hidden');
-                    document.getElementById('heroFormSuccess').classList.remove('hidden');
-                    document.getElementById('notifyForm').classList.add('hidden');
-                    document.getElementById('formSuccess').classList.remove('hidden');
+                    // Also mark suggestions form as done
+                    document.getElementById('suggestionsForm')?.classList.add('hidden');
+                    document.getElementById('formSuccess')?.classList.remove('hidden');
 
                     if (result.counter) {
                         updateCounter(result.counter.display);
