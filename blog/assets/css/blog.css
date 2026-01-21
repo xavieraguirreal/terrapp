@@ -445,6 +445,16 @@
     background: linear-gradient(135deg, #265e44 0%, #2d7553 50%, #3d9268 100%);
 }
 
+/* Contenedor de imagen con fallback */
+.img-fallback-container {
+    width: 100%;
+    height: 100%;
+}
+
+.img-fallback-container .image-placeholder {
+    border-radius: inherit;
+}
+
 /* ====================================
    BENTO GRID LAYOUT
    ==================================== */

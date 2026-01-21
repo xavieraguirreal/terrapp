@@ -28,16 +28,29 @@ function generarImagenConFallback(url, titulo, size = '', extraClasses = '') {
                 </div>`;
     }
 
-    // Crear ID único para este contenedor
-    const containerId = 'img-' + Math.random().toString(36).substr(2, 9);
-
-    return `<div id="${containerId}" class="w-full h-full">
+    // Usar data attributes para el fallback (evita problemas con caracteres especiales)
+    return `<div class="w-full h-full img-fallback-container" data-fallback-title="${tituloEscapado.replace(/"/g, '&quot;')}" data-fallback-size="${sizeClass}">
                 <img src="${url}"
                      alt="${tituloEscapado}"
                      class="w-full h-full object-cover ${extraClasses}"
                      loading="lazy"
-                     onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full image-placeholder ${sizeClass}\\'><span class=\\'placeholder-title\\'>${tituloEscapado.replace(/'/g, "\\'")}</span></div>'">
+                     onerror="handleImageError(this)">
             </div>`;
+}
+
+/**
+ * Maneja errores de carga de imagen de forma robusta
+ */
+function handleImageError(img) {
+    const container = img.parentElement;
+    if (!container) return;
+
+    const title = container.dataset.fallbackTitle || 'Imagen no disponible';
+    const sizeClass = container.dataset.fallbackSize || '';
+
+    container.innerHTML = `<div class="w-full h-full image-placeholder ${sizeClass}">
+        <span class="placeholder-title">${title}</span>
+    </div>`;
 }
 
 // ============================================
@@ -539,10 +552,12 @@ function renderArticle(art) {
     if (art.imagen_url) {
         const tituloEscapado = escapeHtml(traducido.titulo);
         imgContainer.innerHTML = `
-            <img src="${art.imagen_url}"
-                 alt="${tituloEscapado}"
-                 class="w-full rounded-xl shadow-lg"
-                 onerror="this.parentElement.innerHTML='<div class=\\'w-full h-64 md:h-96 image-placeholder placeholder-lg rounded-xl\\'><span class=\\'placeholder-title\\'>${tituloEscapado.replace(/'/g, "\\'")}</span></div>'">`;
+            <div class="img-fallback-container" data-fallback-title="${tituloEscapado.replace(/"/g, '&quot;')}" data-fallback-size="placeholder-lg">
+                <img src="${art.imagen_url}"
+                     alt="${tituloEscapado}"
+                     class="w-full rounded-xl shadow-lg"
+                     onerror="handleImageError(this)">
+            </div>`;
     } else {
         // Mostrar placeholder con título si no hay imagen
         imgContainer.innerHTML = `
