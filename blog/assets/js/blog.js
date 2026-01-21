@@ -1185,6 +1185,61 @@ async function loadMetrics(id) {
 }
 
 // ============================================
+// BLOG NAVIGATION MENUS
+// ============================================
+
+// Toggle categories dropdown
+function toggleCategoriesMenu() {
+    const menu = document.getElementById('categoriesMenu');
+    if (menu) {
+        menu.classList.toggle('hidden');
+    }
+}
+
+// Close categories menu when clicking outside
+document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('categoriesDropdown');
+    const menu = document.getElementById('categoriesMenu');
+    if (dropdown && menu && !dropdown.contains(e.target)) {
+        menu.classList.add('hidden');
+    }
+});
+
+// Toggle blog mobile menu
+function toggleBlogMobileMenu() {
+    const menu = document.getElementById('blogMobileMenu');
+    const btn = document.getElementById('blogMobileMenuBtn');
+    if (menu && btn) {
+        menu.classList.toggle('hidden');
+        const icon = btn.querySelector('svg');
+        if (menu.classList.contains('hidden')) {
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>';
+        } else {
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+        }
+    }
+}
+
+// Close blog mobile menu
+function closeBlogMobileMenu() {
+    const menu = document.getElementById('blogMobileMenu');
+    const btn = document.getElementById('blogMobileMenuBtn');
+    if (menu && btn) {
+        menu.classList.add('hidden');
+        const icon = btn.querySelector('svg');
+        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>';
+    }
+}
+
+// Setup mobile menu button
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('blogMobileMenuBtn');
+    if (btn) {
+        btn.addEventListener('click', toggleBlogMobileMenu);
+    }
+});
+
+// ============================================
 // DARK MODE
 // ============================================
 

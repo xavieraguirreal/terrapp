@@ -224,27 +224,63 @@
         <div class="container mx-auto px-4 sm:px-6 py-4">
             <div class="flex items-center justify-between">
                 <!-- Logo -->
-                <div class="flex items-center gap-3">
+                <a href="#" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
                     <img src="assets/images/logo_terrapp_icono.png" alt="TERRApp" class="w-10 h-10 rounded-xl shadow-lg">
                     <div>
                         <h1 class="text-xl font-bold text-forest-700">TERRApp</h1>
                         <p class="text-xs text-earth-500" data-i18n="nav_by_verumax">por VERUMax</p>
                     </div>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="#about" class="text-earth-600 hover:text-forest-600 font-medium transition-colors" data-i18n="nav_about">Sobre nosotros</a>
+                    <a href="#features" class="text-earth-600 hover:text-forest-600 font-medium transition-colors" data-i18n="nav_features">Funciones</a>
+                    <a href="../blog/" class="text-earth-600 hover:text-forest-600 font-medium transition-colors" data-i18n="nav_blog">Blog</a>
+                    <a href="#quiz-section" class="text-earth-600 hover:text-forest-600 font-medium transition-colors" data-i18n="nav_quiz">Quiz</a>
                 </div>
 
-                <!-- Language Selector -->
-                <div class="relative">
-                    <button id="langToggle" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-earth-100 transition-colors border border-earth-200" aria-label="Seleccionar idioma">
-                        <span id="currentFlag" class="fi fi-ar"></span>
-                        <span id="currentLangName" class="text-sm font-medium hidden sm:inline">Argentina</span>
-                        <svg class="w-4 h-4 text-earth-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                <!-- Right side: Language + CTA + Mobile menu -->
+                <div class="flex items-center gap-3">
+                    <!-- Language Selector -->
+                    <div class="relative">
+                        <button id="langToggle" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-earth-100 transition-colors border border-earth-200" aria-label="Seleccionar idioma">
+                            <span id="currentFlag" class="fi fi-ar"></span>
+                            <span id="currentLangName" class="text-sm font-medium hidden sm:inline">Argentina</span>
+                            <svg class="w-4 h-4 text-earth-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div id="langMenu" class="hidden absolute right-0 mt-2 w-56 bg-white border border-earth-200 rounded-xl shadow-xl overflow-hidden z-50">
+                            <div class="p-2 text-xs text-earth-500 font-semibold uppercase tracking-wider border-b border-earth-100" data-i18n="lang_select_title">Seleccionar idioma</div>
+                            <div id="langOptions" class="max-h-80 overflow-y-auto"></div>
+                        </div>
+                    </div>
+
+                    <!-- CTA Button (desktop) -->
+                    <a href="#suggestions" class="hidden md:inline-flex items-center gap-2 px-4 py-2 bg-forest-600 hover:bg-forest-700 text-white font-semibold rounded-lg transition-colors" data-i18n="nav_subscribe">
+                        Suscribite
+                    </a>
+
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-earth-100 transition-colors" aria-label="Menu">
+                        <svg class="w-6 h-6 text-earth-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
                     </button>
-                    <div id="langMenu" class="hidden absolute right-0 mt-2 w-56 bg-white border border-earth-200 rounded-xl shadow-xl overflow-hidden z-50">
-                        <div class="p-2 text-xs text-earth-500 font-semibold uppercase tracking-wider border-b border-earth-100" data-i18n="lang_select_title">Seleccionar idioma</div>
-                        <div id="langOptions" class="max-h-80 overflow-y-auto"></div>
-                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="hidden md:hidden mt-4 pt-4 border-t border-earth-200">
+                <div class="flex flex-col gap-3">
+                    <a href="#about" class="text-earth-600 hover:text-forest-600 font-medium py-2 transition-colors" data-i18n="nav_about">Sobre nosotros</a>
+                    <a href="#features" class="text-earth-600 hover:text-forest-600 font-medium py-2 transition-colors" data-i18n="nav_features">Funciones</a>
+                    <a href="../blog/" class="text-earth-600 hover:text-forest-600 font-medium py-2 transition-colors" data-i18n="nav_blog">Blog</a>
+                    <a href="#quiz-section" class="text-earth-600 hover:text-forest-600 font-medium py-2 transition-colors" data-i18n="nav_quiz">Quiz</a>
+                    <a href="#suggestions" class="inline-flex items-center justify-center gap-2 px-4 py-3 bg-forest-600 hover:bg-forest-700 text-white font-semibold rounded-lg transition-colors" data-i18n="nav_subscribe">
+                        Suscribite
+                    </a>
                 </div>
             </div>
         </div>
@@ -1920,6 +1956,30 @@
             }
 
             lastScrollY = scrollY;
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            // Cambiar icono hamburguesa/X
+            const icon = mobileMenuBtn.querySelector('svg');
+            if (mobileMenu.classList.contains('hidden')) {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>';
+            } else {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+            }
+        });
+
+        // Cerrar menú móvil al hacer clic en un link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                const icon = mobileMenuBtn.querySelector('svg');
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>';
+            });
         });
 
         // Language Menu Toggle
