@@ -16,6 +16,23 @@
 define('TERRAPP_API', true);
 require_once __DIR__ . '/config.php';
 
+// DEBUG: Sistema de logging propio
+$GLOBALS['debug_messages'] = [];
+
+function debugLog(string $message, array $data = []): void {
+    $logEntry = [
+        'time' => date('Y-m-d H:i:s'),
+        'message' => $message,
+        'data' => $data
+    ];
+    $GLOBALS['debug_messages'][] = $logEntry;
+
+    // También escribir a archivo
+    $logFile = __DIR__ . '/debug_subscribe.log';
+    $logLine = date('Y-m-d H:i:s') . " | {$message} | " . json_encode($data, JSON_UNESCAPED_UNICODE) . "\n";
+    file_put_contents($logFile, $logLine, FILE_APPEND | LOCK_EX);
+}
+
 // CORS preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     header('Access-Control-Allow-Origin: *');
@@ -54,15 +71,14 @@ $email = strtolower($email);
 $lang = preg_match('/^[a-z]{2}_[A-Z]{2}$/', $lang) ? $lang : 'es_AR';
 
 // DEBUG: Log de entrada
-$debugLog = [
+debugLog('INPUT recibido', [
     'email' => $email,
     'source' => $source,
     'comment_length' => strlen($comment),
     'comment_preview' => substr($comment, 0, 50),
     'quizSessionId' => $quizSessionId,
     'lang' => $lang
-];
-logError('DEBUG subscribe.php input', $debugLog);
+]);
 
 try {
     $pdo = getDB();
@@ -76,26 +92,35 @@ try {
         $emailSent = false;
         $debugBranch = 'none';
 
+        debugLog('Usuario YA EXISTE', ['subscriber_id' => $existing['id']]);
+
         // Si viene del quiz, guardar datos y enviar email con resultado
         if ($source === 'quiz' && !empty($comment)) {
             $debugBranch = 'quiz';
-            logError('DEBUG: Entering quiz branch', ['subscriber_id' => $existing['id']]);
+            debugLog('Entrando branch QUIZ', ['subscriber_id' => $existing['id']]);
 
             saveComment($pdo, $existing['id'], $comment, 'quiz_repeat');
+            debugLog('Comentario guardado');
+
             // Vincular quiz si hay session_id
             if (!empty($quizSessionId)) {
                 linkQuizToSubscriber($pdo, $quizSessionId, $existing['id']);
+                debugLog('Quiz vinculado', ['session_id' => $quizSessionId]);
             }
 
-            logError('DEBUG: About to send quiz email', ['email' => $email, 'comment' => $comment]);
+            debugLog('Llamando sendQuizResultEmail', ['email' => $email]);
             $emailSent = sendQuizResultEmail($email, $nombre, $lang, $comment);
-            logError('DEBUG: Quiz email result', ['sent' => $emailSent]);
+            debugLog('Resultado sendQuizResultEmail', ['sent' => $emailSent]);
         }
         // Si es sugerencia (no quiz), guardar y enviar agradecimiento
         elseif (!empty($comment) && $source !== 'quiz') {
             $debugBranch = 'suggestion';
+            debugLog('Entrando branch SUGERENCIA');
             saveComment($pdo, $existing['id'], $comment, $source . '_repeat');
             $emailSent = sendSuggestionThankYouEmail($email, $nombre, $lang, $comment);
+            debugLog('Resultado sendSuggestionThankYouEmail', ['sent' => $emailSent]);
+        } else {
+            debugLog('NO ENTRO A NINGUN BRANCH', ['source' => $source, 'comment_empty' => empty($comment)]);
         }
 
         $counter = getCounter($pdo);
@@ -106,11 +131,7 @@ try {
             'comment_saved' => !empty($comment),
             'email_sent' => $emailSent,
             'counter' => $counter,
-            'debug' => [
-                'branch' => $debugBranch,
-                'source' => $source,
-                'has_comment' => !empty($comment)
-            ]
+            'debug_log' => $GLOBALS['debug_messages']
         ]);
     }
 
@@ -152,14 +173,20 @@ try {
     // Actualizar contador cache
     updateCounterCache($pdo, $multiplier);
 
+    debugLog('NUEVO suscriptor creado', ['subscriber_id' => $subscriberId, 'source' => $source]);
+
     // Enviar email según el caso
-    if (!empty($quizSessionId) && !empty($comment)) {
+    if ($source === 'quiz' && !empty($comment)) {
         // Nuevo suscriptor que completó el quiz: enviar email con resultado del quiz
+        debugLog('Nuevo usuario desde QUIZ, enviando email de resultado');
         $emailSent = sendQuizResultEmail($email, $nombre, $lang, $comment);
     } else {
         // Nuevo suscriptor sin quiz: enviar email de bienvenida genérico
+        debugLog('Nuevo usuario NORMAL, enviando email de bienvenida');
         $emailSent = sendWelcomeEmail($email, $nombre, $lang, $token);
     }
+
+    debugLog('Email enviado?', ['result' => $emailSent]);
 
     // Obtener contador actualizado
     $counter = getCounter($pdo);
@@ -168,12 +195,13 @@ try {
         'success' => true,
         'message' => getSuccessMessage($lang),
         'email_sent' => $emailSent,
-        'counter' => $counter
+        'counter' => $counter,
+        'debug_log' => $GLOBALS['debug_messages']
     ]);
 
 } catch (PDOException $e) {
-    logError('Subscribe error', ['email' => $email, 'error' => $e->getMessage()]);
-    jsonResponse(['error' => 'Error al procesar la solicitud'], 500);
+    debugLog('ERROR PDO', ['error' => $e->getMessage()]);
+    jsonResponse(['error' => 'Error al procesar la solicitud', 'debug_log' => $GLOBALS['debug_messages']], 500);
 }
 
 /**
@@ -246,16 +274,22 @@ function getCounter(PDO $pdo): array {
  * Envía email de bienvenida via SendGrid
  */
 function sendWelcomeEmail(string $email, string $nombre, string $lang, string $token): bool {
+    debugLog('sendWelcomeEmail INICIO', ['email' => $email, 'lang' => $lang]);
+
     if (empty(SENDGRID_API_KEY)) {
-        logError('SendGrid API key not configured');
+        debugLog('ERROR: SendGrid API key NO CONFIGURADA');
         return false;
     }
+
+    debugLog('SendGrid API key OK');
 
     $confirmUrl = LANDING_URL . "?confirm=" . $token;
     $nombreDisplay = $nombre ?: 'futuro/a huertero/a';
 
     // Obtener contenido según idioma
     $content = getEmailContent($lang, $nombreDisplay, $confirmUrl);
+
+    debugLog('Contenido email generado', ['subject' => $content['subject'], 'from' => SENDGRID_FROM_EMAIL]);
 
     $payload = [
         'personalizations' => [[
@@ -276,6 +310,8 @@ function sendWelcomeEmail(string $email, string $nombre, string $lang, string $t
         ]
     ];
 
+    debugLog('Llamando a SendGrid API');
+
     $ch = curl_init('https://api.sendgrid.com/v3/mail/send');
     curl_setopt_array($ch, [
         CURLOPT_POST => true,
@@ -289,8 +325,15 @@ function sendWelcomeEmail(string $email, string $nombre, string $lang, string $t
     ]);
 
     $response = curl_exec($ch);
+    $curlError = curl_error($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
+
+    debugLog('SendGrid RESPUESTA', [
+        'httpCode' => $httpCode,
+        'curlError' => $curlError ?: 'ninguno',
+        'response' => $response ?: 'vacío'
+    ]);
 
     if ($httpCode === 202) {
         // Registrar en logs
@@ -477,7 +520,7 @@ function getAlreadySubscribedMessage(string $lang): string {
  * Envía email con resultado del quiz via SendGrid
  */
 function sendQuizResultEmail(string $email, string $nombre, string $lang, string $quizData): bool {
-    logError('DEBUG sendQuizResultEmail called', [
+    debugLog('sendQuizResultEmail INICIO', [
         'email' => $email,
         'nombre' => $nombre,
         'lang' => $lang,
@@ -485,9 +528,11 @@ function sendQuizResultEmail(string $email, string $nombre, string $lang, string
     ]);
 
     if (empty(SENDGRID_API_KEY)) {
-        logError('SendGrid API key not configured');
+        debugLog('ERROR: SendGrid API key NO CONFIGURADA');
         return false;
     }
+
+    debugLog('SendGrid API key OK', ['prefix' => substr(SENDGRID_API_KEY, 0, 10) . '...']);
 
     $nombreDisplay = $nombre ?: 'futuro/a huertero/a';
 
@@ -497,9 +542,11 @@ function sendQuizResultEmail(string $email, string $nombre, string $lang, string
         $profile = trim($matches[1]);
     }
 
-    logError('DEBUG sendQuizResultEmail profile parsed', ['profile' => $profile]);
+    debugLog('Perfil parseado', ['profile' => $profile]);
 
     $content = getQuizResultEmailContent($lang, $nombreDisplay, $profile, $quizData);
+
+    debugLog('Contenido email generado', ['subject' => $content['subject']]);
 
     $payload = [
         'personalizations' => [[
@@ -520,11 +567,9 @@ function sendQuizResultEmail(string $email, string $nombre, string $lang, string
         ]
     ];
 
-    logError('DEBUG sendQuizResultEmail: Preparing to send', [
+    debugLog('Payload armado, llamando a SendGrid', [
         'to' => $email,
-        'subject' => $content['subject'],
-        'api_key_set' => !empty(SENDGRID_API_KEY),
-        'api_key_prefix' => substr(SENDGRID_API_KEY, 0, 10) . '...'
+        'from' => SENDGRID_FROM_EMAIL
     ]);
 
     $ch = curl_init('https://api.sendgrid.com/v3/mail/send');
@@ -544,10 +589,10 @@ function sendQuizResultEmail(string $email, string $nombre, string $lang, string
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    logError('DEBUG sendQuizResultEmail: SendGrid response', [
+    debugLog('SendGrid RESPUESTA', [
         'httpCode' => $httpCode,
-        'curlError' => $curlError,
-        'response' => substr($response, 0, 500)
+        'curlError' => $curlError ?: 'ninguno',
+        'response' => $response ?: 'vacío'
     ]);
 
     if ($httpCode === 202) {
