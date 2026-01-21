@@ -64,20 +64,19 @@ try {
     if ($existing) {
         $emailSent = false;
 
-        // Ya existe - pero si hay comentario, guardarlo y enviar email de agradecimiento
-        if (!empty($comment) && $source !== 'quiz') {
-            saveComment($pdo, $existing['id'], $comment, $source . '_repeat');
-            $emailSent = sendSuggestionThankYouEmail($email, $nombre, $lang, $comment);
-        }
-
-        // Vincular quiz si hay session_id y enviar email con resultado
-        if (!empty($quizSessionId)) {
-            linkQuizToSubscriber($pdo, $quizSessionId, $existing['id']);
-            // Guardar datos del quiz como comentario también
-            if (!empty($comment)) {
-                saveComment($pdo, $existing['id'], $comment, 'quiz_repeat');
+        // Si viene del quiz, guardar datos y enviar email con resultado
+        if ($source === 'quiz' && !empty($comment)) {
+            saveComment($pdo, $existing['id'], $comment, 'quiz_repeat');
+            // Vincular quiz si hay session_id
+            if (!empty($quizSessionId)) {
+                linkQuizToSubscriber($pdo, $quizSessionId, $existing['id']);
             }
             $emailSent = sendQuizResultEmail($email, $nombre, $lang, $comment);
+        }
+        // Si es sugerencia (no quiz), guardar y enviar agradecimiento
+        elseif (!empty($comment) && $source !== 'quiz') {
+            saveComment($pdo, $existing['id'], $comment, $source . '_repeat');
+            $emailSent = sendSuggestionThankYouEmail($email, $nombre, $lang, $comment);
         }
 
         $counter = getCounter($pdo);
