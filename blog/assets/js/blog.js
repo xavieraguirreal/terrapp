@@ -1828,7 +1828,9 @@ async function sendChatMessage(event) {
         const currentLang = getCurrentLanguage();
 
         // Determinar URL base de la API según la página
-        const apiBase = window.location.pathname.includes('/blog/') ? 'api/' : 'blog/api/';
+        const isOnBlog = window.location.pathname.includes('/blog/');
+        const isOnLanding = window.location.pathname.includes('/landing/');
+        const apiBase = isOnBlog ? 'api/' : (isOnLanding ? '../blog/api/' : '/blog/api/');
 
         const response = await fetch(apiBase + 'chat_rag.php', {
             method: 'POST',
