@@ -337,19 +337,6 @@
                     </div>
                 </div>
 
-                <!-- Quiz CTA in Hero -->
-                <div class="max-w-xl mx-auto mb-8 hero-cta text-center">
-                    <p class="text-earth-600 mb-6 font-medium text-lg" data-i18n="hero_quiz_cta">Descubrí qué tipo de huertero/a sos y recibí consejos personalizados:</p>
-                    <button onclick="openQuiz()" class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-yellow-900 font-bold text-lg rounded-xl transition-all shadow-lg shadow-yellow-500/30 hover:shadow-xl hover:shadow-yellow-500/40 transform hover:-translate-y-0.5 hover:scale-105">
-                        <span>🎯</span>
-                        <span data-i18n="hero_quiz_button">Hacer el test de 30 segundos</span>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                        </svg>
-                    </button>
-                    <p class="mt-4 text-sm text-earth-500" data-i18n="hero_quiz_note">4 preguntas · Sin registro · 100% gratis</p>
-                </div>
-
                 <!-- CTA secundario -->
                 <div class="flex justify-center">
                     <a href="#about" class="inline-flex items-center gap-2 text-earth-600 hover:text-forest-600 font-medium transition-colors">
@@ -369,6 +356,83 @@
             </svg>
         </div>
     </section>
+
+    <!-- Quiz Section -->
+    <section id="quiz-section" class="py-16 bg-gradient-to-br from-forest-600 via-forest-700 to-forest-800 relative overflow-hidden">
+        <!-- Background decoration -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl"></div>
+            <div class="absolute bottom-10 right-10 w-60 h-60 bg-leaf rounded-full blur-3xl"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-yellow-300 rounded-full blur-3xl animate-pulse"></div>
+        </div>
+
+        <div class="container mx-auto px-4 sm:px-6 relative z-10">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white/10 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-white/20">
+                    <div class="flex flex-col lg:flex-row items-center gap-8">
+                        <!-- Left side - Animated illustration -->
+                        <div class="flex-shrink-0">
+                            <div class="relative">
+                                <div class="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-2xl animate-bounce-slow">
+                                    <span class="text-6xl md:text-7xl">🌱</span>
+                                </div>
+                                <div class="absolute -top-2 -right-2 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                                    <span class="text-2xl">❓</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right side - Content -->
+                        <div class="flex-1 text-center lg:text-left">
+                            <span class="inline-block px-4 py-1.5 bg-yellow-400 text-yellow-900 rounded-full text-sm font-bold mb-4 animate-pulse" data-i18n="quiz_badge">🎯 Test de 30 segundos</span>
+                            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-3" data-i18n="quiz_title">¿Sabés qué tipo de huertero/a sos?</h2>
+                            <p class="text-forest-100 text-lg mb-6" data-i18n="quiz_subtitle">Descubrí tu perfil y recibí consejos personalizados para empezar o mejorar tu huerta.</p>
+
+                            <!-- Benefits -->
+                            <div class="flex flex-wrap justify-center lg:justify-start gap-4 mb-6">
+                                <span class="inline-flex items-center gap-1 text-white/90 text-sm">
+                                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                    <span data-i18n="quiz_benefit_1">4 preguntas</span>
+                                </span>
+                                <span class="inline-flex items-center gap-1 text-white/90 text-sm">
+                                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                    <span data-i18n="quiz_benefit_2">Resultado inmediato</span>
+                                </span>
+                                <span class="inline-flex items-center gap-1 text-white/90 text-sm">
+                                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                    <span data-i18n="quiz_benefit_3">Consejos personalizados</span>
+                                </span>
+                            </div>
+
+                            <button id="startQuizBtn" class="group px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-earth-900 font-bold rounded-xl hover:from-yellow-300 hover:to-orange-400 transition-all shadow-lg transform hover:-translate-y-1 hover:shadow-2xl inline-flex items-center gap-3 text-lg">
+                                <span data-i18n="quiz_start_btn">¡Quiero saber mi perfil!</span>
+                                <svg class="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                </svg>
+                            </button>
+
+                            <p class="text-white/60 text-sm mt-4 flex items-center justify-center lg:justify-start gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                <span data-i18n="quiz_privacy">Sin registro, 100% anónimo</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-bounce-slow {
+            animation: bounce-slow 3s ease-in-out infinite;
+        }
+    </style>
 
     <!-- For Who Section -->
     <section id="about" class="py-20 bg-white">
@@ -450,83 +514,6 @@
             </div>
         </div>
     </section>
-
-    <!-- Quiz Section -->
-    <section id="quiz-section" class="py-16 bg-gradient-to-br from-forest-600 via-forest-700 to-forest-800 relative overflow-hidden">
-        <!-- Background decoration -->
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl"></div>
-            <div class="absolute bottom-10 right-10 w-60 h-60 bg-leaf rounded-full blur-3xl"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-yellow-300 rounded-full blur-3xl animate-pulse"></div>
-        </div>
-
-        <div class="container mx-auto px-4 sm:px-6 relative z-10">
-            <div class="max-w-4xl mx-auto">
-                <div class="bg-white/10 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-white/20">
-                    <div class="flex flex-col lg:flex-row items-center gap-8">
-                        <!-- Left side - Animated illustration -->
-                        <div class="flex-shrink-0">
-                            <div class="relative">
-                                <div class="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-2xl animate-bounce-slow">
-                                    <span class="text-6xl md:text-7xl">🌱</span>
-                                </div>
-                                <div class="absolute -top-2 -right-2 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                                    <span class="text-2xl">❓</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Right side - Content -->
-                        <div class="flex-1 text-center lg:text-left">
-                            <span class="inline-block px-4 py-1.5 bg-yellow-400 text-yellow-900 rounded-full text-sm font-bold mb-4 animate-pulse" data-i18n="quiz_badge">🎯 Test de 30 segundos</span>
-                            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-3" data-i18n="quiz_title">¿Sabés qué tipo de huertero/a sos?</h2>
-                            <p class="text-forest-100 text-lg mb-6" data-i18n="quiz_subtitle">Descubrí tu perfil y recibí consejos personalizados para empezar o mejorar tu huerta.</p>
-
-                            <!-- Benefits -->
-                            <div class="flex flex-wrap justify-center lg:justify-start gap-4 mb-6">
-                                <span class="inline-flex items-center gap-1 text-white/90 text-sm">
-                                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                                    <span data-i18n="quiz_benefit_1">4 preguntas</span>
-                                </span>
-                                <span class="inline-flex items-center gap-1 text-white/90 text-sm">
-                                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                                    <span data-i18n="quiz_benefit_2">Resultado inmediato</span>
-                                </span>
-                                <span class="inline-flex items-center gap-1 text-white/90 text-sm">
-                                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                                    <span data-i18n="quiz_benefit_3">Consejos personalizados</span>
-                                </span>
-                            </div>
-
-                            <button id="startQuizBtn" class="group px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-earth-900 font-bold rounded-xl hover:from-yellow-300 hover:to-orange-400 transition-all shadow-lg transform hover:-translate-y-1 hover:shadow-2xl inline-flex items-center gap-3 text-lg">
-                                <span data-i18n="quiz_start_btn">¡Quiero saber mi perfil!</span>
-                                <svg class="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                                </svg>
-                            </button>
-
-                            <p class="text-white/60 text-sm mt-4 flex items-center justify-center lg:justify-start gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                                </svg>
-                                <span data-i18n="quiz_privacy">Sin registro, 100% anónimo</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <style>
-        @keyframes bounce-slow {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        .animate-bounce-slow {
-            animation: bounce-slow 3s ease-in-out infinite;
-        }
-    </style>
 
     <!-- Quiz Modal -->
     <div id="quizModal" class="fixed inset-0 z-[9999] hidden">
