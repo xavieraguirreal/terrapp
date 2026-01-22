@@ -356,6 +356,44 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
                     <img id="articleImage" src="" alt="" class="w-full rounded-xl shadow-lg">
                 </div>
 
+                <!-- Listen to Article (Text-to-Speech) -->
+                <div id="listenSection" class="mb-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 flex items-center gap-4">
+                        <button id="listenBtn" onclick="toggleListenArticle()" class="flex-shrink-0 w-14 h-14 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition shadow-lg shadow-red-500/30">
+                            <svg id="playIcon" class="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                            <svg id="pauseIcon" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                            </svg>
+                        </button>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800 dark:text-gray-200" data-i18n="listen_article">Escuchar artículo</p>
+                            <div class="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full mt-2">
+                                <div id="audioProgress" class="absolute left-0 top-0 h-full bg-red-500 rounded-full transition-all" style="width: 0%"></div>
+                            </div>
+                            <p id="audioTime" class="text-xs text-gray-500 mt-1"></p>
+                        </div>
+                        <button id="stopBtn" onclick="stopListenArticle()" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition hidden">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M6 6h12v12H6z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Key Points (AI Summary) -->
+                <div id="keyPointsSection" class="hidden mb-8">
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
+                        <h3 class="text-lg font-bold text-blue-700 dark:text-blue-400 mb-4 flex items-center gap-2">
+                            <span class="text-xl">⚡</span> <span data-i18n="key_points">Puntos clave</span>
+                        </h3>
+                        <ul id="keyPointsList" class="space-y-3 text-gray-700 dark:text-gray-300">
+                            <!-- Se genera dinámicamente -->
+                        </ul>
+                    </div>
+                </div>
+
                 <!-- Content -->
                 <div id="articleBody" class="prose prose-lg dark:prose-invert max-w-none mb-8 font-serif">
                     <!-- Contenido del artículo -->

@@ -49,13 +49,43 @@ class EmailNotifier {
         $tipsHtml = '';
         $tips = is_array($articulo['tips']) ? $articulo['tips'] : json_decode($articulo['tips'] ?? '[]', true);
         if (!empty($tips)) {
-            $tipsHtml = '<tr><td style="padding: 15px; background: #f0f9f4; border-radius: 8px;">';
-            $tipsHtml .= '<strong style="color: #2d7553;">💡 TIPS:</strong><ul style="margin: 10px 0 0; padding-left: 20px;">';
+            $tipsHtml = '<tr><td style="padding: 15px 20px;"><div style="background: #f0f9f4; border-left: 4px solid #2d7553; padding: 15px; border-radius: 0 8px 8px 0;">';
+            $tipsHtml .= '<strong style="color: #2d7553;">💡 TIPS PARA TU HUERTA:</strong><ul style="margin: 10px 0 0; padding-left: 20px; color: #444;">';
             foreach ($tips as $tip) {
-                $tipsHtml .= '<li style="margin-bottom: 5px;">' . htmlspecialchars($tip) . '</li>';
+                $tipsHtml .= '<li style="margin-bottom: 8px;">' . htmlspecialchars($tip) . '</li>';
             }
-            $tipsHtml .= '</ul></td></tr>';
+            $tipsHtml .= '</ul></div></td></tr>';
         }
+
+        // Imagen del artículo
+        $imagenHtml = '';
+        $urlCambiarImagen = "{$adminUrl}subir_imagen.php?id={$articulo['id']}";
+        if (!empty($articulo['imagen_url'])) {
+            $imagenHtml = '<tr><td style="padding: 15px 20px;">
+                <div style="background: #f8f8f8; border-left: 4px solid #6c757d; padding: 15px; border-radius: 0 8px 8px 0;">
+                    <strong style="color: #444;">📷 IMAGEN A PUBLICAR:</strong>
+                    <div style="margin: 10px 0;">
+                        <img src="' . htmlspecialchars($articulo['imagen_url']) . '" alt="Imagen del artículo" style="max-width: 100%; max-height: 300px; border-radius: 8px; display: block;">
+                    </div>
+                    <p style="margin: 10px 0 0; font-size: 13px;">
+                        <a href="' . $urlCambiarImagen . '" style="color: #2d7553; text-decoration: underline;">📤 Cambiar imagen →</a>
+                    </p>
+                </div>
+            </td></tr>';
+        } else {
+            $imagenHtml = '<tr><td style="padding: 15px 20px;">
+                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 0 8px 8px 0;">
+                    <strong style="color: #856404;">⚠️ SIN IMAGEN</strong>
+                    <p style="margin: 10px 0 0; color: #856404; font-size: 14px;">Este artículo no tiene imagen asociada.</p>
+                    <p style="margin: 10px 0 0;">
+                        <a href="' . $urlCambiarImagen . '" style="color: #2d7553; text-decoration: underline; font-weight: bold;">📤 Subir imagen →</a>
+                    </p>
+                </div>
+            </td></tr>';
+        }
+
+        // URL para programar en otro horario
+        $urlProgramar = "{$adminUrl}revisar.php?id={$articulo['id']}&programar=1";
 
         $subject = "🌱 Nueva noticia para revisar - TERRApp Blog";
 
@@ -123,23 +153,29 @@ class EmailNotifier {
         <!-- Tips -->
         {$tipsHtml}
 
+        <!-- Imagen -->
+        {$imagenHtml}
+
         <!-- Botones de acción -->
         <tr>
             <td style="padding: 25px 20px; text-align: center; background: #fafafa;">
                 <table width="100%" cellpadding="0" cellspacing="0">
                     <tr>
                         <td style="padding: 5px; text-align: center;">
-                            <a href="{$urlAprobar}" style="display: inline-block; padding: 12px 24px; background: #2d7553; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 5px;">✅ APROBAR</a>
+                            <a href="{$urlAprobar}" style="display: inline-block; padding: 12px 20px; background: #2d7553; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 5px; font-size: 14px;">✅ APROBAR</a>
                         </td>
                         <td style="padding: 5px; text-align: center;">
-                            <a href="{$urlRechazar}" style="display: inline-block; padding: 12px 24px; background: #dc3545; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 5px;">❌ RECHAZAR</a>
+                            <a href="{$urlRechazar}" style="display: inline-block; padding: 12px 20px; background: #dc3545; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 5px; font-size: 14px;">❌ RECHAZAR</a>
                         </td>
                         <td style="padding: 5px; text-align: center;">
-                            <a href="{$urlSaltear}" style="display: inline-block; padding: 12px 24px; background: #6c757d; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 5px;">⏭️ SALTEAR</a>
+                            <a href="{$urlSaltear}" style="display: inline-block; padding: 12px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 5px; font-size: 14px;">⏭️ SALTEAR</a>
                         </td>
                     </tr>
                 </table>
-                <p style="margin: 15px 0 0;">
+                <p style="margin: 20px 0 10px;">
+                    <a href="{$urlProgramar}" style="display: inline-block; padding: 10px 20px; background: #0d6efd; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px;">🕐 PROGRAMAR PARA DESPUÉS</a>
+                </p>
+                <p style="margin: 10px 0 0;">
                     <a href="{$urlEditar}" style="color: #2d7553; text-decoration: underline;">✏️ Ver/Editar en panel web</a>
                 </p>
             </td>

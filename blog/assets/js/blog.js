@@ -641,6 +641,12 @@ function renderArticle(art) {
         generateTOC();
     }, 100); // Pequeño delay para asegurar que el DOM está listo
 
+    // Generar puntos clave
+    renderKeyPoints(art);
+
+    // Preparar text-to-speech
+    resetSpeechUI();
+
     // Cargar comentarios
     loadComments(art.id);
 }
@@ -2474,4 +2480,339 @@ function cancelReply() {
     document.getElementById('commentParentId').value = '';
     document.getElementById('commentContent').placeholder = t('placeholder');
     document.getElementById('cancelReplyBtn')?.remove();
+}
+
+// ============================================
+// TEXT-TO-SPEECH (ESCUCHAR ARTÍCULO)
+// ============================================
+
+let speechSynthesis = window.speechSynthesis;
+let speechUtterance = null;
+let isSpeaking = false;
+let isPaused = false;
+let currentArticleText = '';
+let speechStartTime = 0;
+let speechDuration = 0;
+
+/**
+ * Prepara el texto del artículo para lectura
+ */
+function prepareArticleTextForSpeech() {
+    if (!articuloActual) return '';
+
+    const traducido = getArticuloEnIdioma(articuloActual);
+
+    // Construir texto completo para leer
+    let text = traducido.titulo + '.\n\n';
+
+    // Contenido principal (sin HTML)
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = formatContent(traducido.contenido);
+    text += tempDiv.textContent + '\n\n';
+
+    // Opinión editorial
+    if (traducido.opinion_editorial) {
+        text += 'Opinión editorial. ' + traducido.opinion_editorial + '\n\n';
+    }
+
+    // Tips
+    if (traducido.tips && traducido.tips.length > 0) {
+        text += 'Tips para tu huerta. ';
+        traducido.tips.forEach((tip, i) => {
+            text += `Tip ${i + 1}: ${tip}. `;
+        });
+    }
+
+    return text;
+}
+
+/**
+ * Obtiene la voz apropiada según el idioma
+ */
+function getVoiceForLanguage() {
+    const voices = speechSynthesis.getVoices();
+    const lang = getIdiomaBase() || 'es';
+
+    // Mapeo de idiomas a códigos de voz
+    const langMap = {
+        'es': ['es-ES', 'es-MX', 'es-AR', 'es'],
+        'pt': ['pt-BR', 'pt-PT', 'pt'],
+        'en': ['en-US', 'en-GB', 'en'],
+        'fr': ['fr-FR', 'fr-CA', 'fr'],
+        'nl': ['nl-NL', 'nl']
+    };
+
+    const preferredLangs = langMap[lang] || langMap['es'];
+
+    // Buscar voz que coincida
+    for (const prefLang of preferredLangs) {
+        const voice = voices.find(v => v.lang.startsWith(prefLang.split('-')[0]));
+        if (voice) return voice;
+    }
+
+    // Fallback a primera voz disponible
+    return voices[0];
+}
+
+/**
+ * Alterna la lectura del artículo
+ */
+function toggleListenArticle() {
+    const playIcon = document.getElementById('playIcon');
+    const pauseIcon = document.getElementById('pauseIcon');
+    const stopBtn = document.getElementById('stopBtn');
+    const listenBtn = document.getElementById('listenBtn');
+
+    if (!speechSynthesis) {
+        showToast('Tu navegador no soporta la lectura en voz alta');
+        return;
+    }
+
+    if (isSpeaking && !isPaused) {
+        // Pausar
+        speechSynthesis.pause();
+        isPaused = true;
+        playIcon.classList.remove('hidden');
+        pauseIcon.classList.add('hidden');
+    } else if (isPaused) {
+        // Reanudar
+        speechSynthesis.resume();
+        isPaused = false;
+        playIcon.classList.add('hidden');
+        pauseIcon.classList.remove('hidden');
+    } else {
+        // Iniciar nueva lectura
+        startSpeech();
+        playIcon.classList.add('hidden');
+        pauseIcon.classList.remove('hidden');
+        stopBtn.classList.remove('hidden');
+        listenBtn.classList.add('bg-red-600');
+    }
+}
+
+/**
+ * Inicia la lectura del artículo
+ */
+function startSpeech() {
+    // Cancelar cualquier lectura previa
+    speechSynthesis.cancel();
+
+    currentArticleText = prepareArticleTextForSpeech();
+
+    if (!currentArticleText) {
+        showToast('No hay contenido para leer');
+        return;
+    }
+
+    speechUtterance = new SpeechSynthesisUtterance(currentArticleText);
+
+    // Configurar voz
+    const voice = getVoiceForLanguage();
+    if (voice) {
+        speechUtterance.voice = voice;
+    }
+
+    // Configurar propiedades
+    speechUtterance.rate = 1;  // Velocidad normal
+    speechUtterance.pitch = 1; // Tono normal
+    speechUtterance.volume = 1; // Volumen máximo
+
+    // Estimar duración (aprox 150 palabras por minuto)
+    const wordCount = currentArticleText.split(/\s+/).length;
+    speechDuration = (wordCount / 150) * 60; // En segundos
+
+    // Eventos
+    speechUtterance.onstart = () => {
+        isSpeaking = true;
+        speechStartTime = Date.now();
+        updateSpeechProgress();
+    };
+
+    speechUtterance.onend = () => {
+        resetSpeechUI();
+    };
+
+    speechUtterance.onerror = (event) => {
+        console.error('Speech error:', event);
+        resetSpeechUI();
+        if (event.error !== 'canceled') {
+            showToast('Error al leer el artículo');
+        }
+    };
+
+    speechSynthesis.speak(speechUtterance);
+}
+
+/**
+ * Detiene la lectura del artículo
+ */
+function stopListenArticle() {
+    speechSynthesis.cancel();
+    resetSpeechUI();
+}
+
+/**
+ * Restablece la UI de lectura
+ */
+function resetSpeechUI() {
+    isSpeaking = false;
+    isPaused = false;
+
+    const playIcon = document.getElementById('playIcon');
+    const pauseIcon = document.getElementById('pauseIcon');
+    const stopBtn = document.getElementById('stopBtn');
+    const listenBtn = document.getElementById('listenBtn');
+    const progress = document.getElementById('audioProgress');
+    const timeDisplay = document.getElementById('audioTime');
+
+    if (playIcon) playIcon.classList.remove('hidden');
+    if (pauseIcon) pauseIcon.classList.add('hidden');
+    if (stopBtn) stopBtn.classList.add('hidden');
+    if (listenBtn) listenBtn.classList.remove('bg-red-600');
+    if (progress) progress.style.width = '0%';
+    if (timeDisplay) timeDisplay.textContent = '';
+}
+
+/**
+ * Actualiza la barra de progreso de lectura
+ */
+function updateSpeechProgress() {
+    if (!isSpeaking || isPaused) return;
+
+    const elapsed = (Date.now() - speechStartTime) / 1000;
+    const progress = Math.min((elapsed / speechDuration) * 100, 100);
+
+    const progressBar = document.getElementById('audioProgress');
+    const timeDisplay = document.getElementById('audioTime');
+
+    if (progressBar) {
+        progressBar.style.width = `${progress}%`;
+    }
+
+    if (timeDisplay) {
+        const elapsedMin = Math.floor(elapsed / 60);
+        const elapsedSec = Math.floor(elapsed % 60);
+        const totalMin = Math.floor(speechDuration / 60);
+        const totalSec = Math.floor(speechDuration % 60);
+        timeDisplay.textContent = `${elapsedMin}:${elapsedSec.toString().padStart(2, '0')} / ${totalMin}:${totalSec.toString().padStart(2, '0')}`;
+    }
+
+    if (isSpeaking) {
+        requestAnimationFrame(updateSpeechProgress);
+    }
+}
+
+// Cargar voces cuando estén disponibles
+if (speechSynthesis) {
+    speechSynthesis.onvoiceschanged = () => {
+        // Las voces ya están cargadas
+    };
+}
+
+// ============================================
+// PUNTOS CLAVE (KEY POINTS)
+// ============================================
+
+/**
+ * Genera los puntos clave a partir del contenido del artículo
+ * Extrae información relevante del contenido y tips
+ */
+function generateKeyPoints(article) {
+    if (!article) return [];
+
+    const traducido = getArticuloEnIdioma(article);
+    const keyPoints = [];
+
+    // Extraer puntos del contenido
+    const content = traducido.contenido || '';
+
+    // Método 1: Buscar oraciones que empiecen con patrones importantes
+    const importantPatterns = [
+        /(?:^|\. )([A-Z][^.]+(?:importante|destacar|clave|fundamental|esencial|principal)[^.]+\.)/gi,
+        /(?:^|\. )([A-Z][^.]+(?:permite|ayuda|beneficia|mejora|aumenta|reduce)[^.]+\.)/gi,
+        /(?:^|\. )([A-Z][^.]+(?:según|de acuerdo|estudios|investigaciones)[^.]+\.)/gi
+    ];
+
+    // Método 2: Extraer primeras oraciones de cada sección h2
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = formatContent(content);
+
+    const h2Elements = tempDiv.querySelectorAll('h2');
+    h2Elements.forEach(h2 => {
+        // Obtener el siguiente elemento que sea un párrafo
+        let sibling = h2.nextElementSibling;
+        while (sibling && sibling.tagName !== 'P') {
+            sibling = sibling.nextElementSibling;
+        }
+        if (sibling && sibling.textContent) {
+            const firstSentence = sibling.textContent.split('.')[0];
+            if (firstSentence && firstSentence.length > 30 && firstSentence.length < 200) {
+                keyPoints.push(firstSentence.trim() + '.');
+            }
+        }
+    });
+
+    // Método 3: Usar los tips si existen (ya son puntos clave naturalmente)
+    if (traducido.tips && traducido.tips.length > 0) {
+        traducido.tips.forEach(tip => {
+            if (tip && tip.length > 20 && keyPoints.length < 5) {
+                // Transformar el tip en un punto clave
+                keyPoints.push(tip);
+            }
+        });
+    }
+
+    // Método 4: Extraer datos numéricos/estadísticos
+    const statsRegex = /([A-Z][^.]*(?:\d+%|\d+ por ciento|\d+\.\d+|\d+ millones|\d+ mil)[^.]*\.)/g;
+    let match;
+    while ((match = statsRegex.exec(content)) !== null && keyPoints.length < 5) {
+        const stat = match[1].trim();
+        if (stat.length > 30 && stat.length < 200 && !keyPoints.includes(stat)) {
+            keyPoints.push(stat);
+        }
+    }
+
+    // Si no se encontraron suficientes puntos, extraer oraciones importantes del primer párrafo
+    if (keyPoints.length < 3) {
+        const plainText = tempDiv.textContent || '';
+        const sentences = plainText.split(/[.!?]+/).filter(s => s.trim().length > 40);
+
+        for (let i = 0; i < Math.min(3, sentences.length) && keyPoints.length < 5; i++) {
+            const sentence = sentences[i].trim();
+            if (sentence.length > 40 && sentence.length < 200 && !keyPoints.some(kp => kp.includes(sentence.substring(0, 30)))) {
+                keyPoints.push(sentence + '.');
+            }
+        }
+    }
+
+    // Limitar a máximo 5 puntos y eliminar duplicados
+    const uniquePoints = [...new Set(keyPoints)].slice(0, 5);
+
+    return uniquePoints;
+}
+
+/**
+ * Renderiza los puntos clave en la UI
+ */
+function renderKeyPoints(article) {
+    const keyPointsSection = document.getElementById('keyPointsSection');
+    const keyPointsList = document.getElementById('keyPointsList');
+
+    if (!keyPointsSection || !keyPointsList) return;
+
+    const points = generateKeyPoints(article);
+
+    if (points.length === 0) {
+        keyPointsSection.classList.add('hidden');
+        return;
+    }
+
+    keyPointsList.innerHTML = points.map(point => `
+        <li class="flex items-start gap-3">
+            <span class="flex-shrink-0 w-2 h-2 mt-2 bg-blue-500 rounded-full"></span>
+            <span>${escapeHtml(point)}</span>
+        </li>
+    `).join('');
+
+    keyPointsSection.classList.remove('hidden');
 }

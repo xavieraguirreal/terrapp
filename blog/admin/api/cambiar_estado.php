@@ -21,6 +21,7 @@ try {
     $saltearCriterio = isset($input['saltear_criterio']) ? (bool)$input['saltear_criterio'] : false;
     $generarTraducciones = isset($input['generar_traducciones']) ? (bool)$input['generar_traducciones'] : true;
     $publicarAhora = isset($input['publicar_ahora']) ? (bool)$input['publicar_ahora'] : false;
+    $fechaProgramada = isset($input['fecha_programada']) ? $input['fecha_programada'] : null;
 
     // Validar
     if ($id <= 0) {
@@ -64,8 +65,8 @@ try {
         }
     }
 
-    // Cambiar estado (pasar publicarAhora para saltear la programación)
-    $resultado = cambiarEstadoArticulo($id, $estado, $saltearCriterio, $publicarAhora);
+    // Cambiar estado (pasar publicarAhora para saltear la programación, fechaProgramada para programación manual)
+    $resultado = cambiarEstadoArticulo($id, $estado, $saltearCriterio, $publicarAhora, $fechaProgramada);
 
     if ($resultado) {
         // Obtener el artículo actualizado para ver su estado final

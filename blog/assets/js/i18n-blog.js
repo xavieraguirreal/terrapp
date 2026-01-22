@@ -82,7 +82,14 @@ const BLOG_I18N = {
             cat_tecnologia: 'Tecnología',
             cat_recetas: 'Recetas',
             cat_comunidad: 'Comunidad',
-            cat_noticias: 'Noticias'
+            cat_noticias: 'Noticias',
+            // Text-to-Speech
+            listen_article: 'Escuchar artículo',
+            tts_not_supported: 'Tu navegador no soporta la lectura en voz alta',
+            tts_no_content: 'No hay contenido para leer',
+            tts_error: 'Error al leer el artículo',
+            // Key Points
+            key_points: 'Puntos clave'
         },
 
         // PORTUGUÉS (Brasil)
@@ -140,7 +147,12 @@ const BLOG_I18N = {
             cat_tecnologia: 'Tecnologia',
             cat_recetas: 'Receitas',
             cat_comunidad: 'Comunidade',
-            cat_noticias: 'Notícias'
+            cat_noticias: 'Notícias',
+            listen_article: 'Ouvir artigo',
+            tts_not_supported: 'Seu navegador não suporta leitura em voz alta',
+            tts_no_content: 'Não há conteúdo para ler',
+            tts_error: 'Erro ao ler o artigo',
+            key_points: 'Pontos-chave'
         },
 
         // INGLÉS (Guyana)
@@ -198,7 +210,12 @@ const BLOG_I18N = {
             cat_tecnologia: 'Technology',
             cat_recetas: 'Recipes',
             cat_comunidad: 'Community',
-            cat_noticias: 'News'
+            cat_noticias: 'News',
+            listen_article: 'Listen to article',
+            tts_not_supported: 'Your browser does not support text-to-speech',
+            tts_no_content: 'No content to read',
+            tts_error: 'Error reading article',
+            key_points: 'Key points'
         },
 
         // FRANCÉS (Guyana Francesa)
@@ -256,7 +273,12 @@ const BLOG_I18N = {
             cat_tecnologia: 'Technologie',
             cat_recetas: 'Recettes',
             cat_comunidad: 'Communauté',
-            cat_noticias: 'Actualités'
+            cat_noticias: 'Actualités',
+            listen_article: 'Écouter l\'article',
+            tts_not_supported: 'Votre navigateur ne prend pas en charge la lecture vocale',
+            tts_no_content: 'Aucun contenu à lire',
+            tts_error: 'Erreur lors de la lecture de l\'article',
+            key_points: 'Points clés'
         },
 
         // NEERLANDÉS (Surinam)
@@ -314,7 +336,12 @@ const BLOG_I18N = {
             cat_tecnologia: 'Technologie',
             cat_recetas: 'Recepten',
             cat_comunidad: 'Gemeenschap',
-            cat_noticias: 'Nieuws'
+            cat_noticias: 'Nieuws',
+            listen_article: 'Artikel beluisteren',
+            tts_not_supported: 'Uw browser ondersteunt geen tekst-naar-spraak',
+            tts_no_content: 'Geen inhoud om te lezen',
+            tts_error: 'Fout bij het lezen van het artikel',
+            key_points: 'Belangrijke punten'
         }
     },
 

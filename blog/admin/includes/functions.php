@@ -679,7 +679,7 @@ function obtenerArticuloPorSlug(string $slug): ?array {
  * @param bool $saltearCriterio Si es true, no actualiza contador regional
  * @param bool $publicarAhora Si es true, publica inmediatamente sin programar
  */
-function cambiarEstadoArticulo(int $id, string $estado, bool $saltearCriterio = false, bool $publicarAhora = false): bool {
+function cambiarEstadoArticulo(int $id, string $estado, bool $saltearCriterio = false, bool $publicarAhora = false, ?string $fechaPersonalizada = null): bool {
     $pdo = getConnection();
     $articulo = obtenerArticulo($id);
 
@@ -705,8 +705,8 @@ function cambiarEstadoArticulo(int $id, string $estado, bool $saltearCriterio = 
             ");
             $stmt->execute([$id]);
         } else {
-            // Programar para la próxima fecha disponible
-            $fechaProgramada = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS ?? 2);
+            // Usar fecha personalizada si se proporciona, sino calcular automáticamente
+            $fechaProgramada = $fechaPersonalizada ?? calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS ?? 2);
 
             $stmt = $pdo->prepare("
                 UPDATE blog_articulos
@@ -717,6 +717,27 @@ function cambiarEstadoArticulo(int $id, string $estado, bool $saltearCriterio = 
         }
 
         // Exportar JSON (incluye solo los que ya cumplieron su fecha)
+        exportarArticulosJSON();
+    } elseif ($estado === 'programado') {
+        // Programación con fecha personalizada desde el admin
+        actualizarImagenArticulo($id);
+
+        // Actualizar contador regional
+        if (!$saltearCriterio) {
+            actualizarContadorRegional($articulo['region']);
+        }
+
+        // Usar fecha personalizada proporcionada, sino calcular automáticamente
+        $fechaProgramada = $fechaPersonalizada ?? calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS ?? 2);
+
+        $stmt = $pdo->prepare("
+            UPDATE blog_articulos
+            SET estado = 'programado', fecha_programada = ?
+            WHERE id = ?
+        ");
+        $stmt->execute([$fechaProgramada, $id]);
+
+        // Exportar JSON
         exportarArticulosJSON();
     } else {
         // Rechazado o borrador

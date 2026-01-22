@@ -179,6 +179,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
                         <button type="button" onclick="aprobarSaltear()" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg transition">
                             ⏭️ Publicar (omitir criterio)
                         </button>
+                        <button type="button" onclick="mostrarModalProgramar()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition">
+                            🕐 Programar
+                        </button>
                         <button type="button" onclick="rechazar()" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition">
                             ❌ Rechazar
                         </button>
@@ -269,24 +272,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
         </div>
     </main>
 
+    <!-- Modal de Programación -->
+    <div id="modalProgramar" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 p-6">
+            <h3 class="text-lg font-bold mb-4">🕐 Programar publicación</h3>
+            <p class="text-sm text-gray-600 mb-4">Selecciona la fecha y hora en que deseas publicar este artículo:</p>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Fecha y hora de publicación</label>
+                <input type="datetime-local" id="fechaProgramada"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                       min="<?= date('Y-m-d\TH:i') ?>">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Horarios rápidos</label>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="setQuickDate(1, 8)" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg">Mañana 8:00</button>
+                    <button type="button" onclick="setQuickDate(1, 12)" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg">Mañana 12:00</button>
+                    <button type="button" onclick="setQuickDate(1, 18)" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg">Mañana 18:00</button>
+                    <button type="button" onclick="setQuickDate(2, 8)" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg">En 2 días</button>
+                    <button type="button" onclick="setQuickDate(7, 8)" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg">En 1 semana</button>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button type="button" onclick="cerrarModalProgramar()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition">
+                    Cancelar
+                </button>
+                <button type="button" onclick="programarArticulo()" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition">
+                    Programar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const articuloId = <?= $id ?>;
+        const mostrarProgramar = <?= isset($_GET['programar']) && $_GET['programar'] == '1' ? 'true' : 'false' ?>;
 
-        async function cambiarEstado(estado, saltear = false) {
+        // Mostrar modal automáticamente si viene desde el email
+        if (mostrarProgramar) {
+            document.addEventListener('DOMContentLoaded', () => mostrarModalProgramar());
+        }
+
+        async function cambiarEstado(estado, saltear = false, fechaProgramada = null) {
             try {
+                const body = {
+                    id: articuloId,
+                    estado: estado,
+                    saltear_criterio: saltear
+                };
+
+                if (fechaProgramada) {
+                    body.fecha_programada = fechaProgramada;
+                }
+
                 const response = await fetch('api/cambiar_estado.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        id: articuloId,
-                        estado: estado,
-                        saltear_criterio: saltear
-                    })
+                    body: JSON.stringify(body)
                 });
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('Estado actualizado correctamente');
+                    alert(data.message || 'Estado actualizado correctamente');
                     location.href = 'index.php';
                 } else {
                     alert(data.error || 'Error al cambiar estado');
@@ -313,6 +363,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
                 cambiarEstado('rechazado', false);
             }
         }
+
+        function mostrarModalProgramar() {
+            // Establecer fecha mínima como ahora + 1 hora
+            const now = new Date();
+            now.setHours(now.getHours() + 1);
+            document.getElementById('fechaProgramada').min = now.toISOString().slice(0, 16);
+
+            // Establecer valor por defecto: mañana a las 8:00
+            setQuickDate(1, 8);
+
+            document.getElementById('modalProgramar').classList.remove('hidden');
+            document.getElementById('modalProgramar').classList.add('flex');
+        }
+
+        function cerrarModalProgramar() {
+            document.getElementById('modalProgramar').classList.add('hidden');
+            document.getElementById('modalProgramar').classList.remove('flex');
+        }
+
+        function setQuickDate(daysFromNow, hour) {
+            const date = new Date();
+            date.setDate(date.getDate() + daysFromNow);
+            date.setHours(hour, 0, 0, 0);
+
+            // Formatear para input datetime-local
+            const formatted = date.toISOString().slice(0, 16);
+            document.getElementById('fechaProgramada').value = formatted;
+        }
+
+        function programarArticulo() {
+            const fecha = document.getElementById('fechaProgramada').value;
+            if (!fecha) {
+                alert('Por favor selecciona una fecha y hora');
+                return;
+            }
+
+            const fechaSeleccionada = new Date(fecha);
+            const ahora = new Date();
+
+            if (fechaSeleccionada <= ahora) {
+                alert('La fecha debe ser en el futuro');
+                return;
+            }
+
+            const fechaFormateada = fechaSeleccionada.toLocaleString('es-AR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            if (confirm(`¿Programar publicación para ${fechaFormateada}?`)) {
+                cambiarEstado('programado', false, fecha);
+            }
+        }
+
+        // Cerrar modal con Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') cerrarModalProgramar();
+        });
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('modalProgramar').addEventListener('click', (e) => {
+            if (e.target.id === 'modalProgramar') cerrarModalProgramar();
+        });
     </script>
 </body>
 </html>
