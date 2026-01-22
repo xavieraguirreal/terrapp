@@ -147,12 +147,12 @@ try {
     $debug['etapas'][] = [
         'etapa' => '2. Procesar Pendientes',
         'estado' => 'ejecutada',
-        'detalle' => "Procesando hasta 3 artículos de los {$pendientesDisponibles} pendientes..."
+        'detalle' => "Procesando hasta 10 artículos de los {$pendientesDisponibles} pendientes..."
     ];
 
-    // Procesar hasta 3 pendientes
+    // Procesar hasta 10 pendientes
     $procesadas = 0;
-    $maxProcesar = 3;
+    $maxProcesar = 10;
     $debug['procesamiento'] = [];
 
     while ($procesadas < $maxProcesar) {
