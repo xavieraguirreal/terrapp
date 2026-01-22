@@ -187,30 +187,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['importar_seleccionado
         $error = 'Selecciona al menos una URL para importar';
     } else {
         $importados = 0;
+        $rechazados = [];
         $erroresImport = [];
 
         foreach ($urlsSeleccionadas as $index => $url) {
-            if (urlYaProcesada($url)) continue;
-
             $titulo = $titulosSeleccionados[$index] ?? parse_url($url, PHP_URL_HOST);
+
+            // Verificar manualmente cada condición para dar feedback
+            if (urlYaProcesada($url)) {
+                $rechazados[] = "❌ URL ya procesada: " . mb_substr($titulo, 0, 50);
+                continue;
+            }
+
+            if (tituloEsSimilar($titulo)) {
+                $rechazados[] = "❌ Título similar existente: " . mb_substr($titulo, 0, 50);
+                continue;
+            }
 
             try {
                 // Guardar como pendiente para procesar después
-                guardarCandidatasPendientes([[
+                $guardadas = guardarCandidatasPendientes([[
                     'url' => $url,
                     'title' => $titulo,
                     'content' => '',
                     'raw_content' => ''
                 ]]);
-                $importados++;
+
+                if ($guardadas > 0) {
+                    $importados++;
+                } else {
+                    $rechazados[] = "❌ Filtrado (duplicado en pendientes): " . mb_substr($titulo, 0, 50);
+                }
             } catch (Exception $e) {
                 $erroresImport[] = "Error con {$url}: " . $e->getMessage();
             }
         }
 
         if ($importados > 0) {
-            $mensaje = "Se agregaron {$importados} URLs a la cola de pendientes. Ejecuta 'Buscar y Generar' para procesarlas.";
+            $mensaje = "✅ Se agregaron {$importados} URLs a la cola de pendientes. Ejecuta 'Buscar y Generar' para procesarlas.";
+        } else {
+            $mensaje = "⚠️ No se agregó ninguna URL (todas fueron filtradas por duplicados).";
         }
+
+        if (!empty($rechazados)) {
+            $mensaje .= "\n\nRechazados:\n" . implode("\n", $rechazados);
+        }
+
         if (!empty($erroresImport)) {
             $error = implode("\n", $erroresImport);
         }
@@ -256,8 +278,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['importar_seleccionado
 
     <main class="container mx-auto px-4 py-8 max-w-4xl">
         <?php if ($mensaje): ?>
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-            <?= htmlspecialchars($mensaje) ?>
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 whitespace-pre-wrap">
+            <?= nl2br(htmlspecialchars($mensaje)) ?>
         </div>
         <?php endif; ?>
 
