@@ -13,7 +13,7 @@ class EmailNotifier {
     public function __construct() {
         $this->apiKey = SENDGRID_API_KEY;
         $this->fromEmail = SENDGRID_FROM_EMAIL;
-        $this->fromName = SENDGRID_FROM_NAME;
+        $this->fromName = defined('SENDGRID_FROM_NAME_BLOG') ? SENDGRID_FROM_NAME_BLOG : SENDGRID_FROM_NAME;
         $this->adminEmail = ADMIN_EMAIL;
         $this->logFile = __DIR__ . '/../logs/email.log';
 
