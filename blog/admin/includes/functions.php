@@ -387,8 +387,8 @@ function guardarCandidatasPendientes(array $candidatas): int {
         try {
             $stmt = $pdo->prepare("
                 INSERT IGNORE INTO blog_noticias_pendientes
-                (url, titulo, descripcion, contenido, imagen_url, fuente, region)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                (url, titulo, descripcion, contenido, imagen_url, fuente, region, fecha_obtenida)
+                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
             ");
             $stmt->execute([
                 $url,
