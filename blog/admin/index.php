@@ -36,9 +36,16 @@ function adminImageUrl(?string $url): string {
 // Publicar artículos programados cuya fecha ya pasó
 $publicadosVencidos = publicarProgramadosVencidos();
 
+// Paginación de borradores
+$porPagina = 15;
+$paginaActual = isset($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
+$offset = ($paginaActual - 1) * $porPagina;
+$totalBorradores = contarArticulosPorEstado('borrador');
+$totalPaginas = ceil($totalBorradores / $porPagina);
+
 // Obtener datos
 $estadisticas = obtenerEstadisticas();
-$borradores = obtenerArticulos('borrador', 20);
+$borradores = obtenerArticulos('borrador', $porPagina, $offset);
 $programados = obtenerArticulosProgramados();
 $publicados = obtenerArticulos('publicado', 10);
 $contadorRegional = obtenerContadorRegional();
@@ -271,7 +278,10 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
 
         <!-- Borradores pendientes -->
         <div class="card mb-8">
-            <h2 class="text-lg font-bold mb-4">📝 Borradores pendientes de revisión</h2>
+            <h2 class="text-lg font-bold mb-4">
+                📝 Borradores pendientes de revisión
+                <span class="text-sm font-normal text-gray-500">(<?= $totalBorradores ?> total)</span>
+            </h2>
             <?php if (empty($borradores)): ?>
                 <p class="text-gray-500 text-center py-8">No hay artículos pendientes de revisión</p>
             <?php else: ?>
@@ -315,6 +325,37 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Paginación -->
+                <?php if ($totalPaginas > 1): ?>
+                <div class="flex items-center justify-between mt-4 pt-4 border-t">
+                    <p class="text-sm text-gray-500">
+                        Mostrando <?= $offset + 1 ?>-<?= min($offset + $porPagina, $totalBorradores) ?> de <?= $totalBorradores ?>
+                    </p>
+                    <div class="flex gap-2">
+                        <?php if ($paginaActual > 1): ?>
+                        <a href="?pagina=<?= $paginaActual - 1 ?>" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm">← Anterior</a>
+                        <?php endif; ?>
+
+                        <?php
+                        // Mostrar números de página
+                        $inicio = max(1, $paginaActual - 2);
+                        $fin = min($totalPaginas, $paginaActual + 2);
+                        for ($i = $inicio; $i <= $fin; $i++):
+                        ?>
+                        <a href="?pagina=<?= $i ?>"
+                           class="px-3 py-1 rounded text-sm <?= $i === $paginaActual ? 'bg-forest-600 text-white' : 'bg-gray-200 hover:bg-gray-300' ?>">
+                            <?= $i ?>
+                        </a>
+                        <?php endfor; ?>
+
+                        <?php if ($paginaActual < $totalPaginas): ?>
+                        <a href="?pagina=<?= $paginaActual + 1 ?>" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm">Siguiente →</a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
             <?php endif; ?>
         </div>
 

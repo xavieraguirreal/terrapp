@@ -621,18 +621,34 @@ function tieneTraduccion(int $articuloId, string $idioma): bool {
 /**
  * Obtiene todos los artículos con filtro opcional
  */
-function obtenerArticulos(?string $estado = null, int $limite = 100): array {
+function obtenerArticulos(?string $estado = null, int $limite = 100, int $offset = 0): array {
     $pdo = getConnection();
 
     if ($estado) {
-        $stmt = $pdo->prepare("SELECT * FROM blog_articulos WHERE estado = ? ORDER BY fecha_creacion DESC LIMIT ?");
-        $stmt->execute([$estado, $limite]);
+        $stmt = $pdo->prepare("SELECT * FROM blog_articulos WHERE estado = ? ORDER BY fecha_creacion DESC LIMIT ? OFFSET ?");
+        $stmt->execute([$estado, $limite, $offset]);
     } else {
-        $stmt = $pdo->prepare("SELECT * FROM blog_articulos ORDER BY fecha_creacion DESC LIMIT ?");
-        $stmt->execute([$limite]);
+        $stmt = $pdo->prepare("SELECT * FROM blog_articulos ORDER BY fecha_creacion DESC LIMIT ? OFFSET ?");
+        $stmt->execute([$limite, $offset]);
     }
 
     return $stmt->fetchAll();
+}
+
+/**
+ * Cuenta artículos por estado
+ */
+function contarArticulosPorEstado(?string $estado = null): int {
+    $pdo = getConnection();
+
+    if ($estado) {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM blog_articulos WHERE estado = ?");
+        $stmt->execute([$estado]);
+    } else {
+        $stmt = $pdo->query("SELECT COUNT(*) FROM blog_articulos");
+    }
+
+    return (int) $stmt->fetchColumn();
 }
 
 /**

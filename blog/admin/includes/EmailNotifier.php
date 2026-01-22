@@ -8,18 +8,38 @@ class EmailNotifier {
     private string $fromEmail;
     private string $fromName;
     private string $adminEmail;
+    private string $logFile;
 
     public function __construct() {
         $this->apiKey = SENDGRID_API_KEY;
         $this->fromEmail = SENDGRID_FROM_EMAIL;
         $this->fromName = SENDGRID_FROM_NAME;
         $this->adminEmail = ADMIN_EMAIL;
+        $this->logFile = __DIR__ . '/../logs/email.log';
+
+        // Crear directorio de logs si no existe
+        $logDir = dirname($this->logFile);
+        if (!is_dir($logDir)) {
+            mkdir($logDir, 0755, true);
+        }
+    }
+
+    /**
+     * Log de emails para debug
+     */
+    private function log(string $message): void {
+        $timestamp = date('Y-m-d H:i:s');
+        $logMessage = "[{$timestamp}] {$message}\n";
+        file_put_contents($this->logFile, $logMessage, FILE_APPEND);
     }
 
     /**
      * Envía notificación de nuevo artículo para revisar
      */
     public function notificarNuevoArticulo(array $articulo): bool {
+        $this->log("notificarNuevoArticulo llamado para artículo ID: " . ($articulo['id'] ?? 'SIN ID'));
+        $this->log("Título: " . ($articulo['titulo'] ?? 'SIN TÍTULO'));
+
         // Generar tokens para acciones
         $tokenAprobar = generarTokenAccion($articulo['id'], 'aprobar');
         $tokenRechazar = generarTokenAccion($articulo['id'], 'rechazar');
@@ -200,6 +220,11 @@ HTML;
      * Envía email genérico usando SendGrid API
      */
     public function enviarEmail(string $to, string $subject, string $htmlContent): bool {
+        $this->log("=== INICIO ENVÍO EMAIL ===");
+        $this->log("To: {$to}");
+        $this->log("Subject: {$subject}");
+        $this->log("From: {$this->fromEmail}");
+
         $url = 'https://api.sendgrid.com/v3/mail/send';
 
         $data = [
@@ -240,16 +265,20 @@ HTML;
         curl_close($ch);
 
         if ($error) {
-            logError("Error enviando email: " . $error);
+            $this->log("ERROR cURL: {$error}");
             return false;
         }
+
+        $this->log("HTTP Code: {$httpCode}");
+        $this->log("Response: {$response}");
 
         // SendGrid devuelve 202 para envío exitoso
         if ($httpCode !== 202 && $httpCode !== 200) {
-            logError("Error SendGrid: HTTP {$httpCode} - {$response}");
+            $this->log("ERROR SendGrid: HTTP {$httpCode}");
             return false;
         }
 
+        $this->log("EMAIL ENVIADO OK");
         return true;
     }
 }
