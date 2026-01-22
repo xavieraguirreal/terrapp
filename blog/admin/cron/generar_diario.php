@@ -44,7 +44,7 @@ try {
         foreach ($topicsSeleccionados as $topic) {
             try {
                 echo "  Buscando: {$topic}\n";
-                $resultados = $tavily->search($topic, 5);
+                $resultados = $tavily->search($topic, 12);
                 foreach ($resultados as $r) {
                     $todasLasCandidatas[] = $r;
                 }
@@ -139,6 +139,7 @@ try {
             // Preparar datos
             $datosArticulo = [
                 'titulo' => $articuloGenerado['titulo'],
+                'titulo_original' => $pendiente['titulo'] ?? '', // Título original de la fuente
                 'contenido' => $articuloGenerado['contenido'],
                 'opinion_editorial' => $articuloGenerado['opinion_editorial'] ?? '',
                 'tips' => $articuloGenerado['tips'] ?? [],

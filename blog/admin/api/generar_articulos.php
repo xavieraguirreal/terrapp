@@ -64,7 +64,7 @@ try {
         foreach ($topicsSeleccionados as $topic) {
             try {
                 // Usar búsqueda combinada: sitios preferidos + general
-                $resultados = $tavily->searchWithPreferredSites($topic, 5, $dominiosPreferidos);
+                $resultados = $tavily->searchWithPreferredSites($topic, 12, $dominiosPreferidos);
                 $debug['tavily_' . substr($topic, 0, 20)] = count($resultados) . ' resultados';
 
                 // Contar cuántos son de sitios preferidos
@@ -253,6 +253,7 @@ try {
             // Preparar datos para guardar
             $datosArticulo = [
                 'titulo' => $articuloGenerado['titulo'],
+                'titulo_original' => $pendiente['titulo'] ?? '', // Título original de la fuente
                 'contenido' => $articuloGenerado['contenido'],
                 'opinion_editorial' => $articuloGenerado['opinion_editorial'] ?? '',
                 'tips' => $articuloGenerado['tips'] ?? [],

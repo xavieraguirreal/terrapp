@@ -39,13 +39,13 @@ function registrarUrl(string $url): void {
 function verificarDuplicado(string $titulo, string $url): ?array {
     $pdo = getConnection();
 
-    // Normalizar título para comparación
+    // Normalizar título ORIGINAL de la fuente para comparación
     $tituloNormalizado = mb_strtolower(trim($titulo));
     $tituloNormalizado = preg_replace('/[^\p{L}\p{N}\s]/u', '', $tituloNormalizado);
 
     // 1. Buscar por URL exacta de fuente
     $stmt = $pdo->prepare("
-        SELECT id, titulo, estado, fuente_url
+        SELECT id, titulo, titulo_original, estado, fuente_url
         FROM blog_articulos
         WHERE fuente_url = ?
         LIMIT 1
@@ -57,28 +57,28 @@ function verificarDuplicado(string $titulo, string $url): ?array {
         return [
             'tipo' => 'url',
             'articulo_id' => $duplicado['id'],
-            'titulo_existente' => $duplicado['titulo'],
+            'titulo_existente' => $duplicado['titulo_original'] ?? $duplicado['titulo'],
             'estado' => $duplicado['estado']
         ];
     }
 
-    // 2. Buscar por título similar (usando LIKE con las primeras palabras)
+    // 2. Buscar por título ORIGINAL similar (usando LIKE con las primeras palabras)
     $palabras = explode(' ', $tituloNormalizado);
     $palabrasClave = array_slice($palabras, 0, 5); // Primeras 5 palabras
     $busqueda = '%' . implode('%', $palabrasClave) . '%';
 
     $stmt = $pdo->prepare("
-        SELECT id, titulo, estado, fuente_url
+        SELECT id, titulo, titulo_original, estado, fuente_url
         FROM blog_articulos
-        WHERE LOWER(titulo) LIKE ?
+        WHERE LOWER(COALESCE(titulo_original, titulo)) LIKE ?
         LIMIT 1
     ");
     $stmt->execute([$busqueda]);
     $duplicado = $stmt->fetch();
 
     if ($duplicado) {
-        // Verificar similitud más estricta (Levenshtein o similar)
-        $tituloExistente = mb_strtolower($duplicado['titulo']);
+        // Comparar con titulo_original si existe, sino con titulo
+        $tituloExistente = mb_strtolower($duplicado['titulo_original'] ?? $duplicado['titulo']);
         $tituloExistente = preg_replace('/[^\p{L}\p{N}\s]/u', '', $tituloExistente);
 
         // Si el título comienza igual o es muy similar
@@ -86,9 +86,9 @@ function verificarDuplicado(string $titulo, string $url): ?array {
 
         if ($porcentaje > 70) { // 70% de similitud
             return [
-                'tipo' => 'titulo',
+                'tipo' => 'titulo_original',
                 'articulo_id' => $duplicado['id'],
-                'titulo_existente' => $duplicado['titulo'],
+                'titulo_existente' => $duplicado['titulo_original'] ?? $duplicado['titulo'],
                 'estado' => $duplicado['estado'],
                 'similitud' => round($porcentaje, 1) . '%'
             ];
@@ -221,7 +221,8 @@ function actualizarImagenArticulo(int $articuloId): bool {
  */
 function tituloEsSimilar(string $titulo, ?string &$tituloSimilar = null): bool {
     $pdo = getConnection();
-    $stmt = $pdo->query("SELECT titulo FROM blog_articulos WHERE estado IN ('publicado', 'rechazado', 'borrador')");
+    // Comparar con titulo_original (de la fuente), no con el generado por IA
+    $stmt = $pdo->query("SELECT COALESCE(titulo_original, titulo) as titulo_comparar FROM blog_articulos WHERE estado IN ('publicado', 'rechazado', 'borrador')");
     $titulosExistentes = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
     $tituloNormalizado = normalizarTexto($titulo);
@@ -507,14 +508,15 @@ function guardarArticulo(array $datos): int {
 
     $stmt = $pdo->prepare("
         INSERT INTO blog_articulos
-        (titulo, slug, contenido, opinion_editorial, tips, contenido_original,
+        (titulo, titulo_original, slug, contenido, opinion_editorial, tips, contenido_original,
          fuente_nombre, fuente_url, imagen_url, region, pais_origen,
          categoria, tags, estado, tiempo_lectura)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'borrador', ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'borrador', ?)
     ");
 
     $stmt->execute([
         $datos['titulo'],
+        $datos['titulo_original'] ?? null,
         $slug,
         $datos['contenido'],
         $datos['opinion_editorial'] ?? null,
