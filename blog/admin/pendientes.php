@@ -3,6 +3,10 @@
  * TERRApp Blog - Ver y gestionar pendientes en cache
  */
 
+// DEBUG temporal
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once __DIR__ . '/includes/auth.php';
 
 if (!verificarAcceso()) {
@@ -47,6 +51,15 @@ $stmt = $pdo->query("
     ORDER BY usado ASC, fecha_obtenida DESC
 ");
 $pendientes = $stmt->fetchAll();
+
+// DEBUG: mostrar qué encontró
+echo "<!-- DEBUG: Total registros encontrados: " . count($pendientes) . " -->\n";
+if (empty($pendientes)) {
+    echo "<!-- DEBUG: La query no devolvió resultados. Verificando conexión... -->\n";
+    $testStmt = $pdo->query("SELECT COUNT(*) as total FROM blog_noticias_pendientes");
+    $testResult = $testStmt->fetch();
+    echo "<!-- DEBUG: COUNT(*) directo = " . ($testResult['total'] ?? 'ERROR') . " -->\n";
+}
 
 $totalPendientes = count(array_filter($pendientes, fn($p) => $p['usado'] == 0));
 $totalProcesados = count(array_filter($pendientes, fn($p) => $p['usado'] == 1));
