@@ -40,7 +40,7 @@ class RSSGenerator {
         $xml .= '  <lastBuildDate>' . date('r') . '</lastBuildDate>' . "\n";
         $xml .= '  <atom:link href="' . $this->escape($this->blogUrl . 'feed.xml') . '" rel="self" type="application/rss+xml"/>' . "\n";
         $xml .= '  <image>' . "\n";
-        $xml .= '    <url>' . $this->escape($this->blogUrl . '../landing/assets/images/logo_terrapp_icono.png') . '</url>' . "\n";
+        $xml .= '    <url>' . $this->escape('https://terrapp.verumax.com/landing/assets/images/logo_terrapp_icono.png') . '</url>' . "\n";
         $xml .= '    <title>TERRApp Blog</title>' . "\n";
         $xml .= '    <link>' . $this->escape($this->blogUrl) . '</link>' . "\n";
         $xml .= '  </image>' . "\n";

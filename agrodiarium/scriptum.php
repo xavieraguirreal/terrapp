@@ -124,7 +124,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
     <link rel="alternate" type="application/rss+xml" title="TERRApp Blog RSS" href="feed.xml">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="../landing/assets/images/logo_terrapp_icono.png">
+    <link rel="icon" type="image/png" href="https://terrapp.verumax.com/landing/assets/images/logo_terrapp_icono.png">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -186,7 +186,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
                     </a>
                     <!-- Logo (goes to blog) -->
                     <a href="./" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                        <img src="../landing/assets/images/logo_terrapp_icono.png" alt="TERRApp" class="w-8 h-8">
+                        <img src="https://terrapp.verumax.com/landing/assets/images/logo_terrapp_icono.png" alt="TERRApp" class="w-8 h-8">
                         <span class="text-lg font-bold text-forest-600 dark:text-forest-500 hidden sm:inline">TERRApp</span>
                     </a>
 
@@ -212,7 +212,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
                             </div>
                         </div>
 
-                        <a href="../landing/" class="px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-forest-600 dark:hover:text-forest-400 font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm" data-i18n="nav_landing">TERRApp</a>
+                        <a href="https://terrapp.verumax.com/landing/" class="px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-forest-600 dark:hover:text-forest-400 font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm" data-i18n="nav_landing">TERRApp</a>
                     </nav>
                 </div>
 
@@ -271,7 +271,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
                     <a href="./?cat=tecnologia" class="px-6 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm">📱 Tecnología</a>
                     <a href="./?cat=noticias" class="px-6 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm">📰 Noticias</a>
                     <hr class="border-gray-200 dark:border-gray-700 my-2">
-                    <a href="../landing/" class="px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-forest-600 font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition" data-i18n="nav_landing">TERRApp</a>
+                    <a href="https://terrapp.verumax.com/landing/" class="px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-forest-600 font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition" data-i18n="nav_landing">TERRApp</a>
                 </div>
             </div>
         </div>
@@ -280,7 +280,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
     <main class="container mx-auto px-4 py-8">
         <!-- Breadcrumbs -->
         <nav id="breadcrumbs" class="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-3xl mx-auto lg:max-w-none">
-            <a href="../landing/" class="hover:text-forest-600">TERRApp</a>
+            <a href="https://terrapp.verumax.com/landing/" class="hover:text-forest-600">TERRApp</a>
             <span class="mx-2">/</span>
             <a href="./" class="hover:text-forest-600">AGRODiarium</a>
             <span class="mx-2">/</span>
@@ -548,7 +548,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
         <div class="container mx-auto px-4 py-8">
             <div class="text-center">
                 <p class="text-gray-600 dark:text-gray-400 mb-4">
-                    <span data-i18n="footer_cta">¿Te interesa la agricultura urbana?</span> <a href="../landing/" class="text-forest-600 hover:underline font-semibold" data-i18n="footer_cta_link">Conoce TERRApp</a>
+                    <span data-i18n="footer_cta">¿Te interesa la agricultura urbana?</span> <a href="https://terrapp.verumax.com/landing/" class="text-forest-600 hover:underline font-semibold" data-i18n="footer_cta_link">Conoce TERRApp</a>
                 </p>
                 <p class="text-sm text-gray-500">&copy; 2026 TERRApp by VERUMax</p>
             </div>
