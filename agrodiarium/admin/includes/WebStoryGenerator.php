@@ -27,7 +27,7 @@ class WebStoryGenerator {
 
         $this->blogUrl = defined('BLOG_URL')
             ? BLOG_URL
-            : 'https://terrapp.verumax.com/agrodiarium/';
+            : 'https://agrodiarium.verumax.com/';
 
         $this->appName = 'terrapp';
         $this->appStoriesPath = $this->storiesBasePath . $this->appName . '/';

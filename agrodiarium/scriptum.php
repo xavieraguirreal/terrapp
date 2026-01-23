@@ -41,8 +41,8 @@ $article = null;
 $pageTitle = 'Artículo - TERRApp Blog';
 $pageDescription = 'Artículo del Blog TERRApp sobre agricultura urbana';
 $pageImage = 'https://terrapp.verumax.com/landing/assets/images/logo_terrapp_icono.png';
-$pageUrl = 'https://terrapp.verumax.com/agrodiarium/scriptum.php';
-$canonicalUrl = 'https://terrapp.verumax.com/agrodiarium/scriptum.php';
+$pageUrl = 'https://agrodiarium.verumax.com/scriptum.php';
+$canonicalUrl = 'https://agrodiarium.verumax.com/scriptum.php';
 
 // Cargar artículo desde JSON
 $jsonPath = __DIR__ . '/data/articulos.json';
@@ -85,9 +85,9 @@ if ($article) {
     // URLs - incluir lang si no es español
     $slug = htmlspecialchars($article['slug'], ENT_QUOTES, 'UTF-8');
     $langParam = !empty($langBase) ? "&lang={$lang}" : '';
-    $pageUrl = "https://terrapp.verumax.com/agrodiarium/scriptum.php?titulus={$slug}{$langParam}";
+    $pageUrl = "https://agrodiarium.verumax.com/scriptum.php?titulus={$slug}{$langParam}";
     // Canonical siempre apunta a la versión española (SEO)
-    $canonicalUrl = "https://terrapp.verumax.com/agrodiarium/scriptum.php?titulus={$slug}";
+    $canonicalUrl = "https://agrodiarium.verumax.com/scriptum.php?titulus={$slug}";
 }
 
 // Obtener parámetro para pasar al JS
