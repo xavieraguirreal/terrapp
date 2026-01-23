@@ -16,7 +16,7 @@ class WebStoryGenerator {
 
     public function __construct() {
         // Configuración del hub centralizado de stories
-        // En el servidor: terrapp/blog/admin/includes/ -> ../../../../stories/
+        // En el servidor: terrapp/agrodiarium/admin/includes/ -> ../../../../stories/
         $this->storiesBasePath = defined('STORIES_HUB_PATH')
             ? STORIES_HUB_PATH
             : realpath(__DIR__ . '/../../../../') . '/stories/';
@@ -27,7 +27,7 @@ class WebStoryGenerator {
 
         $this->blogUrl = defined('BLOG_URL')
             ? BLOG_URL
-            : 'https://terrapp.verumax.com/blog/';
+            : 'https://terrapp.verumax.com/agrodiarium/';
 
         $this->appName = 'terrapp';
         $this->appStoriesPath = $this->storiesBasePath . $this->appName . '/';

@@ -2,7 +2,7 @@
 /**
  * Script temporal para agregar estructura de headings a artículos existentes
  * Uso: php agregar_headings.php
- * O acceder desde navegador: /blog/admin/scripts/agregar_headings.php
+ * O acceder desde navegador: /agrodiarium/admin/scripts/agregar_headings.php
  */
 
 // Mostrar todos los errores

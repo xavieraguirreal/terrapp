@@ -1,0 +1,8 @@
+# TERRApp - Redirección de /blog a /agrodiarium
+# Mantiene compatibilidad con enlaces antiguos
+
+RewriteEngine On
+
+# Redirección 301 de /blog/* a /agrodiarium/*
+RewriteRule ^blog/(.*)$ /agrodiarium/$1 [R=301,L]
+RewriteRule ^blog/?$ /agrodiarium/ [R=301,L]

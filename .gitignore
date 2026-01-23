@@ -2,6 +2,7 @@
 *.log
 logs/
 blog/admin/logs/
+agrodiarium/admin/logs/
 
 # OS files
 .DS_Store
@@ -26,6 +27,7 @@ nul
 shared_config.php
 api/config.php
 blog/admin/config/config.php
+agrodiarium/admin/config/config.php
 
 # Cache
 *.cache

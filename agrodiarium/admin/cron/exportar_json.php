@@ -3,7 +3,7 @@
  * TERRApp Blog - Cron Job para exportar JSON cada hora
  *
  * Ejecutar con cron:
- * 0 * * * * php /path/to/blog/admin/cron/exportar_json.php >> /path/to/logs/exportar.log 2>&1
+ * 0 * * * * php /path/to/agrodiarium/admin/cron/exportar_json.php >> /path/to/logs/exportar.log 2>&1
  */
 
 // Establecer límites para ejecución como cron

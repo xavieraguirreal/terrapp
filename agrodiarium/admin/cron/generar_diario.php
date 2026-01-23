@@ -3,7 +3,7 @@
  * TERRApp Blog - Cron Job para generación diaria de artículos
  *
  * Ejecutar con cron:
- * 0 6 * * * php /path/to/blog/admin/cron/generar_diario.php >> /path/to/logs/cron.log 2>&1
+ * 0 6 * * * php /path/to/agrodiarium/admin/cron/generar_diario.php >> /path/to/logs/cron.log 2>&1
  */
 
 // Establecer límites para ejecución como cron

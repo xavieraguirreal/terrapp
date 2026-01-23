@@ -154,7 +154,7 @@ $pendientes = $stmt->fetch()['total'];
                 </button>
             </form>
             <p class="text-sm text-gray-500 mt-2 text-center">
-                Las imágenes se descargarán a <code>/blog/uploads/articulos/</code>
+                Las imágenes se descargarán a <code>/agrodiarium/uploads/articulos/</code>
             </p>
             <p class="text-sm text-gray-500 mt-2 text-center">
                 ¿Falló alguna descarga? <a href="subir_imagen.php" class="text-forest-600 hover:underline">📤 Subir imagen manualmente</a>

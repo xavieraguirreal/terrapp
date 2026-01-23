@@ -9,7 +9,7 @@ class RSSGenerator {
     private string $outputPath;
 
     public function __construct() {
-        $this->blogUrl = BLOG_URL ?? 'https://terrapp.verumax.com/blog/';
+        $this->blogUrl = BLOG_URL ?? 'https://terrapp.verumax.com/agrodiarium/';
         $this->outputPath = __DIR__ . '/../../feed.xml';
     }
 

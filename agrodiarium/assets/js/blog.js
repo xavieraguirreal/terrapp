@@ -1099,7 +1099,7 @@ function getShareUrl() {
     if (!articuloActual) return window.location.href;
 
     // Base URL
-    const baseUrl = `${window.location.origin}/blog/scriptum.php?titulus=${articuloActual.slug}`;
+    const baseUrl = `${window.location.origin}/agrodiarium/scriptum.php?titulus=${articuloActual.slug}`;
 
     // Agregar idioma si no es español
     let lang = 'es_AR';
@@ -1924,9 +1924,9 @@ async function sendChatMessage(event) {
         const currentLang = getCurrentLanguage();
 
         // Determinar URL base de la API según la página
-        const isOnBlog = window.location.pathname.includes('/blog/');
+        const isOnBlog = window.location.pathname.includes('/agrodiarium/');
         const isOnLanding = window.location.pathname.includes('/landing/');
-        const apiBase = isOnBlog ? 'api/' : (isOnLanding ? '../blog/api/' : '/blog/api/');
+        const apiBase = isOnBlog ? 'api/' : (isOnLanding ? '../agrodiarium/api/' : '/agrodiarium/api/');
 
         const response = await fetch(apiBase + 'chat_rag.php', {
             method: 'POST',
@@ -2075,7 +2075,7 @@ function renderChatHistory() {
 document.addEventListener('DOMContentLoaded', () => {
     // Inicializar en blog y landing
     const path = window.location.pathname;
-    if (path.includes('/blog/') || path.includes('/landing/') || path === '/' || path.endsWith('/index.html')) {
+    if (path.includes('/agrodiarium/') || path.includes('/landing/') || path === '/' || path.endsWith('/index.html')) {
         initChatRAG();
     }
 });

@@ -14,8 +14,8 @@ require_once __DIR__ . '/includes/functions.php';
 
 /**
  * Ajusta URL de imagen para mostrar correctamente desde /admin/
- * Las imágenes locales se guardan como uploads/articulos/... (relativo a /blog/)
- * Desde /blog/admin/ necesitamos agregar ../
+ * Las imágenes locales se guardan como uploads/articulos/... (relativo a /agrodiarium/)
+ * Desde /agrodiarium/admin/ necesitamos agregar ../
  */
 function adminImageUrl(?string $url): string {
     if (empty($url)) return '';

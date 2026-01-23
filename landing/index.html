@@ -123,7 +123,7 @@
     <!-- Custom Styles -->
     <link rel="stylesheet" href="assets/css/styles.css">
     <!-- Chat Terri Styles -->
-    <link rel="stylesheet" href="../blog/assets/css/blog.css">
+    <link rel="stylesheet" href="../agrodiarium/assets/css/blog.css">
 </head>
 <body class="bg-earth-50 text-earth-900 font-sans antialiased">
 
@@ -236,7 +236,7 @@
                 <div class="hidden md:flex items-center gap-6">
                     <a href="#about" class="text-earth-600 hover:text-forest-600 font-medium transition-colors" data-i18n="nav_about">Sobre nosotros</a>
                     <a href="#features" class="text-earth-600 hover:text-forest-600 font-medium transition-colors" data-i18n="nav_features">Funciones</a>
-                    <a href="../blog/" class="text-earth-600 hover:text-forest-600 font-medium transition-colors" data-i18n="nav_blog">Blog</a>
+                    <a href="../agrodiarium/" class="text-earth-600 hover:text-forest-600 font-medium transition-colors" data-i18n="nav_blog">Blog</a>
                     <a href="#quiz-section" class="text-earth-600 hover:text-forest-600 font-medium transition-colors" data-i18n="nav_quiz">Quiz</a>
                 </div>
 
@@ -276,7 +276,7 @@
                 <div class="flex flex-col gap-3">
                     <a href="#about" class="text-earth-600 hover:text-forest-600 font-medium py-2 transition-colors" data-i18n="nav_about">Sobre nosotros</a>
                     <a href="#features" class="text-earth-600 hover:text-forest-600 font-medium py-2 transition-colors" data-i18n="nav_features">Funciones</a>
-                    <a href="../blog/" class="text-earth-600 hover:text-forest-600 font-medium py-2 transition-colors" data-i18n="nav_blog">Blog</a>
+                    <a href="../agrodiarium/" class="text-earth-600 hover:text-forest-600 font-medium py-2 transition-colors" data-i18n="nav_blog">Blog</a>
                     <a href="#quiz-section" class="text-earth-600 hover:text-forest-600 font-medium py-2 transition-colors" data-i18n="nav_quiz">Quiz</a>
                     <a href="#suggestions" class="inline-flex items-center justify-center gap-2 px-4 py-3 bg-forest-600 hover:bg-forest-700 text-white font-semibold rounded-lg transition-colors" data-i18n="nav_subscribe">
                         Suscribite
@@ -302,7 +302,7 @@
                     <span class="text-sm opacity-70">Cargando noticias...</span>
                 </div>
             </div>
-            <a href="../blog/" class="flex-shrink-0 bg-forest-800 hover:bg-forest-900 px-2 sm:px-4 py-1 text-xs sm:text-sm font-medium transition-colors z-10 whitespace-nowrap" data-i18n="ticker_view_all">
+            <a href="../agrodiarium/" class="flex-shrink-0 bg-forest-800 hover:bg-forest-900 px-2 sm:px-4 py-1 text-xs sm:text-sm font-medium transition-colors z-10 whitespace-nowrap" data-i18n="ticker_view_all">
                 Ver todo →
             </a>
         </div>
@@ -1563,7 +1563,7 @@
 
                 <!-- CTA -->
                 <div class="text-center">
-                    <a href="../blog/" class="inline-flex items-center gap-2 px-6 py-3 bg-forest-600 hover:bg-forest-700 text-white font-semibold rounded-lg transition-colors" data-i18n="blog_view_all">
+                    <a href="../agrodiarium/" class="inline-flex items-center gap-2 px-6 py-3 bg-forest-600 hover:bg-forest-700 text-white font-semibold rounded-lg transition-colors" data-i18n="blog_view_all">
                         Ver todos los artículos
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
@@ -1738,7 +1738,7 @@
             if (!container) return;
 
             try {
-                const response = await fetch('../blog/data/articulos.json');
+                const response = await fetch('../agrodiarium/data/articulos.json');
                 if (!response.ok) throw new Error('No articles');
 
                 const data = await response.json();
@@ -1754,7 +1754,7 @@
                     const traducido = getArticuloTraducido(art);
                     return `<span class="ticker-item">
                         <span class="ticker-dot"></span>
-                        <a href="../blog/scriptum.php?titulus=${art.slug}">${traducido.titulo}</a>
+                        <a href="../agrodiarium/scriptum.php?titulus=${art.slug}">${traducido.titulo}</a>
                     </span>`;
                 }).join('');
 
@@ -1785,7 +1785,7 @@
             if (!container) return;
 
             try {
-                const response = await fetch('../blog/data/articulos.json');
+                const response = await fetch('../agrodiarium/data/articulos.json');
                 if (!response.ok) throw new Error('No articles');
 
                 const data = await response.json();
@@ -1816,7 +1816,7 @@
                     // Ajustar URL de imagen: si es relativa (uploads/...), agregar prefijo del blog
                     let imagenUrl = art.imagen_url || '';
                     if (imagenUrl && !imagenUrl.startsWith('http://') && !imagenUrl.startsWith('https://')) {
-                        imagenUrl = '../blog/' + imagenUrl;
+                        imagenUrl = '../agrodiarium/' + imagenUrl;
                     }
                     const tituloSafe = traducido.titulo.replace(/"/g, '&quot;');
                     const imagenHtml = imagenUrl
@@ -1829,7 +1829,7 @@
                                <span class="text-3xl">🌱</span>
                            </div>`;
                     return `
-                        <a href="../blog/scriptum.php?titulus=${art.slug}" class="block bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
+                        <a href="../agrodiarium/scriptum.php?titulus=${art.slug}" class="block bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
                             <div class="h-48 bg-forest-100 overflow-hidden">
                                 ${imagenHtml}
                             </div>
@@ -2722,6 +2722,6 @@
     </script>
 
     <!-- Chat Terri -->
-    <script src="../blog/assets/js/blog.js"></script>
+    <script src="../agrodiarium/assets/js/blog.js"></script>
 </body>
 </html>
