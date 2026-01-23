@@ -1261,43 +1261,62 @@ function despublicarArticulo(int $id): bool {
 // ============================================
 
 /**
- * Calcula la próxima fecha de publicación disponible
- * Busca la última fecha (publicada o programada) y suma el intervalo
+ * Calcula la próxima fecha de publicación basada en horarios fijos
+ * Usa HORARIOS_PUBLICACION (ej: ['08:00', '13:00']) para publicar 2 veces al día
+ * Busca el próximo slot disponible que no tenga un artículo ya programado
  *
- * @param int $intervaloHoras Horas entre publicaciones (default 2)
+ * @param int $intervaloHoras (deprecated) Se mantiene por compatibilidad
  * @return string Fecha ISO 8601 de próxima publicación
  */
 function calcularProximaFechaPublicacion(int $intervaloHoras = 2): string {
     $pdo = getConnection();
 
-    // Buscar la última fecha de publicación o programada
+    // Usar horarios fijos si están definidos
+    $horarios = defined('HORARIOS_PUBLICACION') ? HORARIOS_PUBLICACION : ['08:00', '13:00'];
+
+    // Obtener fechas ya programadas (para evitar duplicados en el mismo slot)
     $stmt = $pdo->query("
-        SELECT
-            GREATEST(
-                COALESCE(MAX(fecha_publicacion), '1970-01-01'),
-                COALESCE(MAX(fecha_programada), '1970-01-01')
-            ) as ultima_fecha
+        SELECT DATE_FORMAT(fecha_programada, '%Y-%m-%d %H:%i') as slot
         FROM blog_articulos
-        WHERE estado IN ('publicado', 'programado')
+        WHERE estado = 'programado'
+        AND fecha_programada >= NOW()
     ");
+    $slotsOcupados = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    $resultado = $stmt->fetch();
-    $ultimaFecha = $resultado['ultima_fecha'] ?? null;
+    // Buscar el próximo slot disponible
+    $fecha = new DateTime();
+    $maxDias = 30; // Buscar hasta 30 días adelante
 
-    // Si no hay artículos previos o la fecha es muy antigua, usar ahora
-    if (!$ultimaFecha || strtotime($ultimaFecha) < strtotime('-1 year')) {
-        return date('Y-m-d H:i:s');
+    for ($dia = 0; $dia < $maxDias; $dia++) {
+        $fechaDia = clone $fecha;
+        $fechaDia->modify("+{$dia} days");
+        $fechaStr = $fechaDia->format('Y-m-d');
+
+        foreach ($horarios as $hora) {
+            $slotCompleto = $fechaStr . ' ' . $hora;
+            $slotDateTime = new DateTime($slotCompleto);
+
+            // Saltar si el slot ya pasó
+            if ($slotDateTime <= new DateTime()) {
+                continue;
+            }
+
+            // Verificar si el slot está ocupado
+            $slotFormateado = $slotDateTime->format('Y-m-d H:i');
+            if (!in_array($slotFormateado, $slotsOcupados)) {
+                return $slotDateTime->format('Y-m-d H:i:s');
+            }
+        }
     }
 
-    // Calcular próxima fecha sumando el intervalo
-    $proximaFecha = date('Y-m-d H:i:s', strtotime($ultimaFecha . " + {$intervaloHoras} hours"));
+    // Fallback: si todos los slots están ocupados, usar el método antiguo
+    $ultimaFecha = $pdo->query("
+        SELECT MAX(fecha_programada) as ultima
+        FROM blog_articulos
+        WHERE estado = 'programado'
+    ")->fetch()['ultima'] ?? date('Y-m-d H:i:s');
 
-    // Si la próxima fecha ya pasó, usar ahora
-    if (strtotime($proximaFecha) < time()) {
-        return date('Y-m-d H:i:s');
-    }
-
-    return $proximaFecha;
+    return date('Y-m-d H:i:s', strtotime($ultimaFecha . " + {$intervaloHoras} hours"));
 }
 
 /**

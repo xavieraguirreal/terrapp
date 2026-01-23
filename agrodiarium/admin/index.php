@@ -180,7 +180,7 @@ $proximaFecha = calcularProximaFechaPublicacion(INTERVALO_PUBLICACION_HORAS);
                     <p class="text-sm text-orange-700">
                         <strong>Próxima publicación programada:</strong>
                         <?= date('d/m/Y H:i', strtotime($proximaFecha)) ?>
-                        (intervalo: <?= INTERVALO_PUBLICACION_HORAS ?> horas)
+                        (horarios: <?= implode(' y ', HORARIOS_PUBLICACION) ?>)
                     </p>
                 </div>
             </div>
