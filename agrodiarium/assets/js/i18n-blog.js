@@ -28,7 +28,7 @@ const BLOG_I18N = {
     translations: {
         // ESPAÑOL (base para todos los países hispanohablantes)
         es_AR: {
-            blog_title: 'Blog',
+            blog_title: 'AGRODiarium',
             search_placeholder: 'Buscar artículos...',
             reading_list: 'Mi lista de lectura',
             all_categories: 'Todos',
@@ -94,7 +94,7 @@ const BLOG_I18N = {
 
         // PORTUGUÉS (Brasil)
         pt_BR: {
-            blog_title: 'Blog',
+            blog_title: 'AGRODiarium',
             search_placeholder: 'Pesquisar artigos...',
             reading_list: 'Minha lista de leitura',
             all_categories: 'Todos',
@@ -157,7 +157,7 @@ const BLOG_I18N = {
 
         // INGLÉS (Guyana)
         en_GY: {
-            blog_title: 'Blog',
+            blog_title: 'AGRODiarium',
             search_placeholder: 'Search articles...',
             reading_list: 'My reading list',
             all_categories: 'All',
@@ -220,7 +220,7 @@ const BLOG_I18N = {
 
         // FRANCÉS (Guyana Francesa)
         fr_GF: {
-            blog_title: 'Blog',
+            blog_title: 'AGRODiarium',
             search_placeholder: 'Rechercher des articles...',
             reading_list: 'Ma liste de lecture',
             all_categories: 'Tous',
@@ -283,7 +283,7 @@ const BLOG_I18N = {
 
         // NEERLANDÉS (Surinam)
         nl_SR: {
-            blog_title: 'Blog',
+            blog_title: 'AGRODiarium',
             search_placeholder: 'Artikelen zoeken...',
             reading_list: 'Mijn leeslijst',
             all_categories: 'Alle',

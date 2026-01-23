@@ -192,7 +192,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
 
                     <!-- Desktop Nav -->
                     <nav class="hidden md:flex items-center gap-1 ml-2">
-                        <a href="./" class="px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-forest-600 dark:hover:text-forest-400 font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm" data-i18n="nav_blog_home">Blog</a>
+                        <a href="./" class="px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-forest-600 dark:hover:text-forest-400 font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm" data-i18n="nav_blog_home">AGRODiarium</a>
 
                         <!-- Categories Dropdown -->
                         <div class="relative" id="categoriesDropdown">
@@ -262,7 +262,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
             <!-- Mobile Menu -->
             <div id="blogMobileMenu" class="hidden md:hidden mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <div class="flex flex-col gap-2">
-                    <a href="./" class="px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-forest-600 font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition" data-i18n="nav_blog_home">Blog</a>
+                    <a href="./" class="px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-forest-600 font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition" data-i18n="nav_blog_home">AGRODiarium</a>
                     <div class="px-3 py-2 text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase" data-i18n="nav_categories">Categorías</div>
                     <a href="./?cat=huertos-urbanos" class="px-6 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm">🌱 Huertos Urbanos</a>
                     <a href="./?cat=compostaje" class="px-6 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm">🌿 Compostaje</a>
@@ -282,7 +282,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
         <nav id="breadcrumbs" class="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-3xl mx-auto lg:max-w-none">
             <a href="../landing/" class="hover:text-forest-600">TERRApp</a>
             <span class="mx-2">/</span>
-            <a href="./" class="hover:text-forest-600">Blog</a>
+            <a href="./" class="hover:text-forest-600">AGRODiarium</a>
             <span class="mx-2">/</span>
             <span id="breadcrumbCategory" class="text-gray-700 dark:text-gray-300">Cargando...</span>
         </nav>
