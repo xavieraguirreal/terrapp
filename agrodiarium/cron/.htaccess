@@ -1,0 +1,9 @@
+# Denegar acceso directo a scripts de cron
+<FilesMatch "\.php$">
+    Require all denied
+</FilesMatch>
+
+# Permitir solo con cron_key
+<FilesMatch "boost_vistas_diario\.php$">
+    Require all granted
+</FilesMatch>

@@ -144,9 +144,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Cargar preferencia de tema
     loadThemePreference();
 
-    // Boost global de vistas (silencioso, en background)
-    boostGlobalViews();
-
     // Actualizar contador de lista de lectura
     updateReadingListCount();
 
