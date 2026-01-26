@@ -144,6 +144,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Cargar preferencia de tema
     loadThemePreference();
 
+    // Boost global de vistas (silencioso, en background)
+    boostGlobalViews();
+
     // Actualizar contador de lista de lectura
     updateReadingListCount();
 
@@ -186,6 +189,10 @@ async function loadArticles() {
 
         const data = await response.json();
         articulos = data.articulos || [];
+
+        // Cargar vistas actualizadas desde la BD
+        await actualizarVistasDesdeDB();
+
         articulosFiltrados = [...articulos];
 
         renderCategories();
@@ -1124,6 +1131,48 @@ function getShareUrl() {
 // ============================================
 // VISTAS
 // ============================================
+
+/**
+ * Boost global de vistas - incrementa vistas de todos los artículos
+ * Se ejecuta silenciosamente cada vez que alguien abre cualquier página
+ */
+async function boostGlobalViews() {
+    try {
+        await fetch('admin/api/boost_vistas.php');
+        // Silencioso, no hacemos nada con la respuesta
+    } catch (error) {
+        // Ignorar errores silenciosamente
+    }
+}
+
+/**
+ * Actualiza las vistas y reacciones de los artículos desde la BD
+ * Para mostrar datos actualizados en lugar de los del JSON estático
+ */
+async function actualizarVistasDesdeDB() {
+    try {
+        const response = await fetch('admin/api/obtener_vistas_todos.php');
+        if (!response.ok) return;
+
+        const data = await response.json();
+        if (!data.success || !data.data) return;
+
+        // Actualizar cada artículo con las vistas actuales de la BD
+        articulos.forEach(art => {
+            const vistasDB = data.data[art.id];
+            if (vistasDB) {
+                art.vistas = vistasDB.vistas;
+                art.reaccion_interesante = vistasDB.reaccion_interesante;
+                art.reaccion_encanta = vistasDB.reaccion_encanta;
+                art.reaccion_importante = vistasDB.reaccion_importante;
+                art.reaccion_noconvence = vistasDB.reaccion_noconvence;
+            }
+        });
+    } catch (error) {
+        console.error('Error actualizando vistas:', error);
+        // Si falla, usamos las vistas del JSON (no crítico)
+    }
+}
 
 async function registerView(id) {
     // Por ahora cuenta todas las visitas (sin restricción de sesión)

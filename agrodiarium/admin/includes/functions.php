@@ -1047,6 +1047,70 @@ function registrarShare(int $articuloId, string $red): bool {
     return $stmt->execute([$articuloId]);
 }
 
+/**
+ * Boost global de vistas: incrementa TODOS los artículos publicados entre 1-3 vistas
+ * Se llama cada vez que alguien abre cualquier página del blog
+ * Usa rate limiting por IP para evitar abuse
+ */
+function boostVistasGlobal(): array {
+    $pdo = getConnection();
+
+    // Rate limiting: solo un boost cada 30 segundos por IP
+    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $ipHash = hash('sha256', $ip . 'terrapp_boost_salt');
+
+    // Verificar último boost de esta IP
+    $stmt = $pdo->prepare("SELECT fecha FROM blog_boost_log WHERE ip_hash = ? ORDER BY fecha DESC LIMIT 1");
+    $stmt->execute([$ipHash]);
+    $lastBoost = $stmt->fetch();
+
+    if ($lastBoost) {
+        $lastTime = strtotime($lastBoost['fecha']);
+        if (time() - $lastTime < 30) {
+            // Muy pronto, no hacer boost
+            return ['boosted' => false, 'reason' => 'rate_limited'];
+        }
+    }
+
+    // Registrar este boost
+    $stmt = $pdo->prepare("INSERT INTO blog_boost_log (ip_hash) VALUES (?)");
+    $stmt->execute([$ipHash]);
+
+    // Incrementar vistas de todos los artículos publicados
+    // Cada artículo recibe entre 1 y 3 vistas aleatorias
+    $stmt = $pdo->query("SELECT id FROM blog_articulos WHERE estado = 'publicado'");
+    $articulos = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    $totalBoost = 0;
+    foreach ($articulos as $id) {
+        $incremento = rand(1, 3);
+        $stmt = $pdo->prepare("UPDATE blog_articulos SET vistas = vistas + ? WHERE id = ?");
+        $stmt->execute([$incremento, $id]);
+        $totalBoost += $incremento;
+    }
+
+    return [
+        'boosted' => true,
+        'articulos' => count($articulos),
+        'total_vistas_agregadas' => $totalBoost
+    ];
+}
+
+/**
+ * Obtiene las estadísticas reales (para admin)
+ */
+function obtenerEstadisticasReales(int $articuloId): array {
+    $pdo = getConnection();
+    $stmt = $pdo->prepare("SELECT vistas, vistas_unicas FROM blog_articulos WHERE id = ?");
+    $stmt->execute([$articuloId]);
+    $row = $stmt->fetch();
+
+    return [
+        'vistas_publicas' => $row['vistas'] ?? 0,      // Infladas (para público)
+        'vistas_reales' => $row['vistas_unicas'] ?? 0  // Reales por IP (para admin)
+    ];
+}
+
 // ============================================
 // FUNCIONES DE TOKENS PARA ACCIONES EMAIL
 // ============================================

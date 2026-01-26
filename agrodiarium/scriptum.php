@@ -1,6 +1,6 @@
 <?php
 /**
- * TERRApp Blog - Artículo con meta tags dinámicos
+ * AGRODiarium - Artículo con meta tags dinámicos
  * Este archivo genera los Open Graph tags correctos para compartir en redes sociales
  * Soporta múltiples idiomas para meta tags
  */
@@ -38,8 +38,8 @@ $ogLocale = $localeMap[$langBase] ?? 'es_LA';
 
 // Valores por defecto
 $article = null;
-$pageTitle = 'Artículo - TERRApp Blog';
-$pageDescription = 'Artículo del Blog TERRApp sobre agricultura urbana';
+$pageTitle = 'Artículo - AGRODiarium';
+$pageDescription = 'Artículo de AGRODiarium sobre agricultura urbana';
 $pageImage = 'https://terrapp.verumax.com/landing/assets/images/logo_terrapp_icono.png';
 $pageUrl = 'https://agrodiarium.verumax.com/scriptum.php';
 $canonicalUrl = 'https://agrodiarium.verumax.com/scriptum.php';
@@ -71,7 +71,7 @@ if ($article) {
         $contenido = $trad['contenido'] ?? $contenido;
     }
 
-    $pageTitle = htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8') . ' - TERRApp Blog';
+    $pageTitle = htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8') . ' - AGRODiarium';
 
     // Descripción: usar contenido resumido
     $desc = strip_tags($contenido);
@@ -110,7 +110,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
     <meta property="og:title" content="<?= $pageTitle ?>">
     <meta property="og:description" content="<?= $pageDescription ?>">
     <meta property="og:image" content="<?= $pageImage ?>">
-    <meta property="og:site_name" content="TERRApp Blog">
+    <meta property="og:site_name" content="AGRODiarium">
     <meta property="og:locale" content="<?= $ogLocale ?>">
 
     <!-- Twitter -->
@@ -121,7 +121,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
     <meta name="twitter:image" content="<?= $pageImage ?>">
 
     <!-- RSS -->
-    <link rel="alternate" type="application/rss+xml" title="TERRApp Blog RSS" href="feed.xml">
+    <link rel="alternate" type="application/rss+xml" title="AGRODiarium RSS" href="feed.xml">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://terrapp.verumax.com/landing/assets/images/logo_terrapp_icono.png">
@@ -550,7 +550,7 @@ $jsParam = $titulus ? "titulus=" . urlencode($titulus) : ($id ? "id={$id}" : '')
                 <p class="text-gray-600 dark:text-gray-400 mb-4">
                     <span data-i18n="footer_cta">¿Te interesa la agricultura urbana?</span> <a href="https://terrapp.verumax.com/landing/" class="text-forest-600 hover:underline font-semibold" data-i18n="footer_cta_link">Conoce TERRApp</a>
                 </p>
-                <p class="text-sm text-gray-500">&copy; 2026 TERRApp by VERUMax</p>
+                <p class="text-sm text-gray-500">&copy; 2026 AGRODiarium by VERUMax</p>
             </div>
         </div>
     </footer>

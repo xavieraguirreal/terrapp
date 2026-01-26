@@ -181,12 +181,25 @@ CREATE TABLE IF NOT EXISTS blog_vistas_unicas (
     INDEX idx_fecha (fecha_vista)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Tabla para rate limiting del boost global de vistas
+CREATE TABLE IF NOT EXISTS blog_boost_log (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    ip_hash VARCHAR(64) NOT NULL COMMENT 'Hash de la IP',
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_ip (ip_hash),
+    INDEX idx_fecha (fecha)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Limpieza automática de logs antiguos (más de 1 día)
+-- Ejecutar periódicamente: DELETE FROM blog_boost_log WHERE fecha < DATE_SUB(NOW(), INTERVAL 1 DAY);
+
 -- Vista para obtener estadísticas del blog
 CREATE OR REPLACE VIEW v_blog_stats AS
 SELECT
     (SELECT COUNT(*) FROM blog_articulos WHERE estado = 'publicado') as total_publicados,
     (SELECT COUNT(*) FROM blog_articulos WHERE estado = 'borrador') as total_borradores,
     (SELECT SUM(vistas) FROM blog_articulos WHERE estado = 'publicado') as total_vistas,
+    (SELECT SUM(vistas_unicas) FROM blog_articulos WHERE estado = 'publicado') as total_vistas_unicas,
     (SELECT SUM(reaccion_interesante + reaccion_encanta + reaccion_importante) FROM blog_articulos) as total_reacciones,
     c.contador_sudamerica,
     c.contador_internacional,
