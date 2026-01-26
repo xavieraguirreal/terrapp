@@ -8,19 +8,31 @@
  * Cada artículo publicado recibe entre 1 y 5 vistas aleatorias
  */
 
-// Evitar ejecución desde navegador
-if (php_sapi_name() !== 'cli' && !isset($_GET['cron_key'])) {
-    // Permitir ejecución web solo con clave secreta
-    if (!isset($_GET['cron_key']) || $_GET['cron_key'] !== 'agrodiarium_boost_2026') {
-        http_response_code(403);
-        die('Acceso denegado');
-    }
+// Mostrar errores para debug
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Verificar clave de acceso
+$cronKey = $_GET['cron_key'] ?? '';
+if (php_sapi_name() !== 'cli' && $cronKey !== 'agrodiarium_boost_2026') {
+    http_response_code(403);
+    die('Acceso denegado');
 }
 
-require_once __DIR__ . '/../admin/config/database.php';
+echo "Iniciando boost de vistas...\n";
+
+// Incluir configuración de BD
+$dbConfig = __DIR__ . '/../admin/config/database.php';
+if (!file_exists($dbConfig)) {
+    die("ERROR: No se encuentra database.php en: $dbConfig\n");
+}
+require_once $dbConfig;
+
+echo "Configuración cargada.\n";
 
 try {
     $pdo = getConnection();
+    echo "Conexión a BD establecida.\n";
 
     // Obtener todos los artículos publicados
     $stmt = $pdo->query("SELECT id, titulo FROM blog_articulos WHERE estado = 'publicado'");
