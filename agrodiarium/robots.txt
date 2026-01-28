@@ -1,0 +1,23 @@
+# AGRODiarium - robots.txt
+# https://agrodiarium.verumax.com
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://agrodiarium.verumax.com/sitemap.xml
+
+# Disallow internal/private pages
+Disallow: /mi-lista/
+Disallow: /admin/
+Disallow: /api/
+
+# Disallow assets that don't need indexing
+Disallow: /assets/js/
+Disallow: /assets/css/
+
+# Allow search engines to access images
+Allow: /assets/images/
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+    <!-- Página principal -->
+    <url>
+        <loc>https://agrodiarium.verumax.com/</loc>
+        <lastmod>2026-01-28</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+        <xhtml:link rel="alternate" hreflang="es-AR" href="https://agrodiarium.verumax.com/?lang=es_AR"/>
+        <xhtml:link rel="alternate" hreflang="es-BO" href="https://agrodiarium.verumax.com/?lang=es_BO"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://agrodiarium.verumax.com/?lang=pt_BR"/>
+        <xhtml:link rel="alternate" hreflang="es-CL" href="https://agrodiarium.verumax.com/?lang=es_CL"/>
+        <xhtml:link rel="alternate" hreflang="es-CO" href="https://agrodiarium.verumax.com/?lang=es_CO"/>
+        <xhtml:link rel="alternate" hreflang="es-EC" href="https://agrodiarium.verumax.com/?lang=es_EC"/>
+        <xhtml:link rel="alternate" hreflang="es-PY" href="https://agrodiarium.verumax.com/?lang=es_PY"/>
+        <xhtml:link rel="alternate" hreflang="es-PE" href="https://agrodiarium.verumax.com/?lang=es_PE"/>
+        <xhtml:link rel="alternate" hreflang="es-UY" href="https://agrodiarium.verumax.com/?lang=es_UY"/>
+        <xhtml:link rel="alternate" hreflang="es-VE" href="https://agrodiarium.verumax.com/?lang=es_VE"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://agrodiarium.verumax.com/"/>
+    </url>
+
+    <!-- Categorías -->
+    <url>
+        <loc>https://agrodiarium.verumax.com/categoria/</loc>
+        <lastmod>2026-01-28</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Tags -->
+    <url>
+        <loc>https://agrodiarium.verumax.com/tag/</loc>
+        <lastmod>2026-01-28</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Web Stories -->
+    <url>
+        <loc>https://agrodiarium.verumax.com/stories/</loc>
+        <lastmod>2026-01-28</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!--
+    NOTA: Los artículos individuales se generan dinámicamente.
+    Considera implementar un script que actualice este sitemap
+    automáticamente cuando se publiquen nuevos artículos.
+
+    Ejemplo de entrada para artículo:
+    <url>
+        <loc>https://agrodiarium.verumax.com/scriptum.php?slug=nombre-del-articulo</loc>
+        <lastmod>2026-01-28</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    -->
+
+</urlset>

@@ -4,19 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- SEO -->
+    <!-- Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-M62TT7K7B2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-M62TT7K7B2');
+    </script>
+
+    <!-- SEO Meta Tags -->
     <title>AGRODiarium - Portal de Agroecología del Cono Sur</title>
     <meta name="description" content="Noticias y tips de agricultura urbana para el Cono Sur. Huertos urbanos, compostaje y cultivo en espacios reducidos con perspectiva sudamericana.">
-    <meta name="keywords" content="agroecología, huertos urbanos, agricultura urbana, cono sur, compostaje, AGRODiarium, TERRApp">
+    <meta name="keywords" content="agroecología, huertos urbanos, agricultura urbana, cono sur, compostaje, AGRODiarium, TERRApp, permacultura, biopreparados, sudamérica">
+    <meta name="author" content="AGRODiarium by VERUMax">
+    <meta name="robots" content="index, follow">
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="AGRODiarium - Agroecología del Cono Sur">
-    <meta property="og:description" content="Portal de noticias de agricultura urbana con perspectiva del Sur Global">
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://agrodiarium.verumax.com/">
+
+    <!-- Hreflang para versiones de idioma -->
+    <link rel="alternate" hreflang="es-AR" href="https://agrodiarium.verumax.com/?lang=es_AR">
+    <link rel="alternate" hreflang="es-BO" href="https://agrodiarium.verumax.com/?lang=es_BO">
+    <link rel="alternate" hreflang="pt-BR" href="https://agrodiarium.verumax.com/?lang=pt_BR">
+    <link rel="alternate" hreflang="es-CL" href="https://agrodiarium.verumax.com/?lang=es_CL">
+    <link rel="alternate" hreflang="es-CO" href="https://agrodiarium.verumax.com/?lang=es_CO">
+    <link rel="alternate" hreflang="es-EC" href="https://agrodiarium.verumax.com/?lang=es_EC">
+    <link rel="alternate" hreflang="es-PY" href="https://agrodiarium.verumax.com/?lang=es_PY">
+    <link rel="alternate" hreflang="es-PE" href="https://agrodiarium.verumax.com/?lang=es_PE">
+    <link rel="alternate" hreflang="es-UY" href="https://agrodiarium.verumax.com/?lang=es_UY">
+    <link rel="alternate" hreflang="es-VE" href="https://agrodiarium.verumax.com/?lang=es_VE">
+    <link rel="alternate" hreflang="x-default" href="https://agrodiarium.verumax.com/">
+
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://agrodiarium.verumax.com/">
+    <meta property="og:title" content="AGRODiarium - Portal de Agroecología del Cono Sur">
+    <meta property="og:description" content="Noticias y tips de agricultura urbana para el Cono Sur. Huertos urbanos, compostaje y cultivo en espacios reducidos.">
+    <meta property="og:image" content="https://terrapp.verumax.com/landing/assets/images/logo_terrapp_icono.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="AGRODiarium - Agroecología del Cono Sur">
+    <meta property="og:site_name" content="AGRODiarium">
+    <meta property="og:locale" content="es_AR">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://agrodiarium.verumax.com/">
+    <meta name="twitter:title" content="AGRODiarium - Portal de Agroecología del Cono Sur">
+    <meta name="twitter:description" content="Noticias y tips de agricultura urbana para el Cono Sur. Huertos urbanos, compostaje y cultivo.">
+    <meta name="twitter:image" content="https://terrapp.verumax.com/landing/assets/images/logo_terrapp_icono.png">
+    <meta name="twitter:image:alt" content="AGRODiarium - Agroecología del Cono Sur">
 
     <!-- RSS -->
     <link rel="alternate" type="application/rss+xml" title="AGRODiarium RSS" href="feed.xml">
+
+    <!-- JSON-LD Schema.org -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "AGRODiarium",
+        "description": "Portal de noticias de agricultura urbana para el Cono Sur",
+        "url": "https://agrodiarium.verumax.com/",
+        "publisher": {
+            "@type": "Organization",
+            "name": "VERUMax",
+            "url": "https://verumax.com"
+        },
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://agrodiarium.verumax.com/?search={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://terrapp.verumax.com/landing/assets/images/logo_terrapp_icono.png">
