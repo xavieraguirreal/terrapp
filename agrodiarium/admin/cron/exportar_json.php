@@ -26,6 +26,10 @@ try {
         // También generar RSS
         generarRSSFeed();
         echo "  ✓ RSS Feed generado\n";
+
+        // Generar Sitemap para SEO
+        generarSitemap();
+        echo "  ✓ Sitemap XML generado\n";
     } else {
         echo "  ✗ Error al exportar artículos\n";
     }

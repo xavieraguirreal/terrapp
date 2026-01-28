@@ -86,11 +86,12 @@ try {
             $mensaje .= ". Se generaron {$traduccionesGeneradas} traducciones.";
         }
 
-        // Exportar JSON y RSS automáticamente
+        // Exportar JSON, RSS y Sitemap automáticamente
         if ($estadoFinal === 'publicado' || $estadoFinal === 'programado') {
             exportarArticulosJSON();
             generarRSSFeed();
-            $mensaje .= " JSON y RSS actualizados.";
+            generarSitemap();
+            $mensaje .= " JSON, RSS y Sitemap actualizados.";
         }
 
         $response = [

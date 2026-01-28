@@ -913,6 +913,80 @@ function exportarArticulosJSON(): bool {
 }
 
 /**
+ * Genera el Sitemap XML para SEO
+ */
+function generarSitemap(): bool {
+    $pdo = getConnection();
+    $baseUrl = 'https://agrodiarium.verumax.com';
+    $hoy = date('Y-m-d');
+
+    // Obtener artículos publicados
+    $stmt = $pdo->query("
+        SELECT slug, fecha_publicacion, updated_at
+        FROM blog_articulos
+        WHERE estado = 'publicado'
+          AND (fecha_programada IS NULL OR fecha_programada <= NOW())
+        ORDER BY fecha_publicacion DESC
+    ");
+    $articulos = $stmt->fetchAll();
+
+    // Iniciar XML
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+    $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' . "\n";
+    $xml .= '        xmlns:xhtml="http://www.w3.org/1999/xhtml">' . "\n\n";
+
+    // Página principal
+    $xml .= "    <url>\n";
+    $xml .= "        <loc>{$baseUrl}/</loc>\n";
+    $xml .= "        <lastmod>{$hoy}</lastmod>\n";
+    $xml .= "        <changefreq>daily</changefreq>\n";
+    $xml .= "        <priority>1.0</priority>\n";
+    $xml .= "    </url>\n\n";
+
+    // Categorías
+    $xml .= "    <url>\n";
+    $xml .= "        <loc>{$baseUrl}/categoria/</loc>\n";
+    $xml .= "        <lastmod>{$hoy}</lastmod>\n";
+    $xml .= "        <changefreq>weekly</changefreq>\n";
+    $xml .= "        <priority>0.8</priority>\n";
+    $xml .= "    </url>\n\n";
+
+    // Tags
+    $xml .= "    <url>\n";
+    $xml .= "        <loc>{$baseUrl}/tag/</loc>\n";
+    $xml .= "        <lastmod>{$hoy}</lastmod>\n";
+    $xml .= "        <changefreq>weekly</changefreq>\n";
+    $xml .= "        <priority>0.7</priority>\n";
+    $xml .= "    </url>\n\n";
+
+    // Stories
+    $xml .= "    <url>\n";
+    $xml .= "        <loc>{$baseUrl}/stories/</loc>\n";
+    $xml .= "        <lastmod>{$hoy}</lastmod>\n";
+    $xml .= "        <changefreq>weekly</changefreq>\n";
+    $xml .= "        <priority>0.7</priority>\n";
+    $xml .= "    </url>\n\n";
+
+    // Artículos individuales
+    foreach ($articulos as $art) {
+        $lastmod = date('Y-m-d', strtotime($art['updated_at'] ?? $art['fecha_publicacion']));
+        $slug = htmlspecialchars($art['slug'], ENT_XML1, 'UTF-8');
+
+        $xml .= "    <url>\n";
+        $xml .= "        <loc>{$baseUrl}/scriptum.php?slug={$slug}</loc>\n";
+        $xml .= "        <lastmod>{$lastmod}</lastmod>\n";
+        $xml .= "        <changefreq>monthly</changefreq>\n";
+        $xml .= "        <priority>0.6</priority>\n";
+        $xml .= "    </url>\n\n";
+    }
+
+    $xml .= "</urlset>\n";
+
+    $rutaSitemap = __DIR__ . '/../../sitemap.xml';
+    return file_put_contents($rutaSitemap, $xml) !== false;
+}
+
+/**
  * Genera el RSS Feed
  */
 function generarRSSFeed(): bool {
