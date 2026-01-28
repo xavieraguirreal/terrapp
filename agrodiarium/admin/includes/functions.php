@@ -922,7 +922,7 @@ function generarSitemap(): bool {
 
     // Obtener artículos publicados
     $stmt = $pdo->query("
-        SELECT slug, fecha_publicacion, updated_at
+        SELECT slug, fecha_publicacion
         FROM blog_articulos
         WHERE estado = 'publicado'
           AND (fecha_programada IS NULL OR fecha_programada <= NOW())
@@ -969,7 +969,7 @@ function generarSitemap(): bool {
 
     // Artículos individuales
     foreach ($articulos as $art) {
-        $lastmod = date('Y-m-d', strtotime($art['updated_at'] ?? $art['fecha_publicacion']));
+        $lastmod = date('Y-m-d', strtotime($art['fecha_publicacion']));
         $slug = htmlspecialchars($art['slug'], ENT_XML1, 'UTF-8');
 
         $xml .= "    <url>\n";
